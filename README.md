@@ -24,6 +24,11 @@ suppports:
 - 💡 [Suggest an improvement](https://github.com/HugoBlox/hugo-blox-builder/issues)
 - ⬆️ **Updating?** View the [Update Guide](https://docs.hugoblox.com/reference/update/) and [Release Notes](https://github.com/HugoBlox/hugo-blox-builder/releases)
 
+- Icons
+    - [Getting started article](https://docs.hugoblox.com/getting-started/page-builder/#icons)
+    - [Hugo Icons Module](https://icons.hugomods.com/)
+        - Is this an official module? - Yes, it's published by the official [hugomods.com](https://hugomods.com/) site, which features third party modules.
+
 
 ## Latest news
 
