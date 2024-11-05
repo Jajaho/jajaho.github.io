@@ -6,12 +6,15 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
 
 ## Tech
 
-- [**Hugo Blox Builder**](https://hugoblox.com) block builderß
-- [Hugo](https://github.com/gohugoio/hugo) generator
-deploy with GitHub or Netlify. Customize anything on your site with widgets, light/dark themes, and language packs.
+- [Hugo Blox Builder](https://hugoblox.com) block builder
+- [Hugo](https://github.com/gohugoio/hugo) site generator
+    - wirtten in Go
+    - extendable with "hugo modules" (based on [Go Modules](https://go.dev/wiki/Modules))
 
-suppports:
+### Supports:
 - [Mermaid](https://mermaid.js.org/) to generate charts, diagramms and mindmaps
+- custom JS
+- custom HTML & CSS
 
 ## Resources & Links
 
