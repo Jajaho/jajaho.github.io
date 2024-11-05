@@ -1,0 +1,10 @@
+# Local deployment
+resources/_gen/*
+public/*
+hugo_stats.json
+.hugo_build.lock
+go.sum
+
+
+# obsidian
+workspace.json
