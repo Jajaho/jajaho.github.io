@@ -1,6 +1,6 @@
 ---
 # Display name
-title: 
+title: Jakob Holz
 
 # Name pronunciation (optional)
 name_pronunciation: 
@@ -57,16 +57,52 @@ interests:
 education:
   - area: BSc Electrical Engineering
     institution: Ulm University
-    date_start: 2019-10-14
-    date_end: 2024
-    summary: |
-      Grade:
-      
+    date_start: 2020-10-14
+    date_end: 2025-02-15 
+    summary: |   
       Courses included:
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
+      - Quantum Mechanics
+      - Integrated Analog Circuits
+  - area: Abitur
+    institution: Gymnasium im Bildungszentrum Markdorf
+    date_start: 2016-09-01
+    date_end: 2019-07-31
+    summary: |
+      - Specialization in physics and computer science
+
 work:
+  - position: Research Assistant
+    company_name: Institute for Microelectronics, University of Ulm
+    date_start: 2022-01-01
+    date_end: 2023-12-31
+    summary: |
+      Responsibilities included:
+      - Implementation of a microcontroller based physical unclonable function generator
+      - Hardware programming (HDL) on Xilinx Zynq SOCs
+      - Implementation of different normalization processes
+  
+  - position: Research Assistant
+    company_name: Institute for Microelectronics, University of Ulm
+    date_start: 2021-01-01
+    date_end: 2021-12-31
+    summary: |
+      - Concept and implementation of a physical unclonable function readout system
+      - Hardware programming on Xilinx Zynq SOCs
+
+  - position: Development Engineer (Short-term)
+    company_name: Kendrion Markdorf GmbH
+    date_start: 2019-06-01
+    date_end: 2019-08-31
+    summary: |
+      - Development and commissioning of a solenoid valve control and supervision circuit
+
+  - position: Development Engineer (Short-term)
+    company_name: Kendrion Markdorf GmbH
+    date_start: 2018-06-01
+    date_end: 2018-08-31
+    summary: |
+      - Development of a time controlled universal switch
+      - Design of a current probe
   # - position: Director of Cloud Infrastructure
   #   company_name: GenCoin
   #   company_url: ''
@@ -137,6 +173,23 @@ languages:
 #   Only `title`, `awarder`, and `date` are required.
 #   Begin multi-line `summary` with YAML's `|` or `|2-` multi-line prefix and indent 2 spaces below.
 awards:
+  - title: Robocup Junior European Championship
+    date: '2019-06-01'
+    awarder: Robocup Junior
+#    icon:
+    summary: |
+      Winner of the first ever Robocup Junior European championship in the 2v2 lightweight league
+    url: https://www.suedkurier.de/region/bodenseekreis/markdorf/Die-Markdorfer-Robo-Fussball-Jungs-sind-Europameister;art372484,10203832
+  
+  - title: Sponsorship Award
+    date: '2018-07-01'
+    awarder: Markdorf Corporate Committee
+#    icon:
+    summary: |
+      Awarded for excellence in natural sciences and languages
+    url: https://www.suedkurier.de/region/bodenseekreis/markdorf/Ausgezeichnet-mit-dem-Wirtschaftsfoerderpreis-Diese-BZM-Schueler-beweisen-Ehrgeiz-in-Sachen-Naturwissenschaften-und-Sprachen;art372484,9808746
+
+
   # - title: Neural Networks and Deep Learning
   #   url: https://www.coursera.org/learn/neural-networks-deep-learning
   #   date: '2023-11-25'
