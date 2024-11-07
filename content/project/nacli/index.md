@@ -12,6 +12,6 @@ params:
 draft: false
 ---
 
-Flexible and powerful data analysis / manipulation library for Python, providing labeled data structures.
+Command line tool for nodal analysis of linear electrical circuits build with java.
 
 <!--more-->
