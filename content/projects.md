@@ -9,13 +9,9 @@ design:
 
 # Page sections
 sections:
-  - block: markdown
+  - block: 'github.Jajaho.project-timeline'
     id: project-timeline
     content:
-      title: Project Timeline
-      text: |-
-        {{< project-timeline >}}
-
   - block: collection
     content:
       title: Selected Projects
