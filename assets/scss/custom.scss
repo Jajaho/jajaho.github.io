@@ -1,0 +1,11 @@
+.timeline-wrapper {
+    margin: 2rem auto;
+    max-width: 1200px;  // or whatever width matches your design
+
+    .mermaid {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+}

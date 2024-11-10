@@ -9,6 +9,13 @@ design:
 
 # Page sections
 sections:
+  - block: markdown
+    content:
+      title: Project Timeline
+      text: |
+        {{< project-timeline >}}
+    design:
+      columns: '1'
   - block: collection
     content:
       title: Selected Projects
@@ -21,3 +28,6 @@ sections:
       fill_image: false
       columns: 3
 ---
+
+```mermaid
+```

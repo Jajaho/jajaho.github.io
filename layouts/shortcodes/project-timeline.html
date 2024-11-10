@@ -1,0 +1,13 @@
+{{/* layouts/shortcodes/project-timeline.html */}}
+{{ $projects := where site.RegularPages "Type" "project" }}
+
+{{ $output := "```mermaid" }}
+{{ $output = printf "%s\ngantt\n    title Project Timeline\n    dateFormat YYYY-MM-DD\n    axisFormat %%Y-%%m-%%d" $output }}
+{{ range $projects }}
+    {{- if and (isset .Params "startdate") (isset .Params "enddate") -}}
+        {{- $title := .Title | replaceRE "[^a-zA-Z0-9]" "_" -}}
+        {{- $output = printf "%s\n    %s : %s, %s" $output $title .Params.startDate .Params.endDate -}}
+    {{- end -}}
+{{ end }}
+{{ $output = printf "%s\n```" $output }}
+{{ $output | safeHTML }}
