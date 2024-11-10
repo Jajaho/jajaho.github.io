@@ -131,34 +131,42 @@ work:
 skills:
   - name: Technical Skills
     items:
-      - name: Python
-        description: ''
-        percent: 80
-        icon: code-bracket
-      - name: Data Science
-        description: ''
-        percent: 100
-        icon: chart-bar
-      - name: SQL
+      # - name: Python
+      #   description: ''
+      #   percent: 80
+      #   icon: code-bracket
+      # - name: Data Science
+      #   description: ''
+      #   percent: 100
+      #   icon: chart-bar
+      - name: CAD
         description: ''
         percent: 40
-        icon: circle-stack
+        icon: hero/cube-transparent
+      - name: 3D-printing
+        description: ''
+        percent: 40
+        icon: hero/square-3-stack-3d
   - name: Hobbies
     color: '#eeac02'
     color_border: '#f0bf23'
     items:
-      - name: Hiking
-        description: ''
-        percent: 60
-        icon: person-simple-walk
-      - name: Cats
-        description: ''
-        percent: 100
-        icon: cat
-      - name: Photography
+      # - name: Hiking
+      #   description: ''
+      #   percent: 60
+      #   icon: person-simple-walk
+      # - name: Cats
+      #   description: ''
+      #   percent: 100
+      #   icon: cat
+      - name: Electronics
         description: ''
         percent: 80
-        icon: camera
+        icon: hero/cpu-chip
+      - name: Repairs
+        description: ''
+        percent: 80
+        icon: hero/wrench-screwdriver
 
 languages:
   - name: German
@@ -176,7 +184,7 @@ awards:
   - title: Robocup Junior European Championship
     date: '2019-06-01'
     awarder: Robocup Junior
-#    icon:
+    # icon: hero/trophy
     summary: |
       Winner of the first ever Robocup Junior European championship in the 2v2 lightweight league
     url: https://www.suedkurier.de/region/bodenseekreis/markdorf/Die-Markdorfer-Robo-Fussball-Jungs-sind-Europameister;art372484,10203832
@@ -184,7 +192,7 @@ awards:
   - title: Sponsorship Award
     date: '2018-07-01'
     awarder: Markdorf Corporate Committee
-#    icon:
+    # icon: hero/numbered-list
     summary: |
       Awarded for excellence in natural sciences and languages
     url: https://www.suedkurier.de/region/bodenseekreis/markdorf/Ausgezeichnet-mit-dem-Wirtschaftsfoerderpreis-Diese-BZM-Schueler-beweisen-Ehrgeiz-in-Sachen-Naturwissenschaften-und-Sprachen;art372484,9808746
