@@ -12,7 +12,8 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
     - extendable with "hugo modules" (based on [Go Modules](https://go.dev/wiki/Modules))
 
 ### Supports:
-- [Mermaid](https://mermaid.js.org/) to generate charts, diagramms and mindmaps
+
+- [Mermaid](https://mermaid.js.org/) to generate charts, diagrams and mindmaps
 - custom JS
 - custom HTML & CSS
 
@@ -28,6 +29,7 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
 - ⬆️ **Updating?** View the [Update Guide](https://docs.hugoblox.com/reference/update/) and [Release Notes](https://github.com/HugoBlox/hugo-blox-builder/releases)
 
 ### Icons
+
 - Icons available by default [(source)](https://docs.hugoblox.com/getting-started/page-builder/#icons):
     - hb - the [Hugo Blox Icon Pack](https://github.com/HugoBlox/hugo-blox-builder/blob/main/modules/blox-tailwind/data/icons/hb.yaml)
     - brands - the [Brands Icon Pack](https://github.com/HugoBlox/hugo-blox-builder/blob/main/modules/blox-tailwind/data/icons/brands.yaml)
@@ -39,6 +41,7 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
     - Is this an official module? - Yes, it's published by the official [hugomods.com](https://hugomods.com/) site, which features third party modules.
 
 ### Blocks
+
 - Built in Blocks
     - [Hugo Blox Blocks Overview](https://hugoblox.com/blocks/)
     - [Built in blocks example code](https://github.com/HugoBlox/hugo-blox-builder/tree/main/modules/blox-tailwind/layouts/partials/blox)
@@ -47,8 +50,9 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
 - Otherwise [create your own block](https://bootstrap.hugoblox.com/getting-started/page-builder/) which can easily started with this [GitHub template](https://github.com/HugoBlox/create-blox)
 
 #### Styling
-- Version 2 blocks compatible with page `type: landing`
-- There are [Tailwind](https://tailwindcss.com/) and [Bootstrap](https://getbootstrap.com/) styled sites.
+
+- This site uses [Tailwind (v0.3.1)](https://tailwindcss.com/) which works with the `page type: landing` parameter
+- Older sites used [Bootstrap](https://getbootstrap.com/) styling.
 
 
 ## Latest news
