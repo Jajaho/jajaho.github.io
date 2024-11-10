@@ -10,12 +10,12 @@ design:
 # Page sections
 sections:
   - block: markdown
+    id: project-timeline
     content:
       title: Project Timeline
-      text: |
+      text: |-
         {{< project-timeline >}}
-    design:
-      columns: '1'
+
   - block: collection
     content:
       title: Selected Projects

@@ -1,13 +1,31 @@
 {{/* layouts/shortcodes/project-timeline.html */}}
 {{ $projects := where site.RegularPages "Type" "project" }}
 
-{{ $output := "```mermaid" }}
-{{ $output = printf "%s\ngantt\n    title Project Timeline\n    dateFormat YYYY-MM-DD\n    axisFormat %%Y-%%m-%%d" $output }}
-{{ range $projects }}
-    {{- if and (isset .Params "startdate") (isset .Params "enddate") -}}
-        {{- $title := .Title | replaceRE "[^a-zA-Z0-9]" "_" -}}
-        {{- $output = printf "%s\n    %s : %s, %s" $output $title .Params.startDate .Params.endDate -}}
-    {{- end -}}
-{{ end }}
-{{ $output = printf "%s\n```" $output }}
-{{ $output | safeHTML }}
+<div class="mermaid">
+gantt
+    title Project Timeline
+    dateFormat YYYY-MM-DD
+    axisFormat %Y-%m-%d
+    {{ range $projects }}
+        {{- if and (isset .Params "startdate") (isset .Params "enddate") -}}
+            {{- $title := .Title | replaceRE "[^a-zA-Z0-9]" "_" -}}
+            {{- printf "    %s : %s, %s\n" $title .Params.startDate .Params.endDate -}}
+        {{- end -}}
+    {{ end }}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.mermaid) {
+        mermaid.initialize({
+            theme: 'default',
+            gantt: {
+                barHeight: 40,
+                barGap: 8,
+                topPadding: 75,
+                sidePadding: 75
+            }
+        });
+    }
+});
+</script>
