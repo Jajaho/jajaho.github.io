@@ -28,7 +28,13 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
 - ⬆️ **Updating?** View the [Update Guide](https://docs.hugoblox.com/reference/update/) and [Release Notes](https://github.com/HugoBlox/hugo-blox-builder/releases)
 
 - Icons
-    - [Getting started article](https://docs.hugoblox.com/getting-started/page-builder/#icons)
+    - Icons available by default [(source)](https://docs.hugoblox.com/getting-started/page-builder/#icons):
+        - hb - the [Hugo Blox Icon Pack](https://github.com/HugoBlox/hugo-blox-builder/blob/main/modules/blox-tailwind/data/icons/hb.yaml)
+        - brands - the [Brands Icon Pack](https://github.com/HugoBlox/hugo-blox-builder/blob/main/modules/blox-tailwind/data/icons/brands.yaml)
+        - custom - use your own SVG icons - see guide below
+        - devicon - the [Developer Icon Pack](https://devicon.dev/) which includes Python, RStudio, etc.
+        - hero - the [Hero Icon Pack](https://heroicons.com/) (outline variant)
+        - academicons - the [Academicons Icon Pack](https://jpswalsh.github.io/academicons/)
     - [Hugo Icons Module](https://icons.hugomods.com/)
         - Is this an official module? - Yes, it's published by the official [hugomods.com](https://hugomods.com/) site, which features third party modules.
 
