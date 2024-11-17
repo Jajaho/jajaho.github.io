@@ -9,6 +9,8 @@ design:
 
 # Page sections
 sections:
+  	# When using a markdown block the diagram will be nested inside two divs.
+    # source code: https://github.com/HugoBlox/hugo-blox-builder/blob/main/modules/blox-tailwind/layouts/partials/blox/markdown.html
   - block: markdown
     id: project-timeline
     content:
