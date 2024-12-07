@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+</head>
+
+<body>
+    <model-viewer
+    src="{{ .Get "src" }}"
+    alt="{{ .Get "alt" | default "3D model" }}"
+    camera-controls
+    auto-rotate
+    ar
+    {{ with .Get "poster" }}poster="{{ . }}"{{ end }}
+    {{ with .Get "exposure" }}exposure="{{ . }}"{{ end }}
+    shadow-intensity="1"
+    style="width: 100%; height: 500px;">
+    </model-viewer>
+</body>
+</html>
+
