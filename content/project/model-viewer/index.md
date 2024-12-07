@@ -10,8 +10,11 @@ draft: false
 featured: false
 ---
 
-{{< model-viewer model="/models/your-model.glb" >}}
-
-This is a 3d model embedded in a markdown file.
+{{< model-viewer 
+    src="/my_model.glb" 
+    alt="A 3D model of something cool"
+    poster="/path/to/poster-image.webp"
+    exposure="1.5" 
+>}}
 
 <!--more-->
