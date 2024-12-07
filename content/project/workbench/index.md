@@ -5,7 +5,7 @@ date: 2024-11-28
 tags:
   - welding
   - craftsmanship
-draft: false
+draft: true
 featured: false
 ---
 
@@ -36,8 +36,6 @@ Editing the model is encouraged and easy to do since the design is parametric.
 To do so you will need Fusion 360 and open the f3z archive file where you will find the change parameters pane. Feel free to visit <a href='https://grabcad.com/library/workbench-plans-included-2'>my GrabCAD page</a> where I have uploaded the step and f3z files.
 
 ### Drawings
-
-![workbench plans](workbench-drawing-GER.pdf "workbench plans")
 
 
 Unfortunately, I only have German drawings, since I build this project in the summer of 2021 before I even had the plan to document my workings on an English website. However, I am pleased to announce that you can use these plans for free and do whatever you want with them. But if you choose the build my table I would appreciate it if you could let me know.
