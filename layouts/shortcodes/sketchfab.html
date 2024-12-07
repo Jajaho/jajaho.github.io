@@ -7,10 +7,22 @@
       allow="autoplay; fullscreen; xr-spatial-tracking" 
       execution-while-out-of-viewport 
       execution-while-not-rendered 
-      web-share 
+      web-share
       width="{{ .Get "width" | default "640" }}" 
       height="{{ .Get "height" | default "480" }}" 
-      src="https://sketchfab.com/models/{{ .Get "id" }}/embed?ui_theme={{ .Get "theme" | default "light" }}">
+      src="https://sketchfab.com/models/{{ .Get "id" }}/embed?ui_theme={{ .Get "theme" | default "light" }}&autostart=1">
     </iframe>
-  </div>
-  Copy
+</div>
+
+<!-- Article: https://www.dbbrunson.com/docs/effective-online-presence/markdown-extensions-capabilities/embedding-3d-models/ -->
+
+<!-- Settings explained:
+
+Enable automatic loading 
+Add &autostart=1 behind the src URL so it looks like this:
+src="https://sketchfab.com/models/{{ .Get "id" }}/embed?ui_theme={{ .Get "theme" | default "light" }}&autostart=1">
+
+Web-share
+Removing the web-share line has not
+-->
+
