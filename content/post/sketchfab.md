@@ -4,6 +4,7 @@ description: This post demonstrated two methods of embedding 3d models using Ske
 date: 2024-12-06
 tags:
   - 3d
+  - sketchfab
 draft: false
 featured: false
 share: false
