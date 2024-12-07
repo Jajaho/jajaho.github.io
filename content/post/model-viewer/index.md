@@ -16,5 +16,3 @@ featured: false
     poster="/path/to/poster-image.webp"
     exposure="1.5" 
 >}}
-
-<!--more-->
