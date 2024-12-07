@@ -1,5 +1,5 @@
 ---
-title: model-viewer-test
+title: <model-viewer> test
 date: 2024-12-06
 tags:
   - 3D
