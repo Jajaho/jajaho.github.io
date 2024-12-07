@@ -4,7 +4,8 @@ summary:
 date: <% tp.date.now("YYYY-MM-DD", -7) %>
 authors:
   - admin
-tags:
+tags: 
 draft: true
 featured: false
+share: false
 ---

@@ -6,6 +6,7 @@ tags:
   - 3d
 draft: false
 featured: false
+share: false
 ---
 
 This is a test of two methods for embedding the sketchfab-viewer, Sketchfab's 3d model viewer API.

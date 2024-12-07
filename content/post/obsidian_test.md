@@ -7,6 +7,8 @@ tags:
   - Wowchemy
   - Markdown
 draft: false
+featured: false
+share: false
 ---
 
 This post was created, edited and pushed from Obsidian. 

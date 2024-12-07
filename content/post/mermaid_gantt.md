@@ -7,6 +7,8 @@ authors:
 tags:
   - Mermaid
 draft: true
+featured: false
+share: false
 ---
 
 

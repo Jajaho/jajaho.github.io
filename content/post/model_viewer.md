@@ -8,6 +8,7 @@ params:
   endDate: 2022-08-30
 draft: true
 featured: false
+share: false
 ---
 
 {{< model-viewer 
