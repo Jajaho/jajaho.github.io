@@ -1,57 +1,21 @@
-<!-- layouts/shortcodes/model-viewer.html -->
-<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<!-- layouts/shortcodes/model-viewer.html 
+ This is supposed to be quick and simple shortcode which is self contained and shouldn't affect the styling of other components on the same site.
+-->
 
-<style>
-    .viewer-container {
-        width: 100%;
-        height: 600px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    
-    model-viewer {
-        width: 100%;
-        height: 100%;
-        background-color: #f5f5f5;
-    }
-
-    .controls {
-        margin-top: 20px;
-        text-align: center;
-    }
-
-    button {
-        padding: 8px 16px;
-        margin: 0 5px;
-        cursor: pointer;
-    }
-</style>
-
-<div class="viewer-container">
+<div style="width: 100%; height: 600px; max-width: 800px; margin: 0 auto;">
     <model-viewer
+        style="width: 100%; height: 100%; background-color: #f5f5f5;"
         src={{ .Get "src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.glb"}}
         alt={{ .Get "alt" | default "A 3D model of an astronaut"}}
         camera-controls
-        auto-rotate
-        ar
         ios-src={{ .Get "ios-src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.usdz"}}
         shadow-intensity="1"
-        camera-orbit="45deg 55deg 2.5m"
+        camera-orbit={{ .Get "camera-orbit" | default "0deg 75deg 1500m"}}
         exposure="1"
-        shadow-softness="0.5"
-    ></model-viewer>
+        shadow-softness="0.5">
+    </model-viewer>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const modelViewer = document.querySelector('model-viewer');
-
-        modelViewer.addEventListener('load', () => {
-            console.log('Model loaded successfully');
-        });
-
-        modelViewer.addEventListener('error', (error) => {
-            console.error('Error loading model:', error);
-        });
-    });
-</script>
+<!-- The script is loaded last so the html gets loaded first and the user has something to see. -->
+<!-- I checked that (at least in Chrome) the browser detects if you include the same resource twice and only loads this once. -->
+<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
