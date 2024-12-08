@@ -7,6 +7,11 @@ type command
 action Shell commands: Execute: start localhost
 ```
 ```button
+name 🔝 Start localhost (Drafts)
+type command
+action Shell commands: Execute: start localhost (with drafts)
+```
+```button
 name 💻 Open localhost
 type command
 action Shell commands: Execute: open localhost
@@ -17,6 +22,8 @@ name ☠️ Kill localhost
 type command
 action Shell commands: Execute: kill localhost
 ```
+
+Not working yet:
 ```button
 name 🛑 Stop localhost
 type command
