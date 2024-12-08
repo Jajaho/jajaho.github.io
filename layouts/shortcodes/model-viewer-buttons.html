@@ -29,17 +29,22 @@
 
 <div class="viewer-container">
     <model-viewer
-        src={{ .Get "src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.glb"}}
-        alt={{ .Get "alt" | default "A 3D model of an astronaut"}}
+        src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+        alt="A 3D model of an astronaut"
         camera-controls
         auto-rotate
         ar
-        ios-src={{ .Get "ios-src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.usdz"}}
+        ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
         shadow-intensity="1"
         camera-orbit="45deg 55deg 2.5m"
         exposure="1"
         shadow-softness="0.5"
     ></model-viewer>
+
+    <div class="controls">
+        <button onclick="document.querySelector('model-viewer').autoRotate = true">Start Rotation</button>
+        <button onclick="document.querySelector('model-viewer').autoRotate = false">Stop Rotation</button>
+    </div>
 </div>
 
 <script>
