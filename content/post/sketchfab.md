@@ -22,3 +22,13 @@ The second version is an example from Sketchfab's own website, [here](https://sk
 
 {{< sketchfab_custom>}}
 <!--This is Hugos shortcode syntax to embed content -->
+
+## Features
+
+Their service seems to be aimed primarily at media/content creators.
+At least they do **not support** the common `.step` and `.iges` file formats.
+
+Supported file formats: 
+`.fbx` `.obj` `.dae` `.blend` `.stl`
+
+Private uploads are not allowed unless you pay.

@@ -57,6 +57,22 @@ The Hugo **Academic CV Template** empowers you to easily create your job-winning
 - This site uses [Tailwind (v0.3.1)](https://tailwindcss.com/) which works with the `page type: landing` parameter
 - Older sites used [Bootstrap](https://getbootstrap.com/) styling.
 
+### Markdown Formatting
+
+see [Hugo Blox | Docs](https://docs.hugoblox.com/reference/markdown/#code-highlighting)
+
+### Unsupported Obsidian Markdown features
+
+#### Inline code highlighting 
+
+Hugo doesn't support `this is highlighted` syntax for inline code highlighting. Even using double or tripple ``code``, ```code``` is always rendered with `` around code.
+Instead it only supports code blocks:
+
+```python
+# Example of code highlighting
+input_string_var = input("Enter some data: ")
+print("You entered: {}".format(input_string_var))
+```
 
 ## Latest news
 
