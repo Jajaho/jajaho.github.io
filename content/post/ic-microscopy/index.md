@@ -15,14 +15,22 @@ This is my first attempt at applying laser microscopy to acquire 3d point clouds
     src="div2_3x1000z1000.glb"
     ios-model="Astronaut.usdz"
     alt="An old ic."
-    camera-orbit="0deg 150deg 1500m"
->}}
+    camera-orbit="0deg 150deg 1500m">}}
+
+## Chips
+
+### Phillips BDX 
+![](IMG_20241210_172843.jpg)
+
+### Intel
+
 
 ## Data Convertion
 
 INSERT MERMAID DIAGARM HERE!
 
-The data is acquired on a Keyence microscope and packaged in their proprietary e.g. `.vk6`/`.vk4` file format. The Keyence multifile analyzer software is used to export the microscopy data files to stl or step.
+The data is acquired on a Keyence microscope and packaged in their proprietary e.g. `.vk6`/`.vk4` file format. The Keyence multifile analyzer software is used to export the microscopy data files to ``.stl`` or ``.step``.
+
 Note Gwyddion can also open `.vk6`/`.vk4` files, but I wasn't able to export a valid stl file with it. The Keyence software simply works and is very easy to use.
 I have noticed that stl provides vastly better performance, while FreeCAD failed to open data saved as stp files.
 While I managed to export printable 3mf files even without increasing the scaling on the exported data. I had trouble converting it into glb file that the model-viewer can take. 
@@ -35,4 +43,5 @@ Note: FreeCAD can open microscopy data (but not .vk4 or .vk6 files) and export t
 
 - [FreeCAD wiki on GITF](https://wiki.freecad.org/GlTF)
 - [Converter where you can also share files via link](https://www.3dpea.com/en/convert/STL-to-GLB-compressed-with-DRACO)
+	- file size max. 500 Mb
 This service worked.
