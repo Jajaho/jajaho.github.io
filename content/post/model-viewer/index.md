@@ -40,7 +40,7 @@ This completely open source and free 3d model viewer supports advanced functions
 - preset camera views
 - custom lighting, background, post processing, color-grading, ...
 
-Editor: An interactive scene designer allows to set optical parameters and add annotations to the model. It also automatically generates other support resources like the poster (see below). This amazingly useful tool is available here: [modelviewer.dev/editor](https://modelviewer.dev/editor/).
+Editor: An interactive scene designer allows to set optical parameters and add annotations to the model. It also automatically generates other support resources like the poster (see below). This amazingly useful tool is available here: [modelviewer.dev/editor](https://modelviewer.dev/editor/). It's browser based but runs locally, ensuring data privacy.
 
 Src: Can be any url on the web or a local folder, can even provide credentials to fetch models from secured resources.
 
