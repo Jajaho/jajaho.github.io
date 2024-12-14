@@ -16,25 +16,36 @@ This is my first attempt at applying laser microscopy to acquire 3d point clouds
     alt="An old ic."
     camera-orbit="0deg 150deg 1500m">}}
 
-## Chips
-
 {{< model-viewer-dimensions
-    src="div2_3z1000.glb"
-    ios-model="Astronaut.usdz"
-    alt="An old ic."
-    z_scale="200"
-    camera-orbit="0deg 150deg 1500m">}}
+src="div2_3z1000.glb"
+ios-model="Astronaut.usdz"
+alt="An old ic."
+x_scale="10"
+y_scale="1000"
+z_scale="10"
+camera-orbit="0deg 150deg 1500m">}}
+
+## Chips
 
 ### Phillips BDX 
 ![](IMG_20241210_172843.jpg)
 
+<!-- {{< model-viewer-dimensions
+    src="https://cloudstore.uni-ulm.de/s/sGWMD6gHP3N3BrL/download/phillips_bdx_67b_x1_h4000.glb"
+    ios-model="Astronaut.usdz"
+    alt="An old ic."
+    x_scale="100"
+    y_scale="4000"
+    z_scale="100"
+    camera-orbit="0deg 150deg 1500m">}} -->
+
 ### Intel
 
-{{< model-viewer
+<!-- {{< model-viewer
     src="https://cloudstore.uni-ulm.de/s/sLbzm2Lpd5CaLaN/download/intel_1976,77.glb"
     ios-model="Astronaut.usdz"
     alt="An old intel cpu."
-    camera-orbit="0deg 150deg 1500m">}}
+    camera-orbit="0deg 150deg 1500m">}} -->
 
 ## Data Conversion
 
