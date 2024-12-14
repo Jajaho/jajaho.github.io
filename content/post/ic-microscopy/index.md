@@ -13,11 +13,17 @@ This is my first attempt at applying laser microscopy to acquire 3d point clouds
 
 {{< model-viewer
     src="div2_3x1000z1000.glb"
-    ios-model="Astronaut.usdz"
     alt="An old ic."
     camera-orbit="0deg 150deg 1500m">}}
 
 ## Chips
+
+{{< model-viewer-dimensions
+    src="div2_3z1000.glb"
+    ios-model="Astronaut.usdz"
+    alt="An old ic."
+    z_scale="200"
+    camera-orbit="0deg 150deg 1500m">}}
 
 ### Phillips BDX 
 ![](IMG_20241210_172843.jpg)
@@ -30,7 +36,7 @@ This is my first attempt at applying laser microscopy to acquire 3d point clouds
     alt="An old intel cpu."
     camera-orbit="0deg 150deg 1500m">}}
 
-## Data Convertion
+## Data Conversion
 
 INSERT MERMAID DIAGARM HERE!
 
