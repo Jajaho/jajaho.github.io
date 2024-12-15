@@ -50,10 +50,15 @@ camera-orbit="0deg 150deg 1500m">}}
 ## Data Conversion
 
 ```mermaid
-    sequenceDiagram
-    Microscope->>Multifile Analyzer: vk4/vk6
-    Multifile Analyzer->>Windows 3D-Viewer: stl (binary)
-    Windows 3D-Viewer->>model-viewer/Editor: glb
+    flowchart LR
+    M[Microscope] -->|vk4/vk6| MA[Multifile Analyzer]
+    MA -->|stl binary| W[Windows 3D-Viewer]
+    W -->|glb| MV[model-viewer/Editor]
+
+    style M fill:#f9f,stroke:#333,stroke-width:2px
+    style MA fill:#bbf,stroke:#333,stroke-width:2px
+    style W fill:#bfb,stroke:#333,stroke-width:2px
+    style MV fill:#ffb,stroke:#333,stroke-width:2px
 ```
 
 The data is acquired on a Keyence microscope and packaged in their proprietary e.g. `.vk6`/`.vk4` file format. The Keyence multifile analyzer software is used to export the microscopy data files to ``.stl`` or ``.step``.
