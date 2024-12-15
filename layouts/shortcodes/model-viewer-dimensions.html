@@ -335,7 +335,7 @@
                 }
                 
                 if (button) {
-                    const dimensionText = `${(dim * 100).toFixed(3)} um`;
+                    const dimensionText = `${(dim * 1000).toFixed(3)} um`;
                     button.textContent = dimensionText;
                     console.log(`Set dimension text for ${name}: "${dimensionText}"`);
                     
