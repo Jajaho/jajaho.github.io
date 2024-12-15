@@ -37,8 +37,9 @@ To do so you will need Fusion 360 and open the f3z archive file where you will f
 
 ### Drawings
 
-
 Unfortunately, I only have German drawings, since I build this project in the summer of 2021 before I even had the plan to document my workings on an English website. However, I am pleased to announce that you can use these plans for free and do whatever you want with them. But if you choose the build my table I would appreciate it if you could let me know.
+
+<a href="workbench.pdf">Open drawings</a>
 
 ## Manufacturing
 
