@@ -6,7 +6,7 @@ Welcome to my website, a personal notebook and place to show off.
 
 This project uses Git LFS for storing large 3D model files. Before cloning, make sure you have Git LFS installed:
 
-1. Install Git LFS from https://git-lfs.github.com
+1. Install Git LFS from https://git-lfs.com
 2. Run: git lfs install
 3. Clone the repository: git clone [repository-url]
 4. Pull LFS files: git lfs pull
