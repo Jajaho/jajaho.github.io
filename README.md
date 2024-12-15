@@ -1,21 +1,29 @@
-# [Hugo Academic CV Theme](https://github.com/HugoBlox/theme-academic-cv)
+# [My Website](https:www.jakobholz.com)
 
-The Hugo **Academic CV Template** empowers you to easily create your job-winning online resumé, showcase your academic publications, and create online courses or knowledge bases to grow your audience.
+Welcome to my website, a personal notebook and place to show off.
 
+## Development Setup
 
+This project uses Git LFS for storing large 3D model files. Before cloning, make sure you have Git LFS installed:
+
+1. Install Git LFS from https://git-lfs.github.com
+2. Run: git lfs install
+3. Clone the repository: git clone [repository-url]
+4. Pull LFS files: git lfs pull
 
 ## Tech
 
-- [Hugo Blox Builder](https://hugoblox.com) block builder
 - [Hugo](https://github.com/gohugoio/hugo) site generator
     - wirtten in Go
     - extendable with "hugo modules" (based on [Go Modules](https://go.dev/wiki/Modules))
+- [Hugo Blox Builder](https://hugoblox.com) block builder
+- [Hugo Academic CV Theme](https://github.com/HugoBlox/theme-academic-cv)
+
 
 ### Supports:
 
 - [Mermaid](https://mermaid.js.org/) to generate charts, diagrams and mindmaps
-- custom JS
-- custom HTML & CSS
+- Posts with custom JS, HTML & CSS
 
 ## Resources & Links
 
