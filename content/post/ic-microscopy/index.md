@@ -60,9 +60,10 @@ While I managed to export printable ``.3mf`` files even without increasing the s
 
 And more importantly, it is not displayed at all on my embedded model-viewer here.
 
-Note: FreeCAD can open microscopy data (but not .vk4 or .vk6 files) and export to glb (which has not worked so far, even when scaling up beforehand.)
+FreeCAD can open some microscopy data formats(but not .vk4 or .vk6 files). It also officially supports exports to ``.glb`` (see [FreeCAD wiki on GITF](https://wiki.freecad.org/GlTF)) but the mesh export function does not support it.
 
-- [FreeCAD wiki on GITF](https://wiki.freecad.org/GlTF)
+FreeCAD has a powerful [Mesh Decimating](https://wiki.freecad.org/Mesh_Decimating) function which can be used to minimize a models file size by reducing the number of faces. This will inadvertently alter the model and in many cases rip holes into it. These holes can then be repaired in Meshmixer manually or automatically which may further distort the model.
+
 - [Converter where you can also share files via link](https://www.3dpea.com/en/convert/STL-to-GLB-compressed-with-DRACO)
 	- This service worked. But the file size is limited to 500 Mb.
 - I managed to get a file displayed in model-viewer/editor/ after scaling all units by 1000 times and converting the stl to glb on this website, [imagetostl.com](https://imagetostl.com/convert/file/stl/to/glb#convert).
