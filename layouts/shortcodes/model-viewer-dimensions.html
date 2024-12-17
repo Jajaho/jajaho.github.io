@@ -1,4 +1,36 @@
 <!-- layouts/shortcodes/dimension-model-viewer.html -->
+{{ $isDevelopment := eq hugo.Environment "development" }}
+{{ $modelPath := "" }}
+
+{{/* Get model folder from config or use default */}}
+{{ $modelFolder := site.Params.modelViewer.folder | default "models" }}
+
+{{/* Validate required parameters */}}
+{{ with .Get "src" }}
+    {{ $modelPath = . }}
+{{ else }}
+    {{ errorf "The dimension-model-viewer shortcode requires a 'src' parameter" }}
+{{ end }}
+
+{{ if $isDevelopment }}
+    {{/* Check if the model file exists in assets */}}
+    {{ $assetPath := printf "%s/%s" $modelFolder $modelPath }}
+    {{ if not (fileExists (printf "assets/%s" $assetPath)) }}
+        {{ errorf "Model file %s not found at assets/%s. Please place your 3D model in the assets/%s/ directory." $modelPath $assetPath $modelFolder }}
+    {{ end }}
+    
+    {{/* Get the resource and its permalink */}}
+    {{ $modelResource := resources.Get $assetPath }}
+    {{ $modelPath = $modelResource.Permalink }}
+{{ else }}
+    {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s/%s" 
+        site.Params.github.username 
+        site.Params.github.repo 
+        site.Params.github.modelRelease 
+        $modelFolder
+        $modelPath }}
+{{ end }}
+
 <div class="dimension-model-container">
     <!-- Warning messages -->
     <div class="dimension-firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; max-width: 800px; margin: 0 auto;">
@@ -9,9 +41,9 @@
         <model-viewer 
             class="dimension-model"
             style="width: 100%; height: 100%; background-color: #f5f5f5;"
-            src={{ .Get "src" | default "https://modelviewer.dev/shared-assets/models/Chair.glb"}}
-            poster={{ .Get "poster" | default ""}}
-            alt={{ .Get "alt" | default "A 3D model with dimensions"}}
+            src="{{ $modelPath }}"
+            poster={{ .Get "poster" | default "" }}
+            alt={{ .Get "alt" | default "A 3D model with dimensions" }}
             data-x-scale={{ .Get "x_scale" | default "100" }}
             data-y-scale={{ .Get "y_scale" | default "100" }}
             data-z-scale={{ .Get "z_scale" | default "100" }}

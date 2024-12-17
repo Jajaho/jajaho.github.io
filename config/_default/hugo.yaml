@@ -54,3 +54,15 @@ security:
   _merge: deep
 sitemap:
   _merge: deep
+
+############################
+## CUSTOM
+############################
+
+params:
+  modelViewer:
+    folder: "models" # Relative to the assets/ folder, managed by hugo
+  github:
+    username: "your-username"
+    repo: "your-repo"
+    modelRelease: "v1.0.0"  # Version tag for your 3D model release

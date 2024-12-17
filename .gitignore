@@ -12,3 +12,6 @@ workspace.json
 app.json
 appearance.json
 core-plugins.json
+
+*.glb
+*.udz

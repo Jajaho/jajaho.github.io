@@ -17,7 +17,7 @@ Please see the examples below.
 
 ## Astronaut
 
-{{< model-viewer>}}
+
 
 A nice looking Astronaut, whose model is being served from a remote location.
 
@@ -33,7 +33,7 @@ camera-orbit="0deg 150deg 1500m">}}
 
 A simple embedded 3d model served from the same server and with dimensions 1 m x 2 m x 3 m.
 
-## A tiny ectangle with dimensions 
+## A tiny rectangle with dimensions 
 
 {{< model-viewer-dimensions
 src="test_cube_um.glb"
