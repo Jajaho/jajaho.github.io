@@ -1,0 +1,87 @@
+# Model Viewer Implementation Approaches
+
+## Problem Statement
+Need to implement a 3D model viewer in Hugo that can access and display large GLB files (>100MB) stored in a GitHub repository.
+
+## Attempted Approaches
+
+### 1. Direct GitHub Release Assets
+```
+https://github.com/username/repo/releases/download/v1.0.0/model.glb
+```
+**Outcome**: Failed
+- Works for manual downloads in browser
+- 404 error when accessed programmatically through model-viewer
+- GitHub doesn't allow direct programmatic access to release assets
+
+### 2. Raw GitHub URLs
+```
+https://raw.githubusercontent.com/username/repo/main/model.glb
+```
+**Outcome**: Failed
+- Files too large to be committed directly to repository
+- Not suitable for large binary files
+
+### 3. GitHub API Approach
+```
+https://api.github.com/repos/username/repo/releases/assets/ASSET_ID
+```
+**Outcome**: Failed
+- Requires authentication for private repositories
+- Can't expose authentication tokens in client-side code
+- CORS issues prevent direct access
+
+### 4. jsDelivr CDN
+```
+https://cdn.jsdelivr.net/gh/username/repo@version/model.glb
+```
+**Outcome**: Failed
+- Only works with files committed to repository
+- Cannot access release assets
+- "Failed to fetch version info" error
+
+### 5. GitHub Pages
+```
+https://username.github.io/repo/models/model.glb
+```
+**Outcome**: Failed
+- CORS issues with objects.githubusercontent.com
+- Access-Control-Allow-Origin header mismatch
+- GitHub's release asset storage not designed for direct embedding
+
+## CORS Error Details
+```
+Access-Control-Allow-Origin' header has a value 'https://www.domain.com' that is not equal to the supplied origin
+```
+
+## Recommended Solutions
+
+### 1. Public Cloud Storage (Recommended)
+- Use AWS S3, Cloudflare R2, or similar
+- Public read access
+- Proper CORS configuration
+- CDN capabilities
+
+### 2. Git LFS with Public Repository
+- Create separate public repository
+- Use Git Large File Storage (LFS)
+- Store models in repository
+- Access via jsDelivr
+
+### 3. Dedicated CDN Service
+- Cloudflare R2
+- Backblaze B2
+- Designed for large public assets
+- Cost-effective for public access
+
+## Key Learnings
+1. GitHub release assets are designed for downloads, not direct embedding
+2. Large binary files require specialized storage solutions
+3. CORS considerations are crucial for web-based 3D viewers
+4. Authentication and private access complicate client-side implementations
+
+## Next Steps
+Consider implementing one of these solutions:
+1. Set up AWS S3 bucket with public read access
+2. Create dedicated public repository with Git LFS
+3. Use specialized CDN service for large file hosting
