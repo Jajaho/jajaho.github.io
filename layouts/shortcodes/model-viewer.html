@@ -24,11 +24,10 @@
     {{ $modelResource := resources.Get $assetPath }}
     {{ $modelPath = $modelResource.Permalink }}
 {{ else }}
-    {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s/%s" 
+    {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s" 
         site.Params.github.username 
         site.Params.github.repo 
         site.Params.github.modelRelease 
-        $modelFolder
         $modelPath }}
 {{ end }}
 
