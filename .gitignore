@@ -13,5 +13,7 @@ app.json
 appearance.json
 core-plugins.json
 
+# models
 *.glb
-*.udz
+*.gltf
+*.usdz
