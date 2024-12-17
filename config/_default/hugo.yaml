@@ -65,4 +65,5 @@ params:
   github:
     username: "Jajaho"
     repo: "HugoBloxSite"
+    branch: "main"
     modelRelease: "v1.0.0"  # Version tag for your 3D model release
