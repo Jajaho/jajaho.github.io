@@ -63,6 +63,6 @@ params:
   modelViewer:
     folder: "models" # Relative to the assets/ folder, managed by hugo
   github:
-    username: "your-username"
-    repo: "your-repo"
+    username: "Jajaho"
+    repo: "HugoBloxSite"
     modelRelease: "v1.0.0"  # Version tag for your 3D model release
