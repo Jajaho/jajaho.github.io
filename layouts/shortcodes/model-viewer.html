@@ -24,11 +24,11 @@
     {{ $modelResource := resources.Get $assetPath }}
     {{ $modelPath = $modelResource.Permalink }}
 {{ else }}
-    {{ $modelPath = printf "https://raw.githubusercontent.com/%s/%s/%s/%s/%s" 
+{{/* Construct GitHub release asset URL */}}
+    {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s" 
         site.Params.github.username 
         site.Params.github.repo 
-        (site.Params.github.branch | default "main")
-        $modelFolder
+        site.Params.github.releaseTag
         $modelPath | safeURL }}
 {{ end }}
 
