@@ -1,6 +1,7 @@
 <!-- layouts/shortcodes/dimension-model-viewer.html -->
 {{ $isDevelopment := eq hugo.Environment "development" }}
 {{ $modelPath := "" }}
+{{ $useAssets := .Get "use_assets" | default true }}
 
 {{/* Get model folder from config or use default */}}
 {{ $modelFolder := site.Params.modelViewer.folder | default "models" }}
@@ -12,7 +13,7 @@
     {{ errorf "The dimension-model-viewer shortcode requires a 'src' parameter" }}
 {{ end }}
 
-{{ if $isDevelopment }}
+{{ if or $isDevelopment $useAssets }}
     {{/* Check if the model file exists in assets */}}
     {{ $assetPath := printf "%s/%s" $modelFolder $modelPath }}
     {{ if not (fileExists (printf "assets/%s" $assetPath)) }}
@@ -22,14 +23,14 @@
     {{/* Get the resource and its permalink */}}
     {{ $modelResource := resources.Get $assetPath }}
     {{ $modelPath = $modelResource.Permalink }}
-    {{ else }}
+{{ else }}
     {{/* Construct GitHub release asset URL */}}
-        {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s" 
-            site.Params.github.username 
-            site.Params.github.repo 
-            site.Params.github.releaseTag
-            $modelPath | safeURL }}
-    {{ end }}
+    {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s" 
+        site.Params.github.username 
+        site.Params.github.repo 
+        site.Params.github.releaseTag
+        $modelPath | safeURL }}
+{{ end }}
     
 
 <div class="dimension-model-container">

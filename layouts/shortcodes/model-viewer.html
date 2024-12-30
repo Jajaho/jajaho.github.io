@@ -1,7 +1,7 @@
 <!-- layouts/shortcodes/model-viewer.html -->
 {{ $isDevelopment := eq hugo.Environment "development" }}
 {{ $modelPath := "" }}
-{{ $iosModelPath := "" }}
+{{ $useAssets := .Get "use_assets" | default true }}
 
 {{/* Get model folder from config or use default */}}
 {{ $modelFolder := site.Params.modelViewer.folder | default "models" }}
@@ -13,7 +13,7 @@
     {{ errorf "The model-viewer shortcode requires a 'src' parameter" }}
 {{ end }}
 
-{{ if $isDevelopment }}
+{{ if or $isDevelopment $useAssets }}
     {{/* Check if the model file exists in assets */}}
     {{ $assetPath := printf "%s/%s" $modelFolder $modelPath }}
     {{ if not (fileExists (printf "assets/%s" $assetPath)) }}
@@ -24,7 +24,7 @@
     {{ $modelResource := resources.Get $assetPath }}
     {{ $modelPath = $modelResource.Permalink }}
 {{ else }}
-{{/* Construct GitHub release asset URL */}}
+    {{/* Construct GitHub release asset URL */}}
     {{ $modelPath = printf "https://github.com/%s/%s/releases/download/%s/%s" 
         site.Params.github.username 
         site.Params.github.repo 

@@ -5,15 +5,9 @@ hugo_stats.json
 .hugo_build.lock
 go.sum
 
-
 # obsidian
 /.obsidian
 workspace.json
 app.json
 appearance.json
 core-plugins.json
-
-# models
-*.glb
-*.gltf
-*.usdz
