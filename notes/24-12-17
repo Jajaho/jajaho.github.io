@@ -1,9 +1,16 @@
 # Model Viewer Implementation Approaches
 
 ## Problem Statement
-Need to implement a 3D model viewer in Hugo that can access and display large GLB files (>100MB) stored in a GitHub repository.
+Need to serve large glb file for the model-viewer.
+- git can only handle files < 100 Mb
+- git lfs storage is limited to 1 Gb in total (also needs replacement of symbolic links for production)
+- Serving from a managed cloud provider will have the wrong CORS headers. -> Would need CORS browser plugin to intercept the requests.
+
 
 ## Attempted Approaches
+
+I generally tried accessing the unlimited GitHub release asset storage.
+Important: Remember, generally the repo has to be public to be accessed without access tokens.
 
 ### 1. Direct GitHub Release Assets
 ```
