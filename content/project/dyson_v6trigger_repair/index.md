@@ -6,7 +6,7 @@ tags:
   - repair
   - electronics
   - battery
-draft: true
+draft: false
 featured: false
 ---
 
@@ -14,15 +14,14 @@ I repaired this for my girlfriends mum who wanted to throw it away.
 
 ## DC61 Battery Pack
 
-nominal voltage: 21.6 V
-rated capacity: 2100 mAh (46 Wh)
-
+nominal voltage: 21.6 V  
+rated capacity: 2100 mAh (46 Wh)  
 6-CELL (214141) 6INR19/66-1
 
-## Checks prior to disassembly
+## Preliminary Testing
 
-- PSU 26 VDC at dc barrel plug ✔
-- No current draw when plugged into battery ❌
+- ✔ PSU 26 VDC at dc barrel plug 
+- ❌ No current draw when plugged into battery 
 - Unless the button is pressed no voltage is applied at the terminals
 - After pressing the button on top of the battery the *light flashes red 32 times and then green once (the 32 flashes of death)* before extinguishing and a voltage of 11 VDC was measured at the two battery terminals
 
@@ -40,26 +39,29 @@ I had some trouble with this and recommend using a flat head screw driver to pus
 Still the battery would not charge when plugged in to the adapter through the dc barrel jack.
 So i preceded to check the individual cell voltages.
 
-cell voltages:
+Cell voltages:
 (measured 30-12-2023, from most negative to positive)
 
-1. 3.807
-2. 3.481
-3. 3.94
-4. 3.93
-5. 3.89
-6. 3.914
+| Cell number | Cell voltage [V] |  
+| ----------- | ---------------- |
+| 1 | 3.807 |
+| 2 | 3.481 |
+| 3 | 3.94 |
+| 4 | 3.93 |
+| 5 | 3.89 |
+| 6 | 3.914 |
 
 Clearly cell 1 & 2 were to low. (According to tinfever's README they should be within 300 mV of each other)
 After pealing back the hot glue coating I traced the connections from the cells to the battery management chip (ISL94208).
 The cells are connected to bmc via a simple voltage divider with a 1k resistor and varying second resistor values.
 
-According to the datasheet the ISL94208 is capable not only of sensing the cell voltages but can also balance out any differences. How the unbalance could happen is unclear. 
-After finding [tinfever's](https://github.com/tinfever) diy firmware for the battery however it was clear that the feature was intentionally disabled by omitting the required external balancing resistors. Probably because they tried to implement and test it (there exists a version of the pcb with unpopulated footprints for the required resistors) but failed. 
+According to the datasheet the ISL94208 is capable not only of sensing the cell voltages but can also balance out any differences. How the unbalance could happen is unclear.  
+
+Note: After finding [tinfever's](https://github.com/tinfever) diy firmware for the battery however it was clear that the feature was intentionally disabled by omitting the required external balancing resistors. Maybe because they tried to implement and test it (there exists a version of the pcb with unpopulated footprints for the required resistors) but failed, but you can surely think of a different reason.  
 
 The bmc communicates with the mC via I2C so maybe we could spy on them with a serial decoder and find out why it died?
 
-I charged cell 2 with 4.15 V at 1 A (The power adapter is rated at 750 mA but 1 A should be fine because they were not over discharged) with my bench power supply while watching it like a hawk (that is wearing safety glasses) and with a closeable metal bin below the table so I could quickly get rid of it in case things got to hot. 
+I charged cell 2 with 4.15 V at 1 A (The power adapter is rated at 750 mA but 1 A should be fine because they were not over discharged) with my bench power supply while watching it like a hawk (wearing safety glasses) and with a closeable metal bin below the table so I could quickly get rid of it in case things got to hot. 
 
 After charging the 2. cell voltage is 3.85 V.
 
