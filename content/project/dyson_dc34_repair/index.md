@@ -37,7 +37,7 @@ To improve the appearance of the part special care should be taken by placing th
 
 ## Issue 2
 
-Working theory: The battery cells are old and as a consequence of that their voltage drops fast when discharging until it riggers the undervoltage protection of the bms (battery management system). Once the output is shut off the cell voltage recovers and the protection mechanism disengages only to trigger again, but quicker the next time.
+Working theory: The battery cells are old and as a consequence of that their voltage drops fast when discharging until it triggers the undervoltage protection of the bms (battery management system). Once the output is shut off the cell voltage recovers and the protection mechanism disengages only to trigger again, but quicker the next time.
 
 ### Battery disassembly
 
@@ -48,7 +48,7 @@ The battery shell is hold together with clips in the same location as the other 
 The best feature of this battery is that it doesn't deactivate itself like the V6 battery bms does when the cell voltages get unbalanced, which can happen very easily if you leave the vacuum lying around for a couple of months!
 
 Anyways, the most negative cell voltage is connected to P4 and the most positive cell voltage is connected to P2.
-I was not able to identify the microcontroller on the front.
+I was not able to identify the micro controller on the front.
 
 {{< figure src="pcb_front.jpg" title="PCB front" >}}
 {{< figure src="pcb_back.webp" title="PCB back" >}}

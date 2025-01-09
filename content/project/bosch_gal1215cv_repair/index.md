@@ -21,8 +21,8 @@ Charging current: max. 1500 mAh
 Two pictures were taken to trace the connections on the pcb. Since this is a simple one sided pcb this was fairly easy.
 The pcb has the markings: PCB1857V1
 
-{{< figure src="reverse-engineering-front-23-09-2023.webp" caption="Front side of the dremel pcb." >}}
-{{< figure src="reverse-engineering-back-23-09-2023.webp" caption="Back side of the dremel pcb, labeled." >}}
+{{< figure src="reverse-engineering-front-23-09-2023.webp" caption="Front side of the Dremel pcb." >}}
+{{< figure src="reverse-engineering-back-23-09-2023.webp" caption="Back side of the Dremel pcb, labeled." >}}
 
 <a href="schematic-24-09-2023.pdf">Open charger schematic</a>
 
@@ -39,7 +39,7 @@ The supply voltage is increased via the feedback path over the optocoupler U1. B
 It is an open secret that Bosch and Dremel (Dremel being a division in the Robert Bosch Tool Corporation since 1993) batteries are compatible except for the bottom plastic shell with the retainment clips. I would bet that they are probably even manufactured in the same factory.
 
 The battery has five contacts, two for providing power, one for the ntc and two additional contacts labeled "C1" and "C2".
-It would be reasonable to suspect that these two expose the anode of the first and second 18650 cells inside but only C1 and the ntc are actually connected to the charger. So there is definetly no balance charging happening.
+It would be reasonable to suspect that these two expose the anode of the first and second 18650 cells inside but only C1 and the ntc are actually connected to the charger. So there is definitely no balance charging happening.
 
 {{< figure src="12v_battery_labeled.webp" caption="Battery - charger connections." >}}
 
