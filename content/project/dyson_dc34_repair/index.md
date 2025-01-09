@@ -25,7 +25,7 @@ The part is printed on a fdm 3D-printer in PETG filament matching the original c
 #### Slicer settings
 
 The orientation of te part during printing should maximize the strength of the pins holding the clip in place.
-To improve the appearance of the part special care should be taken by placing the seams on the underside of the finished part. For this cura offers special settings for seam placement, the "smart hiding" option was used in combination with manual seem orientation. The seam position is marked as white dots on the sliced part in the picture below. To download this model check out my GrabCAD page.
+To improve the appearance of the part special care should be taken by placing the seams on the underside of the finished part. For this cura offers special settings for seam placement, the "smart hiding" option was used in combination with manual seem orientation. The seam position is marked as white dots on the sliced part in the picture below. To download this model, please visit the [GrabCAD page](https://grabcad.com/library/dyson-dc34-animalpro-filter-clip-1).
 
 {{< figure src="print_orientation.png" caption="Print orientation of the clip." >}}
 
