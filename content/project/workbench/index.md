@@ -43,7 +43,7 @@ The design you see below is my third iteration, I had to start over becuase the 
 {{< figure src="explosion.png" caption="Explosion drawing" >}}
 
 Editing the and adjusting the model is easy to do since the design is parametric, feel free to try it yourself.
-To do so you will need to open the `.f3z` archive file in Fusion360. Visit the change parameters pane to edit it's dimensions. Please visit <a href='https://grabcad.com/library/workbench-plans-included-2'>my GrabCAD page</a> where I have uploaded the ``.step`` and ``.f3z`` files.
+To do so you will need to open the `.f3z` archive file in Fusion360. Visit the change parameters pane to edit it's dimensions. Please visit [my GrabCAD page](https://grabcad.com/library/workbench-plans-included-2) where I have uploaded the ``.step`` and ``.f3z`` files.
 
 ### Drawings 
 
