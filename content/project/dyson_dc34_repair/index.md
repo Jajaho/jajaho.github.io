@@ -19,8 +19,9 @@ My friend saved this one from the trashcan. Because it was defective I offered t
 
 ## Issue 1
 
+### Scanning
+
 The broken clip is scanned with an EinScan 3D scanner. This scan is used as a reference in CAD to model a replacement part.
-The part is printed on a fdm 3D-printer in PETG filament matching the original colour.  
 
 {{< model-viewer
     src="scan.glb"
@@ -28,8 +29,10 @@ The part is printed on a fdm 3D-printer in PETG filament matching the original c
     alt="3D-scan of the broken filter clip."
     camera-orbit="20deg 20deg 1500m">}}
 
-#### Slicer settings
+**3D scan of the broken clip**
 
+### Printing
+The part is printed on a fdm 3D-printer in PETG filament matching the original colour.  
 The orientation of te part during printing should maximize the strength of the pins holding the clip in place.
 To improve the appearance of the part special care should be taken by placing the seams on the underside of the finished part. For this, Cura offers special settings for seam placement, the "smart hiding" option was used in combination with manual seem orientation. The seam position is marked as white dots on the sliced part in the picture below. To download this model, please visit the [GrabCAD page](https://grabcad.com/library/dyson-dc34-animalpro-filter-clip-1).
 
