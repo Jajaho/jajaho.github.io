@@ -53,6 +53,7 @@ This project uses Git LFS for storing large 3D model files. Before cloning, make
 - Built in Blocks
     - [Hugo Blox Blocks Overview](https://hugoblox.com/blocks/)
     - [Built in blocks example code](https://github.com/HugoBlox/hugo-blox-builder/tree/main/modules/blox-tailwind/layouts/partials/blox)
+    - [Bootstrap (legacy) Hugo Blocks Documentation](https://bootstrap.hugoblox.com)
 
 - You can add text, images, videos, galleries, and HTML/CSS/JS, to the `Markdown` block
 - Otherwise [create your own block](https://bootstrap.hugoblox.com/getting-started/page-builder/) which can easily started with this [GitHub template](https://github.com/HugoBlox/create-blox)
