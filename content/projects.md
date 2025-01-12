@@ -13,7 +13,7 @@ sections:
     content:
       title: Selected Projects
       text: I enjoy making things. Here is a selection of them.
-      count: 0
+      count: 0 # 0 shows all projects
       filters:
         folders:
           - project

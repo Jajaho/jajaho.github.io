@@ -6,7 +6,7 @@ tags:
   - welding
   - craftsmanship
 draft: false
-featured: false
+featured: true
 ---
 
 
