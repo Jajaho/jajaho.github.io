@@ -66,30 +66,7 @@ There are many online converts with varying robustness and file size support. Wh
     - Converter where you can also share files via link
 	- This service worked. But the file size is limited to 500 Mb.
 - [imagetostl.com](https://imagetostl.com/convert/file/stl/to/glb#convert)
-    - I managed to get a file displayed in model-viewer/editor/ after scaling all units by 1000 times and converting the stl to glb on this website, Unfortunately even though the model is displayed in the editor, this error message was generated:
-    ```
-    Error
-    Message
-    Pointer
-    ACCESSOR_MIN_MISMATCH
-    Declared minimum value for this component (0.6866880059242249) does not match actual minimum (-6.133399963378906).
-    /accessors/0/min/1
-    ACCESSOR_ELEMENT_OUT_OF_MIN_BOUND
-    Accessor contains 129303 element(s) less than declared minimum value 0.6866880059242249.
-    /accessors/0/min/1
-    ACCESSOR_MIN_MISMATCH
-    Declared minimum value for this component (-6.133399963378906) does not match actual minimum (-527.3764038085938).
-    /accessors/0/min/2
-    ACCESSOR_ELEMENT_OUT_OF_MIN_BOUND
-    Accessor contains 878680 element(s) less than declared minimum value -6.133399963378906.
-    /accessors/0/min/2
-    ACCESSOR_MAX_MISMATCH
-    Declared maximum value for this component (527.3764038085938) does not match actual maximum (61.323001861572266).
-    /accessors/0/max/1
-    ACCESSOR_MAX_MISMATCH
-    Declared maximum value for this component (61.323001861572266) does not match actual maximum (-0.6866880059242249).
-    /accessors/0/max/2
-    ```
+    - I managed to get a file displayed in model-viewer/editor/ after scaling all units by 1000 times and converting the stl to glb on this website, Unfortunately even though the model is displayed in the editor, ``ACCESSOR_MIN_MISMATCH`` and ``ACCESSOR_ELEMENT_OUT_OF_MIN_BOUND`` error messages were generated.
 
 ## Editing Models/Meshes
 
@@ -97,10 +74,23 @@ FreeCAD has a powerful [Mesh Decimating](https://wiki.freecad.org/Mesh_Decimatin
 
 To change the appearance of the model e.g. its texture the [modelviewer.dev/editor](https://modelviewer.dev/editor/) can be used to change it and safe it in the ``.glb`` file, which is different to the Windows 3d-Viewer which safes it as an external ``.json`` file.
 
-## Providing Large Files
+## Challenges Providing Large Files
 
-Firefox can't display models over 400 Mb in it's WebGL viewer.
-You could upload it to a cloud storage provider like Nextcloud or the like. But accessing the resource will be blocked by the browsers CORS policy. If I had access to the server config I could add the headers manually but I don't. So the solution is git lfs for the win.
+Serving files hundreds of Mb in size over the web might generally not be the smartest idea, but apart from long loading times what is actually stopping you? - Let's find out below.
+
+Firefox can't display models over 400 Mb in it's WebGL viewer.  
+Git doesn't support files > 100 Mb, but this can be circumvented by using the git lfs extension. However git lfs works by replacing the managed file in the repository with a link to an external storage location where the file is actually stored. Because of the browsers CORS policy ([learn more](https://de.wikipedia.org/wiki/Cross-Origin_Resource_Sharing)), this hasn't worked for me either. Anyways, GitHubs lfs storage limits are quite strict and anything above 1 Gb of storage requires a monthly payment.  
+
+So a cheaper alternative is to upload it to a cloud storage provider like Nextcloud or the like. But accessing the resource will again be blocked by the browsers CORS policy unless the file server provides the correct headers. 
+Consequently, access to the server config is necessary to configure the headers correctly, which typically requires a self hosted instance. 
+
+So if you don't want to host your own file server that is accessible from the internet (which comes with it's own can of worms), what would be an actual solution? 
+
+Intercepting the browsers request to the file server and adding the correct CORS headers then. There are two ways to do this, an easy way and a hard way.
+
+The easy way: Telling your visitors to install a browser plugin like [Allow CORS: Access-Control-Allow-Origin](https://addons.mozilla.org/en-US/firefox/addon/access-control-allow-origin/) (also available for chrome) which does this for you automatically. I have tested this myself and it works very well.
+
+The hard way: Setting up your own service helper to the same. This can either be a js script on your page or via a cdn (content distribution network) like cloudflare which offers this service for free (as of 01/2025). Both solutions will require some setup and I can not guarantee that the work because I couldn't get it to work my self.
 
 ## Ideas
 
@@ -117,13 +107,12 @@ Adding the optical image as a normal map to the glb file greatly enhances visibi
   </figure>
 </div>
 
-- Add an animated or at least coloured texture to highlight certain parts of the ic.
-- Add dimensions ✅
+- ✅ Add a fullscreen mode so larger models can be viewed without obstruction.
+- ✅ Add dimensions 
     - Part the scale into two parts so the actual feature size can be interpreted more easily (like in the MultiFile Analyzer)
-- Add hotspots for base emitter source
-- Add a fullscreen mode so larger models can be viewed without obstruction.
-
-<figure class="w-full md:w-1/2">
+- Add an animated or at least coloured texture to highlight certain parts of the ic.
+- Add hotspots for base emitter source 
+  <figure class="w-full md:w-1/2">
     <img src="hotspots.png" alt="Phillips chip with hotspots" class="rounded-lg shadow-md">
     <figcaption class="text-center text-sm mt-2">Base and emitter labeled with hotspots.</figcaption>
   </figure>
