@@ -19,7 +19,6 @@ This is my first attempt at applying laser confocal microscopy to acquire 3d poi
 
 {{< model-viewer
     src="phillips_bdx_67b_x1_h4000_decimated3.glb"
-    use_assets=true
     alt="An old ic."
     camera-orbit="20deg 20deg 1500m">}}
 
@@ -27,7 +26,6 @@ A Phillips BDX 67B NPN epitaxial base darlington power transistor with integrate
 
 {{< model-viewer-dimensions
 src="phillips_bdx_67b_x1_h4000_decimated3.glb"
-use_assets=true
 alt="An old ic."
 x_scale="100"
 y_scale="4000"

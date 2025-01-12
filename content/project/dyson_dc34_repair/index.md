@@ -25,7 +25,6 @@ The broken clip is scanned with an EinScan 3D scanner. This scan is used as a re
 
 {{< model-viewer
     src="scan.glb"
-    use_assets=true
     alt="3D-scan of the broken filter clip."
     camera-orbit="20deg 20deg 1500m">}}
 

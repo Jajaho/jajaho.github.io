@@ -25,7 +25,6 @@ A nice looking Astronaut, whose model is being served from a remote location.
 
 {{< model-viewer-dimensions
 src="testraeder_m.glb"
-use_assets=true
 alt="A rectangle used for testing."
 x_scale="100"
 y_scale="100"
@@ -38,7 +37,6 @@ A simple embedded 3d model served from the same server and with dimensions 1 m x
 
 {{< model-viewer-dimensions
 src="testraeder_um.glb"
-use_assets=true
 alt="A rectangle used for testing."
 x_scale="100"
 y_scale="100"

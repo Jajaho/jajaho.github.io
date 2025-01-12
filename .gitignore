@@ -13,13 +13,10 @@ appearance.json
 core-plugins.json
 
 # models
-*.glb
-*.gltf
-*.usdz
+# *.glb
+# *.gltf
+# *.usdz
 
 # Exceptions for published models
 
-!assets/models/phillips_bdx_67b_x1_h4000_decimated3.glb
-!assets/models/testraeder_m.glb
-!assets/models/testraeder_um.glb
-!assets/models/scan.glb
+content/post/intel_1976/intel_1976,77.glb

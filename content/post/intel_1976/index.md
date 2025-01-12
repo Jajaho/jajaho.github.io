@@ -15,7 +15,6 @@ share: false
 
 {{< model-viewer-dimensions
     src="intel_1976,77.glb"
-    alt="An old intel cpu."
     x_scale="100"
     y_scale="700"
     z_scale="100"
