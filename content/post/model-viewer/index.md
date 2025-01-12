@@ -46,6 +46,16 @@ camera-orbit="0deg 150deg 1500m">}}
 A teeny tiny 123 block for a micron sized machinist with dimensions 1 um x 2 um x 3 um.
 The fact that models with these tiny dimensions is important for displaying to scale microscopy data.
 
+## A viwer with the ability to switch between two models
+
+{{< model-viewer-switch 
+    src1="testraeder_um.glb" 
+    src2="testraeder_m.glb"
+    btn1-text="Version A" 
+    btn2-text="Version B"
+    alt="My 3D models" 
+>}}
+
 ## Features
 
 Some interesting supported functions like:

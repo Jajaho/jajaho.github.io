@@ -23,10 +23,13 @@ My friend saved this one from the trashcan. Because it was defective I offered t
 
 The broken clip is scanned with an EinScan 3D scanner. This scan is used as a reference in CAD to model a replacement part.
 
-{{< model-viewer
-    src="scan.glb"
-    alt="3D-scan of the broken filter clip."
-    camera-orbit="20deg 20deg 1500m">}}
+{{< model-viewer-switch 
+    src1="scan.glb" 
+    src2="model.glb"
+    btn1-text="Scan" 
+    btn2-text="Model"
+    alt="The scan and final model." 
+>}}
 
 **3D scan of the broken clip**
 
