@@ -20,11 +20,11 @@ For a workbench, the requirements are particularly high. The tabletop should be 
 
 ## Design
 
-The first step is always a sketch for any project is a sketch in my notebook. 
+The first step for any project is always a sketch in my notebook. Here the requirements and materials are specified, which outlines a general approach and provides a first design.
 
 ### Modularity
 
-The frame of the table can be seperated into six individual parts, which are all light enough to be carried by a single person.
+The frame of the table can be separated into six individual parts, which are all light enough to be carried by a single person.
 They are hold together by M10 screws which mate with tapped, flat steel pieces that are welded to the tubes.
 
 ### Tabletop
@@ -38,7 +38,7 @@ To compensate for an uneven floor the legs feature adjustable feet for leveling.
 ## CAD
 
 The entire cad-process from sketch to drawing was done in Autodesk Fusion360.
-The design you see below is my third iteration, I had to start over becuase the way I set up my sketches wasn't allowing my to move forward efficiently.
+The design you see below is my third iteration, I had to start over because the way I set up my sketches wasn't allowing my to move forward efficiently.
 
 {{< figure src="explosion.png" caption="Explosion drawing" >}}
 
@@ -47,7 +47,7 @@ To do so you will need to open the `.f3z` archive file in Fusion360. Visit the c
 
 ### Drawings 
 
-Unfortunately, I only have German drawings, since I build this project in the summer of 2021 before I even had the plan to document my workings on an English website. However, you may use these plans for free and do whatever you want with them. However, if you decide to build it, I would appreciate it if you could reach out and let me know, thank you.
+Since I built this project in the summer of 2021, before I even had any plans to document my workings on an English website, I can unfortunately only provide German drawings. However, you may use these plans for free and do whatever you want with them. If you do decide to build it, I would appreciate it if you could reach out and let me know, thank you.
 
 <a href="workbench.pdf">Open drawings</a>
 
