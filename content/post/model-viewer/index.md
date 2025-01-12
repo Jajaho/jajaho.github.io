@@ -15,46 +15,53 @@ share: false
 
 Please see the examples below.
 
-## Astronaut
+## Examples
 
+### A viewer with fullscreen capability
 
+{{< model-viewer-fullscreen
+    src="testraeder_m.glb"
+    alt="An old ic."
+    camera-orbit="20deg 20deg 1500m"
+>}}
 
-A nice looking Astronaut, whose model is being served from a remote location.
-
-## A rectangle with dimensions 
+### A rectangle with dimensions 
 
 {{< model-viewer-dimensions
-src="testraeder_m.glb"
-alt="A rectangle used for testing."
-x_scale="100"
-y_scale="100"
-z_scale="100"
-camera-orbit="0deg 150deg 1500m">}}
+    src="testraeder_m.glb"
+    alt="A tetrahedron used for testing."
+    x_scale="100"
+    y_scale="100"
+    z_scale="100"
+    camera-orbit="0deg 150deg 1500m"
+>}}
 
 A simple embedded 3d model served from the same server and with dimensions 1 m x 2 m x 3 m.
 
-## A tiny rectangle with dimensions 
+### A tiny rectangle with dimensions 
 
 {{< model-viewer-dimensions
-src="testraeder_um.glb"
-alt="A rectangle used for testing."
-x_scale="100"
-y_scale="100"
-z_scale="100"
-camera-orbit="0deg 150deg 1500m">}}
+    src="testraeder_um.glb"
+    alt="A small tetrahedron used for testing."
+    x_scale="100"
+    y_scale="100"
+    z_scale="100"
+    camera-orbit="0deg 150deg 1500m"
+>}}
 
 A teeny tiny 123 block for a micron sized machinist with dimensions 1 um x 2 um x 3 um.
 The fact that models with these tiny dimensions is important for displaying to scale microscopy data.
 
-## A viwer with the ability to switch between two models
+### A viewer with the ability to switch between two models
 
 {{< model-viewer-switch 
     src1="testraeder_um.glb" 
     src2="testraeder_m.glb"
     btn1-text="Version A" 
     btn2-text="Version B"
-    alt="My 3D models" 
+    alt="A tetrahedron used for testing." 
 >}}
+
 
 ## Features
 

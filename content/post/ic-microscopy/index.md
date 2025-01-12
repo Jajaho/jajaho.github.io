@@ -17,20 +17,22 @@ This is my first attempt at applying laser confocal microscopy to acquire 3d poi
 
 ## Showcase
 
-{{< model-viewer
+{{< model-viewer-fullscreen
     src="phillips_bdx_67b_x1_h4000_decimated3.glb"
     alt="An old ic."
-    camera-orbit="20deg 20deg 1500m">}}
+    camera-orbit="20deg 20deg 1500m"
+>}}
 
 A Phillips BDX 67B NPN epitaxial base darlington power transistor with integrated resistors to set the operating point and a free wheeling diode to protect it. The mesh has been heavily decimated and and the optical image has been applied as a normal map to enhance the visibility of small features.
 
 {{< model-viewer-dimensions
-src="phillips_bdx_67b_x1_h4000_decimated3.glb"
-alt="An old ic."
-x_scale="100"
-y_scale="4000"
-z_scale="100"
-camera-orbit="0deg 150deg 1500m">}}
+    src="phillips_bdx_67b_x1_h4000_decimated3.glb"
+    alt="An old ic."
+    x_scale="100"
+    y_scale="4000"
+    z_scale="100"
+    camera-orbit="0deg 150deg 1500m"
+>}}
 
 The same chip but with accurate dimensions, note that the height of has been scaled to 4000 % of the actual size.
 
@@ -42,14 +44,14 @@ Note: Gwyddion can also open `.vk6`/`.vk4` files, but I wasn't able to export a 
 
 ```mermaid
     flowchart LR
-    M[Microscope] -->|vk4/vk6| MA[Keyence MultiFile Analyzer]
-    MA -->|stl binary| W[Windows 3D-Viewer]
-    W -->|glb| MV[model-viewer/Editor]
+    M[Microscope] -->| vk4/vk6 | MA[Keyence MultiFile Analyzer]
+    MA -->| stl binary | W[Windows 3D-Viewer]
+    W -->| glb | MV[model-viewer/Editor]
 
-    style M fill:#1565c0,stroke:#0d47a1,stroke-width:2px,color:#fff
-    style MA fill:#1976d2,stroke:#1565c0,stroke-width:2px,color:#fff
-    style W fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style MV fill:#64b5f6,stroke:#2196f3,stroke-width:2px,color:#fff
+    style M fill:#1565c0,stroke-width:0px,color:#fff
+    style MA fill:#1976d2,stroke-width:0px,color:#fff
+    style W fill:#2196f3,stroke-width:0px,color:#fff
+    style MV fill:#64b5f6,stroke-width:0px,color:#fff
 ```
 
 
