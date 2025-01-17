@@ -17,12 +17,6 @@ This is my first attempt at applying laser confocal microscopy to acquire 3d poi
 
 ## Showcase
 
-{{< model-viewer-fullscreen
-    src="phillips_bdx_67b_x1_h4000_decimated3.glb"
-    alt="An old ic."
-    camera-orbit="20deg 20deg 1500m"
->}}
-
 A Phillips BDX 67B NPN epitaxial base darlington power transistor with integrated resistors to set the operating point and a free wheeling diode to protect it. The mesh has been heavily decimated and and the optical image has been applied as a normal map to enhance the visibility of small features.
 
 {{< model-viewer-dimensions
@@ -34,7 +28,7 @@ A Phillips BDX 67B NPN epitaxial base darlington power transistor with integrate
     camera-orbit="0deg 150deg 1500m"
 >}}
 
-The same chip but with accurate dimensions, note that the height of has been scaled to 4000 % of the actual size.
+The model dimensions are accurate to the real world, but the height has been scaled to 4000 % of its actual size, exaggerating the chips features.
 
 ## Data Conversion
 
