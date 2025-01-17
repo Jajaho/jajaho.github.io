@@ -1,0 +1,290 @@
+<!-- layouts/shortcodes/model-viewer-slider.html -->
+{{ $isDevelopment := eq hugo.Environment "development" }}
+{{ $modelFolder := site.Params.modelViewer.folder | default "models" }}
+
+{{/* Validate required parameters */}}
+{{ with .Get "src1" }}
+    {{ $model1Path := . }}
+{{ else }}
+    {{ errorf "The model-viewer-slider shortcode requires a 'src1' parameter" }}
+{{ end }}
+
+{{ with .Get "src2" }}
+    {{ $model2Path := . }}
+{{ else }}
+    {{ errorf "The model-viewer-slider shortcode requires a 'src2' parameter" }}
+{{ end }}
+
+<div class="model-viewer-container">
+    <div class="firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; max-width: 800px; margin: 0 auto;">
+        ⚠️ These large 3D models may not display correctly in Firefox. Please use Chrome for the best experience.
+    </div>
+    
+    <div class="model-container">
+        <model-viewer 
+            id="model1-viewer"
+            class="model-viewer"
+            src="{{ .Get "src1" }}"
+            alt="{{ .Get "alt" | default "A 3D model comparison" }}"
+            camera-controls
+            ar
+            ar-modes="webxr"
+            ar-scale="fixed"
+            camera-orbit="-30deg auto auto"
+            max-camera-orbit="auto 100deg auto"
+            shadow-intensity="1"
+            touch-action="pan-y">
+        </model-viewer>
+        
+        <model-viewer 
+            id="model2-viewer"
+            class="model-viewer"
+            src="{{ .Get "src2" }}"
+            alt="{{ .Get "alt" | default "A 3D model comparison" }}"
+            camera-controls
+            ar
+            ar-modes="webxr"
+            ar-scale="fixed"
+            camera-orbit="-30deg auto auto"
+            max-camera-orbit="auto 100deg auto"
+            shadow-intensity="1"
+            touch-action="pan-y">
+        </model-viewer>
+
+        <div class="slider-container">
+            <div class="slider-line">
+                <div class="slider-handle"></div>
+            </div>
+        </div>
+
+        <!-- Labels for models -->
+        <div class="model-labels">
+            <div class="label-left">{{ .Get "btn1-text" | default "Model 1" }}</div>
+            <div class="label-right">{{ .Get "btn2-text" | default "Model 2" }}</div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+<style>
+.model-container {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.model-viewer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+#model1-viewer {
+    clip-path: inset(0 50% 0 0);
+}
+
+#model2-viewer {
+    clip-path: inset(0 0 0 50%);
+}
+
+.slider-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.slider-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(-50%);
+    pointer-events: all;
+    cursor: ew-resize;
+}
+
+.slider-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: all;
+    cursor: ew-resize;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider-handle::before,
+.slider-handle::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 16px;
+    background: #666;
+}
+
+.slider-handle::before {
+    transform: translateX(-4px);
+}
+
+.slider-handle::after {
+    transform: translateX(4px);
+}
+
+.model-labels {
+    position: absolute;
+    top: 16px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 32px;
+    pointer-events: none;
+}
+
+.label-left, .label-right {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* This keeps child nodes hidden while the element loads */
+:not(:defined) > * {
+    display: none;
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const container = document.querySelector('.model-container');
+      const model1Viewer = document.querySelector('#model1-viewer');
+      const model2Viewer = document.querySelector('#model2-viewer');
+      const sliderLine = document.querySelector('.slider-line');
+      const sliderHandle = document.querySelector('.slider-handle');
+  
+      let isDragging = false;
+      let startX;
+      let sliderPosition = 50; // Store slider position as percentage
+  
+      // Improved camera sync function
+      function syncCamera(source, target) {
+          // Sync all camera parameters
+          const orbit = source.getCameraOrbit();
+          const target_orbit = target.getCameraOrbit();
+          if (orbit.toString() !== target_orbit.toString()) {
+              target.cameraOrbit = orbit.toString();
+              target.cameraTarget = source.getCameraTarget().toString();
+              target.fieldOfView = source.getFieldOfView().toString();
+          }
+      }
+  
+      // Add camera sync listeners
+      [model1Viewer, model2Viewer].forEach(viewer => {
+          viewer.addEventListener('camera-change', () => {
+              if (viewer === model1Viewer) {
+                  syncCamera(model1Viewer, model2Viewer);
+              } else {
+                  syncCamera(model2Viewer, model1Viewer);
+              }
+          });
+      });
+  
+      // Improved drag handling
+      function startDragging(e) {
+          isDragging = true;
+          // Use the current event position as starting point
+          startX = (e.clientX || e.touches[0].clientX);
+          
+          // Prevent default behaviors
+          e.preventDefault();
+          
+          // Add event listeners
+          document.addEventListener('mousemove', onDrag);
+          document.addEventListener('mouseup', stopDragging);
+          document.addEventListener('touchmove', onDrag);
+          document.addEventListener('touchend', stopDragging);
+      }
+  
+      function onDrag(e) {
+          if (!isDragging) return;
+  
+          e.preventDefault();
+          
+          const containerRect = container.getBoundingClientRect();
+          const currentX = (e.clientX || e.touches[0].clientX);
+          
+          // Calculate position relative to container
+          const positionInContainer = currentX - containerRect.left;
+          const percentage = (positionInContainer / containerRect.width) * 100;
+          
+          // Clamp percentage between 0 and 100
+          sliderPosition = Math.max(0, Math.min(100, percentage));
+          
+          updateSliderPosition(sliderPosition);
+      }
+  
+      function stopDragging() {
+          isDragging = false;
+          document.removeEventListener('mousemove', onDrag);
+          document.removeEventListener('mouseup', stopDragging);
+          document.removeEventListener('touchmove', onDrag);
+          document.removeEventListener('touchend', stopDragging);
+      }
+  
+      function updateSliderPosition(percentage) {
+          sliderLine.style.left = `${percentage}%`;
+          model1Viewer.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+          model2Viewer.style.clipPath = `inset(0 0 0 ${percentage}%)`;
+      }
+  
+      // Initialize slider position
+      updateSliderPosition(50);
+  
+      // Add event listeners for slider
+      sliderHandle.addEventListener('mousedown', startDragging);
+      sliderHandle.addEventListener('touchstart', startDragging);
+      sliderLine.addEventListener('mousedown', startDragging);
+      sliderLine.addEventListener('touchstart', startDragging);
+
+    // Check for Firefox and large models
+    async function checkModelSize() {
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) return;
+        
+        try {
+            const model1Response = await fetch(model1Viewer.src, { method: 'HEAD' });
+            const model2Response = await fetch(model2Viewer.src, { method: 'HEAD' });
+            
+            const size1InMB = model1Response.headers.get('content-length') / (1024 * 1024);
+            const size2InMB = model2Response.headers.get('content-length') / (1024 * 1024);
+            
+            if (size1InMB > 100 || size2InMB > 100) {
+                document.querySelector('.firefox-warning').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error checking model size:', error);
+        }
+    }
+
+    checkModelSize();
+});
+</script>
