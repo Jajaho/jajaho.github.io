@@ -1,5 +1,5 @@
 ---
-# Required fields
+#sd
 title: Template Post Title  # The title of your post
 date: 2024-01-01T00:00:00Z  # The publication date
 draft: true  # Set to false when ready to publish
@@ -45,8 +45,8 @@ data_files:
     description: "Experimental data"
 ---
 
-# Your Post Content
 
+The featured imge is presented above.  
 Start writing your post content here using Markdown syntax.
 
 ## Sections
@@ -63,12 +63,15 @@ def example():
 ### Images
 
 #### Basic Markdown Image
-![Alt text](image.jpg)
+![Alternative text](featured.png)
 
 #### Hugo Figure Shortcode
-{{< figure src="image.jpg" >}}  # Basic usage
 
-{{< figure src="image.jpg" 
+##### Minimal 
+{{< figure src="featured.png" >}}  
+
+##### Full featured
+{{< figure src="featured.png" 
     title="Image Title" 
     caption="Image caption"
     alt="Alt text"
@@ -76,22 +79,22 @@ def example():
     link="https://example.com"
     target="_blank"
     rel="noopener"
-    width="600"
-    height="400"
+    width="400"
+    height="100"
     loading="lazy"
-    >}}  # Full options
+    >}} 
 
-# Figure Shortcode Options:
-# - src: Path to image (required)
-# - title: Image title (hover text)
-# - caption: Description below image  
-# - alt: Accessibility text
-# - class: CSS class
-# - link: URL to link image to
-# - target: Link target (_blank, _self)
-# - rel: Link rel attribute
-# - width/height: Dimensions in px
-# - loading: lazy/eager loading
+Figure Shortcode Options:
+- src: Path to image (required)
+- title: Image title (hover text)
+- caption: Description below image  
+- alt: Accessibility text
+- class: CSS class
+- link: URL to link image to
+- target: Link target (_blank, _self)
+- rel: Link rel attribute
+- width/height: Dimensions in px
+- loading: lazy/eager loading
 
 ### Links
 
