@@ -1,0 +1,7 @@
+name: tag-sidebar
+title: Tag Sidebar
+description: A sidebar for filtering content by tags
+category: navigation
+icon: tags
+version: 1.0.0
+template: hugo-blox/blox/community/tag-sidebar.html

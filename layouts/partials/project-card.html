@@ -1,0 +1,27 @@
+<article class="article-container" data-tags="{{ with .Params.tags }}{{ delimit (apply . "urlize" ".") " " }}{{ end }}">
+  {{ if .Params.image }}
+  <div class="article-image">
+    <img src="{{ .Params.image }}" alt="{{ .Title }}">
+  </div>
+  {{ end }}
+  
+  <div class="article-content">
+    <h2 class="article-title">
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </h2>
+    
+    {{ if .Params.summary }}
+    <p class="article-summary">
+      {{ .Params.summary }}
+    </p>
+    {{ end }}
+    
+    {{ if .Params.tags }}
+    <div class="article-tags">
+      {{ range .Params.tags }}
+      <span class="tag">{{ . }}</span>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+</article>

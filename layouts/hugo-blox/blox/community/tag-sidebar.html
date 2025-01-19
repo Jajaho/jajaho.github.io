@@ -1,0 +1,62 @@
+<div class="tag-sidebar">
+  <h3>Filter by Tag</h3>
+  <ul class="tags-list">
+    {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+      <li>
+        <a href="#" class="tag-filter" data-tag="{{ $name | urlize }}">
+          {{ $name }} ({{ $taxonomy.Count }})
+        </a>
+      </li>
+    {{ end }}
+  </ul>
+</div>
+
+<style>
+.tag-sidebar {
+  width: 250px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-right: 1px solid #ddd;
+}
+
+.tags-list {
+  list-style: none;
+  padding: 0;
+}
+
+.tags-list li {
+  margin: 5px 0;
+}
+
+.tag-filter {
+  text-decoration: none;
+  color: #333;
+}
+
+.tag-filter:hover {
+  color: #007bff;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tagFilters = document.querySelectorAll('.tag-filter');
+  
+  tagFilters.forEach(filter => {
+    filter.addEventListener('click', function(e) {
+      e.preventDefault();
+      const selectedTag = this.dataset.tag;
+      
+      // Hide all project cards
+      document.querySelectorAll('.article-grid .article-container').forEach(card => {
+        card.style.display = 'none';
+      });
+      
+      // Show only cards with matching tag
+      document.querySelectorAll(`.article-container[data-tags*="${selectedTag}"]`).forEach(card => {
+        card.style.display = 'block';
+      });
+    });
+  });
+});
+</script>

@@ -1,0 +1,7 @@
+{{ define "main" }}
+<div class="article-grid">
+  {{ range .Pages }}
+    {{ partial "project-card.html" . }}
+  {{ end }}
+</div>
+{{ end }}
