@@ -3,7 +3,8 @@
 title: ""
 date: 2022-10-24
 type: landing
-
+aliases:
+- /HugoBloxSite/
 design:
   # Default section spacing
   spacing: "6rem"
