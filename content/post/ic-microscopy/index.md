@@ -9,6 +9,8 @@ tags:
     - model-viewer
 image:
   caption: "Phillips BDX 67B NPN epitaxial base darlington power transistor"
+aliases: 
+  - /HugoBloxSite/post/ic-microscopy/
 draft: false
 featured: false
 share: false
