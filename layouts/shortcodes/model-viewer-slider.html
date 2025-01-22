@@ -175,96 +175,124 @@
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-      const container = document.querySelector('.model-container');
-      const model1Viewer = document.querySelector('#model1-viewer');
-      const model2Viewer = document.querySelector('#model2-viewer');
-      const sliderLine = document.querySelector('.slider-line');
-      const sliderHandle = document.querySelector('.slider-handle');
-  
-      let isDragging = false;
-      let startX;
-      let sliderPosition = 50; // Store slider position as percentage
-  
-      // Improved camera sync function
-      function syncCamera(source, target) {
-          // Sync all camera parameters
-          const orbit = source.getCameraOrbit();
-          const target_orbit = target.getCameraOrbit();
-          if (orbit.toString() !== target_orbit.toString()) {
-              target.cameraOrbit = orbit.toString();
-              target.cameraTarget = source.getCameraTarget().toString();
-              target.fieldOfView = source.getFieldOfView().toString();
-          }
-      }
-  
-      // Add camera sync listeners
-      [model1Viewer, model2Viewer].forEach(viewer => {
-          viewer.addEventListener('camera-change', () => {
-              if (viewer === model1Viewer) {
-                  syncCamera(model1Viewer, model2Viewer);
-              } else {
-                  syncCamera(model2Viewer, model1Viewer);
-              }
-          });
-      });
-  
-      // Improved drag handling
-      function startDragging(e) {
-          isDragging = true;
-          // Use the current event position as starting point
-          startX = (e.clientX || e.touches[0].clientX);
-          
-          // Prevent default behaviors
-          e.preventDefault();
-          
-          // Add event listeners
-          document.addEventListener('mousemove', onDrag);
-          document.addEventListener('mouseup', stopDragging);
-          document.addEventListener('touchmove', onDrag);
-          document.addEventListener('touchend', stopDragging);
-      }
-  
-      function onDrag(e) {
-          if (!isDragging) return;
-  
-          e.preventDefault();
-          
-          const containerRect = container.getBoundingClientRect();
-          const currentX = (e.clientX || e.touches[0].clientX);
-          
-          // Calculate position relative to container
-          const positionInContainer = currentX - containerRect.left;
-          const percentage = (positionInContainer / containerRect.width) * 100;
-          
-          // Clamp percentage between 0 and 100
-          sliderPosition = Math.max(0, Math.min(100, percentage));
-          
-          updateSliderPosition(sliderPosition);
-      }
-  
-      function stopDragging() {
-          isDragging = false;
-          document.removeEventListener('mousemove', onDrag);
-          document.removeEventListener('mouseup', stopDragging);
-          document.removeEventListener('touchmove', onDrag);
-          document.removeEventListener('touchend', stopDragging);
-      }
-  
-      function updateSliderPosition(percentage) {
-          sliderLine.style.left = `${percentage}%`;
-          model1Viewer.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-          model2Viewer.style.clipPath = `inset(0 0 0 ${percentage}%)`;
-      }
-  
-      // Initialize slider position
-      updateSliderPosition(50);
-  
-      // Add event listeners for slider
-      sliderHandle.addEventListener('mousedown', startDragging);
-      sliderHandle.addEventListener('touchstart', startDragging);
-      sliderLine.addEventListener('mousedown', startDragging);
-      sliderLine.addEventListener('touchstart', startDragging);
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.model-container');
+    const model1Viewer = document.querySelector('#model1-viewer');
+    const model2Viewer = document.querySelector('#model2-viewer');
+    const sliderLine = document.querySelector('.slider-line');
+    const sliderHandle = document.querySelector('.slider-handle');
+
+    let isDragging = false;
+    let startX;
+    let sliderPosition = 50;
+    let lastSyncState = {
+        orbit: '',
+        target: '',
+        fov: ''
+    };
+    let lastActiveModel = null;
+
+    // Track which model is being manipulated
+    function handleUserInteraction(modelViewer) {
+        modelViewer.addEventListener('pointerdown', () => {
+            lastActiveModel = modelViewer;
+        });
+    }
+
+    // Add interaction tracking to both models
+    handleUserInteraction(model1Viewer);
+    handleUserInteraction(model2Viewer);
+
+    // Improved camera sync function with bidirectional sync
+    function syncCamera() {
+        if (!lastActiveModel) return;
+
+        const sourceViewer = lastActiveModel;
+        const targetViewer = sourceViewer === model1Viewer ? model2Viewer : model1Viewer;
+
+        const currentOrbit = sourceViewer.getCameraOrbit().toString();
+        const currentTarget = sourceViewer.getCameraTarget().toString();
+        const currentFOV = sourceViewer.getFieldOfView().toString();
+
+        // Only update if camera parameters have changed
+        if (currentOrbit !== lastSyncState.orbit ||
+            currentTarget !== lastSyncState.target ||
+            currentFOV !== lastSyncState.fov) {
+            
+            // Update target model camera
+            targetViewer.cameraOrbit = currentOrbit;
+            targetViewer.cameraTarget = currentTarget;
+            targetViewer.fieldOfView = currentFOV;
+
+            // Store new state
+            lastSyncState = {
+                orbit: currentOrbit,
+                target: currentTarget,
+                fov: currentFOV
+            };
+        }
+    }
+
+    // Start periodic camera sync
+    const syncInterval = setInterval(syncCamera, 1000 / 30); // 30fps sync rate
+
+    // Improved drag handling
+    function startDragging(e) {
+        isDragging = true;
+        startX = (e.clientX || e.touches[0].clientX);
+        
+        e.preventDefault();
+        
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', stopDragging);
+        document.addEventListener('touchmove', onDrag);
+        document.addEventListener('touchend', stopDragging);
+    }
+
+    function onDrag(e) {
+        if (!isDragging) return;
+
+        e.preventDefault();
+        
+        const containerRect = container.getBoundingClientRect();
+        const currentX = (e.clientX || e.touches[0].clientX);
+        
+        const positionInContainer = currentX - containerRect.left;
+        const percentage = (positionInContainer / containerRect.width) * 100;
+        
+        sliderPosition = Math.max(0, Math.min(100, percentage));
+        
+        updateSliderPosition(sliderPosition);
+    }
+
+    function stopDragging() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', stopDragging);
+        document.removeEventListener('touchmove', onDrag);
+        document.removeEventListener('touchend', stopDragging);
+    }
+
+    function updateSliderPosition(percentage) {
+        sliderLine.style.left = `${percentage}%`;
+        model1Viewer.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+        model2Viewer.style.clipPath = `inset(0 0 0 ${percentage}%)`;
+    }
+
+    // Initialize slider position
+    updateSliderPosition(50);
+
+    // Add event listeners for slider
+    sliderHandle.addEventListener('mousedown', startDragging);
+    sliderHandle.addEventListener('touchstart', startDragging);
+    sliderLine.addEventListener('mousedown', startDragging);
+    sliderLine.addEventListener('touchstart', startDragging);
+
+    // Cleanup function for when the component is destroyed
+    function cleanup() {
+        clearInterval(syncInterval);
+        stopDragging();
+    }
 
     // Check for Firefox and large models
     async function checkModelSize() {
