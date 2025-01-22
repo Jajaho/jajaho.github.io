@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastSyncState = {
         orbit: '',
         target: '',
-        fov: ''
+        fov: '',
+        zoom: ''
     };
     let lastActiveModel = null;
 
@@ -197,13 +198,18 @@ document.addEventListener('DOMContentLoaded', function() {
         modelViewer.addEventListener('pointerdown', () => {
             lastActiveModel = modelViewer;
         });
+        
+        // Also track scroll/zoom events
+        modelViewer.addEventListener('wheel', () => {
+            lastActiveModel = modelViewer;
+        });
     }
 
     // Add interaction tracking to both models
     handleUserInteraction(model1Viewer);
     handleUserInteraction(model2Viewer);
 
-    // Improved camera sync function with bidirectional sync
+    // Improved camera sync function with complete sync
     function syncCamera() {
         if (!lastActiveModel) return;
 
@@ -213,28 +219,40 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentOrbit = sourceViewer.getCameraOrbit().toString();
         const currentTarget = sourceViewer.getCameraTarget().toString();
         const currentFOV = sourceViewer.getFieldOfView().toString();
+        const currentZoom = sourceViewer.getCameraTarget().z.toString();
 
-        // Only update if camera parameters have changed
+        // Only update if any camera parameters have changed
         if (currentOrbit !== lastSyncState.orbit ||
             currentTarget !== lastSyncState.target ||
-            currentFOV !== lastSyncState.fov) {
+            currentFOV !== lastSyncState.fov ||
+            currentZoom !== lastSyncState.zoom) {
             
-            // Update target model camera
+            // Synchronize all camera parameters
             targetViewer.cameraOrbit = currentOrbit;
             targetViewer.cameraTarget = currentTarget;
             targetViewer.fieldOfView = currentFOV;
+
+            // Force a proper zoom sync by updating the camera distance
+            const orbitParts = currentOrbit.split(' ');
+            if (orbitParts.length >= 3) {
+                const theta = orbitParts[0];
+                const phi = orbitParts[1];
+                const radius = orbitParts[2];
+                targetViewer.cameraOrbit = `${theta} ${phi} ${radius}`;
+            }
 
             // Store new state
             lastSyncState = {
                 orbit: currentOrbit,
                 target: currentTarget,
-                fov: currentFOV
+                fov: currentFOV,
+                zoom: currentZoom
             };
         }
     }
 
-    // Start periodic camera sync
-    const syncInterval = setInterval(syncCamera, 1000 / 30); // 30fps sync rate
+    // Start periodic camera sync with higher frequency for smoother zoom
+    const syncInterval = setInterval(syncCamera, 1000 / 60); // 60fps sync rate
 
     // Improved drag handling
     function startDragging(e) {
