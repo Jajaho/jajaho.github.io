@@ -23,9 +23,8 @@
             camera-controls
             {{ with .Get "ios-src" }}ios-src="{{ . }}"{{ end }}
             shadow-intensity="1"
-            camera-orbit="{{ .Get "camera-orbit" | default "0deg 75deg 1500m" }}"
-            exposure="1"
-            shadow-softness="0.5">
+            camera-orbit="-30deg auto auto"
+            exposure="1">
         </model-viewer>
     </div>
 </div>
