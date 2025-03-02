@@ -1,0 +1,1277 @@
+<div id="crystal-lattice-container" class="crystal-lattice">
+  <div class="control-panel">
+    <div class="control-group">
+      <label for="lattice-type">Lattice Type:</label>
+      <select id="lattice-type">
+        <option value="sc">Simple Cubic (SC)</option>
+        <option value="bcc">Body-Centered Cubic (BCC)</option>
+        <option value="fcc">Face-Centered Cubic (FCC)</option>
+        <option value="diamond">Diamond</option>
+        <option value="hcp">Hexagonal Close-Packed (HCP)</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <label for="lattice-constant">Lattice Constant (Å): <span id="constant-value">1.0</span></label>
+      <input type="range" id="lattice-constant" min="0.5" max="2" step="0.1" value="1">
+
+      
+        <label for="unit-cell-count">Unit Cells: <span id="cell-count-value">1</span></label>
+        <input type="range" id="unit-cell-count" min="1" max="10" step="1" value="1">
+      
+    </div>
+    
+    <div class="control-group">
+      <div class="checkbox-control">
+        <input type="checkbox" id="show-klabels">
+        <label for="show-klabels">Show k-space Labels</label>
+      </div>
+      
+      <div class="checkbox-control">
+        <input type="checkbox" id="show-unit-cell-edges" checked>
+        <label for="show-unit-cell-edges">Show Unit Cell Edges</label>
+      </div>
+      
+      <div class="checkbox-control">
+        <input type="checkbox" id="show-atom-connections">
+        <label for="show-atom-connections">Show Atom Connections</label>
+      </div>
+    </div>
+  </div>
+  
+  <div class="visualization-area">
+    <div class="lattice-panel">
+      <h3>Real Space Lattice</h3>
+      <div class="canvas-container">
+        <canvas id="real-lattice-canvas"></canvas>
+      </div>
+    </div>
+    
+    <div class="lattice-panel" id="reciprocal-panel">
+      <h3>Reciprocal Space Lattice</h3>
+      <div class="canvas-container">
+        <canvas id="reciprocal-lattice-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-panel">
+    <h3>Lattice Information</h3>
+    <div class="info-content">
+      <div>
+        <p><span class="label">Lattice Type:</span> <span id="info-lattice-type">Simple Cubic (SC)</span></p>
+        <p><span class="label">Lattice Constant:</span> <span id="info-lattice-constant">1.00</span> Å</p>
+      </div>
+      <div>
+        <p><span class="label">Reciprocal Lattice Constant:</span> <span id="info-reciprocal-constant">6.28</span> Å⁻¹</p>
+        <p><span class="label">Brillouin Zone:</span> <span id="info-brillouin-zone">Cubic</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.crystal-lattice {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.control-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .control-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkbox-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+label {
+  font-weight: 500;
+}
+
+select, input[type="range"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+}
+
+.unit-cell-control {
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.visualization-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .visualization-area {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lattice-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.lattice-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  background: #f8f8f8;
+  min-height: 350px;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.info-panel {
+  background: #e6f0f9;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.info-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.info-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .info-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.label {
+  font-weight: 500;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
+  const realCanvas = document.getElementById('real-lattice-canvas');
+  const reciprocalCanvas = document.getElementById('reciprocal-lattice-canvas');
+  const reciprocalPanel = document.getElementById('reciprocal-panel');
+  
+  // Controls
+  const latticeTypeSelect = document.getElementById('lattice-type');
+  const latticeConstantInput = document.getElementById('lattice-constant');
+  const constantValueDisplay = document.getElementById('constant-value');
+  const unitCellCountInput = document.getElementById('unit-cell-count');
+  const cellCountValueDisplay = document.getElementById('cell-count-value');
+  const showKLabelsCheckbox = document.getElementById('show-klabels');
+  const showUnitCellEdgesCheckbox = document.getElementById('show-unit-cell-edges');
+  const showAtomConnectionsCheckbox = document.getElementById('show-atom-connections');
+  
+  // Info displays
+  const infoLatticeType = document.getElementById('info-lattice-type');
+  const infoLatticeConstant = document.getElementById('info-lattice-constant');
+  const infoReciprocalConstant = document.getElementById('info-reciprocal-constant');
+  const infoBrillouinZone = document.getElementById('info-brillouin-zone');
+  
+  // State
+  let latticeType = 'sc';
+  let latticeConstant = 1.0;
+  let unitCellCount = 1;
+  let showKLabels = false;
+  let showReciprocal = true;
+  let showUnitCellEdges = true;
+  let showAtomConnections = false;
+  
+  // Three.js variables
+  let realScene, realCamera, realRenderer;
+  let reciprocalScene, reciprocalCamera, reciprocalRenderer;
+  let realLabelContainer, reciprocalLabelContainer;
+  
+  // Camera control state
+  const cameraControls = {
+    real: { 
+      isDragging: false, 
+      previousMousePosition: { x: 0, y: 0 }, 
+      rotationSpeed: 0.01,
+      radius: 5,
+      theta: Math.PI / 2,
+      phi: Math.PI / 2
+    },
+    reciprocal: { 
+      isDragging: false, 
+      previousMousePosition: { x: 0, y: 0 }, 
+      rotationSpeed: 0.01,
+      radius: 5,
+      theta: Math.PI / 2,
+      phi: Math.PI / 2
+    }
+  };
+  
+  // Initialize
+  init();
+  
+  function init() {
+    // Initialize real space
+    initRealSpace();
+    
+    // Initialize reciprocal space if enabled
+    if (showReciprocal) {
+      initReciprocalSpace();
+    } else {
+      reciprocalPanel.style.display = 'none';
+    }
+    
+    // Set up event listeners
+    setupEventListeners();
+    
+    // Start animation
+    animate();
+    
+    // Update visualization
+    updateVisualization();
+  }
+  
+  function initRealSpace() {
+    // Create scene
+    realScene = new THREE.Scene();
+    realScene.background = new THREE.Color(0xf0f0f0);
+    
+    // Create camera
+    realCamera = new THREE.PerspectiveCamera(75, realCanvas.clientWidth / realCanvas.clientHeight, 0.1, 1000);
+    realCamera.position.z = 5;
+    
+    // Create renderer
+    realRenderer = new THREE.WebGLRenderer({ canvas: realCanvas, antialias: true });
+    realRenderer.setSize(realCanvas.clientWidth, realCanvas.clientHeight);
+    
+    // Create label container
+    realLabelContainer = document.createElement('div');
+    realLabelContainer.style.position = 'absolute';
+    realLabelContainer.style.top = '0';
+    realLabelContainer.style.left = '0';
+    realLabelContainer.style.width = '100%';
+    realLabelContainer.style.height = '100%';
+    realLabelContainer.style.pointerEvents = 'none';
+    realCanvas.parentElement.appendChild(realLabelContainer);
+    
+    // Add axes
+    const axesHelper = new THREE.AxesHelper(3);
+    realScene.add(axesHelper);
+    
+    // Set up camera controls
+    setupCameraControls('real', realCanvas, realCamera);
+  }
+  
+  function initReciprocalSpace() {
+    // Create scene
+    reciprocalScene = new THREE.Scene();
+    reciprocalScene.background = new THREE.Color(0xf0f0f0);
+    
+    // Create camera
+    reciprocalCamera = new THREE.PerspectiveCamera(75, reciprocalCanvas.clientWidth / reciprocalCanvas.clientHeight, 0.1, 1000);
+    reciprocalCamera.position.z = 5;
+    
+    // Create renderer
+    reciprocalRenderer = new THREE.WebGLRenderer({ canvas: reciprocalCanvas, antialias: true });
+    reciprocalRenderer.setSize(reciprocalCanvas.clientWidth, reciprocalCanvas.clientHeight);
+    
+    // Create label container
+    reciprocalLabelContainer = document.createElement('div');
+    reciprocalLabelContainer.style.position = 'absolute';
+    reciprocalLabelContainer.style.top = '0';
+    reciprocalLabelContainer.style.left = '0';
+    reciprocalLabelContainer.style.width = '100%';
+    reciprocalLabelContainer.style.height = '100%';
+    reciprocalLabelContainer.style.pointerEvents = 'none';
+    reciprocalCanvas.parentElement.appendChild(reciprocalLabelContainer);
+    
+    // Add axes
+    const axesHelper = new THREE.AxesHelper(3);
+    reciprocalScene.add(axesHelper);
+    
+    // Set up camera controls
+    setupCameraControls('reciprocal', reciprocalCanvas, reciprocalCamera);
+  }
+  
+  function setupCameraControls(type, canvas, camera) {
+    const controls = cameraControls[type];
+    
+    // Initial orbit camera position
+    const updateCameraPosition = () => {
+      const radius = controls.radius;
+      const theta = controls.theta;
+      const phi = controls.phi;
+      
+      camera.position.x = radius * Math.sin(phi) * Math.cos(theta);
+      camera.position.y = radius * Math.cos(phi);
+      camera.position.z = radius * Math.sin(phi) * Math.sin(theta);
+      
+      camera.lookAt(0, 0, 0);
+    };
+    
+    // Set initial camera position
+    updateCameraPosition();
+    
+    // Mouse down handler
+    canvas.addEventListener('mousedown', function(event) {
+      controls.isDragging = true;
+      controls.previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
+    });
+    
+    // Mouse move handler
+    canvas.addEventListener('mousemove', function(event) {
+      if (!controls.isDragging) return;
+      
+      const deltaMove = {
+        x: event.clientX - controls.previousMousePosition.x,
+        y: event.clientY - controls.previousMousePosition.y
+      };
+      
+      // Update theta and phi for orbital rotation
+      controls.theta += deltaMove.x * controls.rotationSpeed;
+      if (type === 'real') {
+        controls.phi = Math.max(0.1, Math.min(Math.PI - 0.1, controls.phi - deltaMove.y * controls.rotationSpeed));
+      } else {
+        controls.phi = Math.max(0.1, Math.min(Math.PI - 0.1, controls.phi + deltaMove.y * controls.rotationSpeed));
+      }
+      
+      // Update camera position based on new angles
+      updateCameraPosition();
+      
+      controls.previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
+    });
+    
+    // Mouse up handler
+    canvas.addEventListener('mouseup', function() {
+      controls.isDragging = false;
+    });
+    
+    // Zoom handler
+    canvas.addEventListener('wheel', function(event) {
+      event.preventDefault();
+      // Adjust orbit radius based on wheel delta
+      const zoomSpeed = 0.1;
+      controls.radius += event.deltaY > 0 ? zoomSpeed : -zoomSpeed;
+      // Limit how close and far we can get
+      controls.radius = Math.max(2, Math.min(15, controls.radius));
+      
+      // Update camera position with new radius
+      updateCameraPosition();
+    }, { passive: false });
+  }
+  
+  function setupEventListeners() {
+    // Lattice type change
+    latticeTypeSelect.addEventListener('change', function() {
+      latticeType = this.value;
+      updateInfoPanel();
+      updateVisualization();
+    });
+    
+    // Lattice constant change
+    latticeConstantInput.addEventListener('input', function() {
+      latticeConstant = parseFloat(this.value);
+      constantValueDisplay.textContent = latticeConstant.toFixed(1);
+      updateInfoPanel();
+      updateVisualization();
+    });
+    
+    // Unit cell count change
+    unitCellCountInput.addEventListener('input', function() {
+      unitCellCount = parseInt(this.value);
+      cellCountValueDisplay.textContent = unitCellCount;
+      updateVisualization();
+    });
+    
+    // Checkbox changes
+    showKLabelsCheckbox.addEventListener('change', function() {
+      showKLabels = this.checked;
+      updateVisualization();
+    });
+    
+    showUnitCellEdgesCheckbox.addEventListener('change', function() {
+      showUnitCellEdges = this.checked;
+      updateVisualization();
+    });
+    
+    showAtomConnectionsCheckbox.addEventListener('change', function() {
+      showAtomConnections = this.checked;
+      updateVisualization();
+    });
+    
+    // Window resize
+    window.addEventListener('resize', handleResize);
+  }
+  
+  function handleResize() {
+    if (realCanvas && realRenderer && realCamera) {
+      const width = realCanvas.clientWidth;
+      const height = realCanvas.clientHeight;
+      
+      realCamera.aspect = width / height;
+      realCamera.updateProjectionMatrix();
+      realRenderer.setSize(width, height);
+    }
+    
+    if (showReciprocal && reciprocalCanvas && reciprocalRenderer && reciprocalCamera) {
+      const width = reciprocalCanvas.clientWidth;
+      const height = reciprocalCanvas.clientHeight;
+      
+      reciprocalCamera.aspect = width / height;
+      reciprocalCamera.updateProjectionMatrix();
+      reciprocalRenderer.setSize(width, height);
+    }
+  }
+  
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    // Render real space
+    realRenderer.render(realScene, realCamera);
+    
+    // Render reciprocal space if enabled
+    if (showReciprocal && reciprocalRenderer) {
+      reciprocalRenderer.render(reciprocalScene, reciprocalCamera);
+      
+      // Update k-point labels if enabled
+      if (showKLabels && reciprocalLabelContainer) {
+        updateLabels(reciprocalCamera, reciprocalLabelContainer);
+      }
+    }
+  }
+  
+  function updateVisualization() {
+    // Clear existing lattices
+    clearScene(realScene);
+    if (showReciprocal && reciprocalScene) {
+      clearScene(reciprocalScene);
+    }
+    
+    // Generate new lattices
+    generateRealLattice();
+    if (showReciprocal && reciprocalScene) {
+      generateReciprocalLattice();
+    }
+  }
+  
+  function clearScene(scene) {
+    // Remove all objects except axes
+    const axesHelper = scene.children.find(child => child instanceof THREE.AxesHelper);
+    scene.clear();
+    if (axesHelper) {
+      scene.add(axesHelper);
+    } else {
+      scene.add(new THREE.AxesHelper(3));
+    }
+  }
+  
+  function generateRealLattice() {
+    const a = latticeConstant;
+    let latticePoints = [];
+    
+    // Determine the bounds based on unit cell count
+    let min, max;
+    if (unitCellCount === 1) {
+      min = 0;
+      max = 1;
+    } else {
+      const halfCount = Math.floor(unitCellCount / 2);
+      min = -halfCount;
+      max = unitCellCount % 2 === 0 ? halfCount : halfCount + 1;
+    }
+    
+    // Define lattice points based on type
+    switch (latticeType) {
+      case 'sc': // Simple Cubic
+        for (let i = min; i <= max; i++) {
+          for (let j = min; j <= max; j++) {
+            for (let k = min; k <= max; k++) {
+              latticePoints.push(new THREE.Vector3(i * a, j * a, k * a));
+            }
+          }
+        }
+        break;
+        
+      case 'bcc': // Body-Centered Cubic
+        for (let i = min; i <= max; i++) {
+          for (let j = min; j <= max; j++) {
+            for (let k = min; k <= max; k++) {
+              // Corner atoms
+              latticePoints.push(new THREE.Vector3(i * a, j * a, k * a));
+              
+              // If we're not at the last cell in any dimension, add the body center
+              if (i < max && j < max && k < max) {
+                latticePoints.push(new THREE.Vector3(
+                  i * a + a/2,
+                  j * a + a/2,
+                  k * a + a/2
+                ));
+              }
+            }
+          }
+        }
+        break;
+        
+      case 'fcc': // Face-Centered Cubic
+        for (let i = min; i <= max; i++) {
+          for (let j = min; j <= max; j++) {
+            for (let k = min; k <= max; k++) {
+              // Corner atoms
+              latticePoints.push(new THREE.Vector3(i * a, j * a, k * a));
+              
+              // Face center atoms - only add if we're not at the boundary in respective dimensions
+              if (i < max && j < max) {
+                latticePoints.push(new THREE.Vector3(i * a + a/2, j * a + a/2, k * a));
+              }
+              if (i < max && k < max) {
+                latticePoints.push(new THREE.Vector3(i * a + a/2, j * a, k * a + a/2));
+              }
+              if (j < max && k < max) {
+                latticePoints.push(new THREE.Vector3(i * a, j * a + a/2, k * a + a/2));
+              }
+            }
+          }
+        }
+        break;
+        
+      case 'diamond': // Diamond
+        // First create an FCC lattice
+        for (let i = min; i <= max; i++) {
+          for (let j = min; j <= max; j++) {
+            for (let k = min; k <= max; k++) {
+              // Corner atoms
+              latticePoints.push(new THREE.Vector3(i * a, j * a, k * a));
+              
+              // Face center atoms - only add if we're not at the boundary in respective dimensions
+              if (i < max && j < max) {
+                latticePoints.push(new THREE.Vector3(i * a + a/2, j * a + a/2, k * a));
+              }
+              if (i < max && k < max) {
+                latticePoints.push(new THREE.Vector3(i * a + a/2, j * a, k * a + a/2));
+              }
+              if (j < max && k < max) {
+                latticePoints.push(new THREE.Vector3(i * a, j * a + a/2, k * a + a/2));
+              }
+            }
+          }
+        }
+        
+        // Add the second FCC lattice displaced by (a/4, a/4, a/4)
+        // We filter to only include points within our unit cell boundaries
+        const offset = a / 4;
+        const baseLattice = [...latticePoints];
+        baseLattice.forEach(point => {
+          const newPoint = new THREE.Vector3(
+            point.x + offset,
+            point.y + offset,
+            point.z + offset
+          );
+          
+          // Only add if within the unit cell boundaries
+          if (newPoint.x >= min * a && newPoint.x <= max * a &&
+              newPoint.y >= min * a && newPoint.y <= max * a &&
+              newPoint.z >= min * a && newPoint.z <= max * a) {
+            latticePoints.push(newPoint);
+          }
+        });
+        break;
+        
+      case 'hcp': // Hexagonal Close-Packed
+        const c = a * Math.sqrt(8/3); // c/a ratio for ideal HCP
+        
+        for (let i = min; i < max; i++) {
+          for (let j = min; j < max; j++) {
+            for (let k = min; k < max; k++) {
+              // A layer: atoms at the corners of the hexagonal prism
+              latticePoints.push(new THREE.Vector3(
+                i * a,
+                j * (a * Math.sqrt(3)),
+                k * c
+              ));
+              
+              // A layer: additional atom to complete the hexagonal layer
+              latticePoints.push(new THREE.Vector3(
+                i * a + a/2,
+                j * (a * Math.sqrt(3)) + (a * Math.sqrt(3))/3,
+                k * c
+              ));
+              
+              // B layer: atoms shifted by a/3 in x, a*sqrt(3)/3 in y, and c/2 in z
+              latticePoints.push(new THREE.Vector3(
+                i * a + a/3,
+                j * (a * Math.sqrt(3)) + (a * Math.sqrt(3))/3,
+                k * c + c/2
+              ));
+              
+              latticePoints.push(new THREE.Vector3(
+                i * a + a/3 + a/2,
+                j * (a * Math.sqrt(3)) + 2 * (a * Math.sqrt(3))/3,
+                k * c + c/2
+              ));
+            }
+          }
+        }
+        break;
+    }
+    
+    // Add atoms to the scene
+    const sphereGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff });
+    
+    latticePoints.forEach(point => {
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.position.copy(point);
+      realScene.add(sphere);
+    });
+    
+    // Add unit cell edges if enabled
+    if (showUnitCellEdges) {
+      drawUnitCellEdges(latticeType, latticeConstant, realScene, min, max);
+    }
+    
+    // Add atom connections if enabled
+    if (showAtomConnections) {
+      connectAtoms(latticePoints, latticeType, latticeConstant, realScene);
+    }
+  }
+  
+  function drawUnitCellEdges(type, constant, scene, min, max) {
+    const a = constant;
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x444444 });
+    
+    // Draw unit cell edges for each unit cell
+    for (let i = min; i < max; i++) {
+      for (let j = min; j < max; j++) {
+        for (let k = min; k < max; k++) {
+          // Define the 8 corners of a standard unit cell
+          const corners = [
+            new THREE.Vector3(i * a, j * a, k * a),
+            new THREE.Vector3((i + 1) * a, j * a, k * a),
+            new THREE.Vector3((i + 1) * a, (j + 1) * a, k * a),
+            new THREE.Vector3(i * a, (j + 1) * a, k * a),
+            new THREE.Vector3(i * a, j * a, (k + 1) * a),
+            new THREE.Vector3((i + 1) * a, j * a, (k + 1) * a),
+            new THREE.Vector3((i + 1) * a, (j + 1) * a, (k + 1) * a),
+            new THREE.Vector3(i * a, (j + 1) * a, (k + 1) * a)
+          ];
+          
+          // Define the 12 edges of the unit cell
+          const edges = [
+            [0, 1], [1, 2], [2, 3], [3, 0],  // Bottom face
+            [4, 5], [5, 6], [6, 7], [7, 4],  // Top face
+            [0, 4], [1, 5], [2, 6], [3, 7]   // Vertical edges
+          ];
+          
+          // Draw each edge
+          edges.forEach(edge => {
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+              corners[edge[0]],
+              corners[edge[1]]
+            ]);
+            const line = new THREE.Line(geometry, lineMaterial);
+            scene.add(line);
+          });
+          
+          // For hexagonal, draw additional lines to show the hexagonal structure
+          if (type === 'hcp') {
+            const c = a * Math.sqrt(8/3); // c/a ratio for ideal HCP
+            
+            // Add the hexagonal connections in the base layer
+            const hexPoints = [
+              new THREE.Vector3(i * a, j * (a * Math.sqrt(3)), k * c),
+              new THREE.Vector3(i * a + a/2, j * (a * Math.sqrt(3)) + (a * Math.sqrt(3))/3, k * c),
+              new THREE.Vector3(i * a + a, j * (a * Math.sqrt(3)), k * c),
+              new THREE.Vector3(i * a + a, j * (a * Math.sqrt(3)) + (a * Math.sqrt(3))/1.5, k * c),
+              new THREE.Vector3(i * a + a/2, j * (a * Math.sqrt(3)) + (a * Math.sqrt(3)) * 2/3, k * c),
+              new THREE.Vector3(i * a, j * (a * Math.sqrt(3)) + (a * Math.sqrt(3))/1.5, k * c)
+            ];
+            
+            for (let h = 0; h < hexPoints.length; h++) {
+              const nextH = (h + 1) % hexPoints.length;
+              const geometry = new THREE.BufferGeometry().setFromPoints([
+                hexPoints[h],
+                hexPoints[nextH]
+              ]);
+              const line = new THREE.Line(geometry, lineMaterial);
+              scene.add(line);
+            }
+            
+            // Add the same for the top layer
+            const hexPointsTop = hexPoints.map(point => 
+              new THREE.Vector3(point.x, point.y, point.z + c)
+            );
+            
+            for (let h = 0; h < hexPointsTop.length; h++) {
+              const nextH = (h + 1) % hexPointsTop.length;
+              const geometry = new THREE.BufferGeometry().setFromPoints([
+                hexPointsTop[h],
+                hexPointsTop[nextH]
+              ]);
+              const line = new THREE.Line(geometry, lineMaterial);
+              scene.add(line);
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  function connectAtoms(latticePoints, type, constant, scene) {
+    const a = constant;
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x444444 });
+    
+    for (let i = 0; i < latticePoints.length; i++) {
+      for (let j = i + 1; j < latticePoints.length; j++) {
+        const distance = latticePoints[i].distanceTo(latticePoints[j]);
+        
+        // Only connect nearby atoms (adjust threshold based on lattice type)
+        let threshold = a * 1.1; // Default threshold
+        if (type === 'bcc') threshold = a * Math.sqrt(3) * 0.55;
+        if (type === 'fcc') threshold = a * Math.sqrt(2) * 0.55;
+        if (type === 'diamond') threshold = a * Math.sqrt(3) * 0.3;
+        if (type === 'hcp') threshold = a * 1.2;
+        
+        if (distance < threshold) {
+          const geometry = new THREE.BufferGeometry().setFromPoints([
+            latticePoints[i],
+            latticePoints[j]
+          ]);
+          const line = new THREE.Line(geometry, lineMaterial);
+          scene.add(line);
+        }
+      }
+    }
+  }
+  
+  function generateReciprocalLattice() {
+    const a = latticeConstant;
+    const b = 2 * Math.PI / a; // Reciprocal lattice constant
+    let reciprocalPoints = [];
+    
+    // Define reciprocal lattice points based on type
+    switch (latticeType) {
+      case 'sc': // Simple Cubic reciprocal lattice is also SC
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            for (let k = -1; k <= 1; k++) {
+              reciprocalPoints.push({
+                position: new THREE.Vector3(i * b, j * b, k * b)
+              });
+            }
+          }
+        }
+        break;
+        
+      case 'bcc': // BCC reciprocal lattice is FCC
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            for (let k = -1; k <= 1; k++) {
+              // Corner points
+              reciprocalPoints.push({
+                position: new THREE.Vector3(i * b, j * b, k * b)
+              });
+              
+              // Face center points
+              if (i !== 1 && j !== 1) {
+                reciprocalPoints.push({
+                  position: new THREE.Vector3(i * b + b/2, j * b + b/2, k * b)
+                });
+              }
+              
+              if (i !== 1 && k !== 1) {
+                reciprocalPoints.push({
+                  position: new THREE.Vector3(i * b + b/2, j * b, k * b + b/2)
+                });
+              }
+              
+              if (j !== 1 && k !== 1) {
+                reciprocalPoints.push({
+                  position: new THREE.Vector3(i * b, j * b + b/2, k * b + b/2)
+                });
+              }
+            }
+          }
+        }
+        break;
+        
+      case 'fcc': // FCC reciprocal lattice is BCC
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            for (let k = -1; k <= 1; k++) {
+              // Corner points
+              reciprocalPoints.push({
+                position: new THREE.Vector3(i * b, j * b, k * b)
+              });
+            }
+          }
+        }
+        
+        // Body center points
+        for (let i = -1; i < 1; i++) {
+          for (let j = -1; j < 1; j++) {
+            for (let k = -1; k < 1; k++) {
+              reciprocalPoints.push({
+                position: new THREE.Vector3(i * b + b/2, j * b + b/2, k * b + b/2)
+              });
+            }
+          }
+        }
+        break;
+        
+      case 'diamond': // Diamond reciprocal lattice is BCC with structure factor
+        // Same as FCC reciprocal lattice (BCC)
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            for (let k = -1; k <= 1; k++) {
+              // Corner points
+              reciprocalPoints.push({
+                position: new THREE.Vector3(i * b, j * b, k * b)
+              });
+            }
+          }
+        }
+        
+        // Body center points
+        for (let i = -1; i < 1; i++) {
+          for (let j = -1; j < 1; j++) {
+            for (let k = -1; k < 1; k++) {
+              reciprocalPoints.push({
+                position: new THREE.Vector3(i * b + b/2, j * b + b/2, k * b + b/2)
+              });
+            }
+          }
+        }
+        break;
+        
+      case 'hcp': // HCP reciprocal lattice
+        const b_xy = b;
+        const b_z = b * Math.sqrt(3/8); // Adjusted for ideal c/a ratio
+        
+        // Generate hexagonal reciprocal lattice
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            for (let k = -1; k <= 1; k++) {
+              // Base points
+              reciprocalPoints.push({
+                position: new THREE.Vector3(
+                  i * b_xy,
+                  j * b_xy,
+                  k * b_z
+                )
+              });
+              
+              // Additional points to form hexagonal pattern
+              if (i !== 1 && j !== 1) {
+                reciprocalPoints.push({
+                  position: new THREE.Vector3(
+                    i * b_xy + b_xy/2,
+                    j * b_xy + b_xy/2,
+                    k * b_z
+                  )
+                });
+              }
+            }
+          }
+        }
+        break;
+    }
+    
+    // Add k-points to the scene
+    const sphereGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff3366 });
+    
+    reciprocalPoints.forEach(point => {
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.position.copy(point.position);
+      reciprocalScene.add(sphere);
+    });
+    
+    // Add special k-points with labels if enabled
+    if (showKLabels && reciprocalLabelContainer) {
+      // Clear any existing labels
+      while (reciprocalLabelContainer.firstChild) {
+        reciprocalLabelContainer.removeChild(reciprocalLabelContainer.firstChild);
+      }
+      
+      const kPoints = getSpecialKPoints(latticeType, b);
+      kPoints.forEach(point => {
+        addTextLabel(
+          reciprocalScene,
+          point.position,
+          point.label,
+          reciprocalCamera,
+          reciprocalLabelContainer
+        );
+      });
+    }
+    
+    // Add Brillouin Zone boundaries
+    addBrillouinZone(latticeType, b, reciprocalScene);
+  }
+  
+  function getSpecialKPoints(type, b) {
+    const points = [];
+    
+    switch (type) {
+      case 'sc':
+        // High-symmetry points for SC
+        points.push({ position: new THREE.Vector3(0, 0, 0), label: "Γ" });
+        points.push({ position: new THREE.Vector3(b/2, 0, 0), label: "X" });
+        points.push({ position: new THREE.Vector3(b/2, b/2, 0), label: "M" });
+        points.push({ position: new THREE.Vector3(b/2, b/2, b/2), label: "R" });
+        break;
+        
+      case 'bcc':
+        // High-symmetry points for BCC
+        points.push({ position: new THREE.Vector3(0, 0, 0), label: "Γ" });
+        points.push({ position: new THREE.Vector3(0, 0, b), label: "H" });
+        points.push({ position: new THREE.Vector3(b/2, b/2, 0), label: "N" });
+        points.push({ position: new THREE.Vector3(b/4, b/4, b/4), label: "P" });
+        break;
+        
+      case 'fcc':
+        // High-symmetry points for FCC
+        points.push({ position: new THREE.Vector3(0, 0, 0), label: "Γ" });
+        points.push({ position: new THREE.Vector3(0, b/2, b/2), label: "X" });
+        points.push({ position: new THREE.Vector3(b/2, b/2, b/2), label: "L" });
+        points.push({ position: new THREE.Vector3(b/4, b/2, b*3/4), label: "W" });
+        points.push({ position: new THREE.Vector3(b*3/8, b*3/8, b*3/4), label: "K" });
+        break;
+        
+      case 'diamond':
+        // High-symmetry points for Diamond (same as FCC)
+        points.push({ position: new THREE.Vector3(0, 0, 0), label: "Γ" });
+        points.push({ position: new THREE.Vector3(0, b/2, b/2), label: "X" });
+        points.push({ position: new THREE.Vector3(b/2, b/2, b/2), label: "L" });
+        points.push({ position: new THREE.Vector3(b/4, b/2, b*3/4), label: "W" });
+        points.push({ position: new THREE.Vector3(b*3/8, b*3/8, b*3/4), label: "K" });
+        break;
+        
+      case 'hcp':
+        const b_xy = b;
+        const b_z = b * Math.sqrt(3/8); // Adjusted for ideal c/a ratio
+        
+        // High-symmetry points for HCP
+        points.push({ position: new THREE.Vector3(0, 0, 0), label: "Γ" });
+        points.push({ position: new THREE.Vector3(0, 0, b_z/2), label: "A" });
+        points.push({ position: new THREE.Vector3(b_xy/2, 0, 0), label: "M" });
+        points.push({ position: new THREE.Vector3(b_xy/3, b_xy/3, 0), label: "K" });
+        points.push({ position: new THREE.Vector3(b_xy/3, b_xy/3, b_z/2), label: "H" });
+        break;
+    }
+    
+    return points;
+  }
+  
+  function addTextLabel(scene, position, text, camera, labelContainer) {
+    if (!text || !labelContainer) return;
+    
+    // Create a colored sphere to mark special k-points
+    const geometry = new THREE.SphereGeometry(0.15, 32, 32);
+    
+    // Use different colors for different labels
+    let color;
+    switch (text) {
+      case 'Γ': color = 0x00ff00; break; // Green for Gamma
+      case 'X': color = 0xff0000; break; // Red for X points
+      case 'L': color = 0x0000ff; break; // Blue for L points
+      case 'M': color = 0xffff00; break; // Yellow for M points
+      case 'K': color = 0xff00ff; break; // Magenta for K points
+      case 'W': color = 0x00ffff; break; // Cyan for W points
+      case 'R': color = 0xffa500; break; // Orange for R points
+      case 'H': color = 0x800080; break; // Purple for H points
+      case 'P': color = 0x008000; break; // Dark green for P points
+      case 'A': color = 0x800000; break; // Maroon for A points
+      default: color = 0xffffff;         // White for other points
+    }
+    
+    const material = new THREE.MeshBasicMaterial({ color });
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.copy(position);
+    scene.add(sphere);
+    
+    // Create an HTML element for the label
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'k-point-label';
+    labelDiv.innerHTML = text;
+    labelDiv.style.position = 'absolute';
+    labelDiv.style.color = '#FFFFFF';
+    labelDiv.style.fontWeight = 'bold';
+    labelDiv.style.fontSize = '18px';
+    labelDiv.style.fontFamily = 'Arial, sans-serif';
+    labelDiv.style.textShadow = '1px 1px 3px black';
+    labelDiv.style.padding = '2px 6px';
+    labelDiv.style.borderRadius = '4px';
+    labelDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    labelDiv.style.pointerEvents = 'none';
+    labelDiv.style.zIndex = '1000';
+    labelDiv.style.display = 'none'; // Will be shown in update loop
+    
+    // Store the 3D position with the label
+    labelDiv.dataset.x = position.x;
+    labelDiv.dataset.y = position.y;
+    labelDiv.dataset.z = position.z;
+    
+    // Add the label to the container
+    labelContainer.appendChild(labelDiv);
+    
+    // Return the label element
+    return labelDiv;
+  }
+  
+  function updateLabels(camera, labelContainer) {
+    if (!labelContainer) return;
+    
+    // Get all label elements
+    const labels = labelContainer.querySelectorAll('.k-point-label');
+    
+    labels.forEach(label => {
+      // Get the 3D position
+      const position = new THREE.Vector3(
+        parseFloat(label.dataset.x),
+        parseFloat(label.dataset.y),
+        parseFloat(label.dataset.z)
+      );
+      
+      // Project the position to 2D screen coordinates
+      const vector = position.clone();
+      vector.project(camera);
+      
+      // Convert to screen coordinates
+      const x = (vector.x * 0.5 + 0.5) * labelContainer.clientWidth;
+      const y = (-(vector.y * 0.5) + 0.5) * labelContainer.clientHeight;
+      
+      // Check if the point is in front of the camera
+      if (vector.z < 1) {
+        // Position the label
+        label.style.left = `${x}px`;
+        label.style.top = `${y}px`;
+        label.style.display = 'block';
+      } else {
+        // Hide if behind the camera
+        label.style.display = 'none';
+      }
+    });
+  }
+  
+  function addBrillouinZone(type, b, scene) {
+    let vertices = [];
+    let faces = [];
+    
+    switch (type) {
+      case 'sc': // Simple cubic BZ is also a cube
+        vertices = [
+          new THREE.Vector3(-b/2, -b/2, -b/2),
+          new THREE.Vector3(b/2, -b/2, -b/2),
+          new THREE.Vector3(b/2, b/2, -b/2),
+          new THREE.Vector3(-b/2, b/2, -b/2),
+          new THREE.Vector3(-b/2, -b/2, b/2),
+          new THREE.Vector3(b/2, -b/2, b/2),
+          new THREE.Vector3(b/2, b/2, b/2),
+          new THREE.Vector3(-b/2, b/2, b/2)
+        ];
+        
+        faces = [
+          [0, 1, 2, 3], // bottom
+          [4, 5, 6, 7], // top
+          [0, 1, 5, 4], // front
+          [2, 3, 7, 6], // back
+          [0, 3, 7, 4], // left
+          [1, 2, 6, 5]  // right
+        ];
+        break;
+        
+      case 'bcc': // BCC BZ is a rhombic dodecahedron
+        // Simplified approximation with 14 vertices
+        const d = b / 2;
+        vertices = [
+          new THREE.Vector3(0, 0, d),
+          new THREE.Vector3(0, 0, -d),
+          new THREE.Vector3(0, d, 0),
+          new THREE.Vector3(0, -d, 0),
+          new THREE.Vector3(d, 0, 0),
+          new THREE.Vector3(-d, 0, 0),
+          new THREE.Vector3(d/2, d/2, d/2),
+          new THREE.Vector3(d/2, d/2, -d/2),
+          new THREE.Vector3(d/2, -d/2, d/2),
+          new THREE.Vector3(d/2, -d/2, -d/2),
+          new THREE.Vector3(-d/2, d/2, d/2),
+          new THREE.Vector3(-d/2, d/2, -d/2),
+          new THREE.Vector3(-d/2, -d/2, d/2),
+          new THREE.Vector3(-d/2, -d/2, -d/2)
+        ];
+        
+        // Simplified faces
+        faces = [
+          [0, 6, 10], [0, 10, 12], [0, 12, 8], [0, 8, 6],
+          [1, 7, 11], [1, 11, 13], [1, 13, 9], [1, 9, 7],
+          [2, 6, 7], [2, 7, 11], [2, 11, 10], [2, 10, 6],
+          [3, 8, 9], [3, 9, 13], [3, 13, 12], [3, 12, 8],
+          [4, 6, 7], [4, 7, 9], [4, 9, 8], [4, 8, 6],
+          [5, 10, 11], [5, 11, 13], [5, 13, 12], [5, 12, 10]
+        ];
+        break;
+        
+      case 'fcc': // FCC BZ is a truncated octahedron
+        // Simplified approximation
+        vertices = [
+          new THREE.Vector3(0, 0, b),
+          new THREE.Vector3(0, 0, -b),
+          new THREE.Vector3(0, b, 0),
+          new THREE.Vector3(0, -b, 0),
+          new THREE.Vector3(b, 0, 0),
+          new THREE.Vector3(-b, 0, 0),
+          new THREE.Vector3(b/2, b/2, b/2),
+          new THREE.Vector3(b/2, b/2, -b/2),
+          new THREE.Vector3(b/2, -b/2, b/2),
+          new THREE.Vector3(b/2, -b/2, -b/2),
+          new THREE.Vector3(-b/2, b/2, b/2),
+          new THREE.Vector3(-b/2, b/2, -b/2),
+          new THREE.Vector3(-b/2, -b/2, b/2),
+          new THREE.Vector3(-b/2, -b/2, -b/2)
+        ];
+        
+        // Simplified faces
+        faces = [
+          [0, 6, 10], [0, 10, 12], [0, 12, 8], [0, 8, 6],
+          [1, 7, 11], [1, 11, 13], [1, 13, 9], [1, 9, 7],
+          [2, 6, 7], [2, 7, 11], [2, 11, 10], [2, 10, 6],
+          [3, 8, 9], [3, 9, 13], [3, 13, 12], [3, 12, 8],
+          [4, 6, 7], [4, 7, 9], [4, 9, 8], [4, 8, 6],
+          [5, 10, 11], [5, 11, 13], [5, 13, 12], [5, 12, 10]
+        ];
+        break;
+        
+      default:
+        // For other lattices, use simplified BZ representation
+        vertices = [
+          new THREE.Vector3(-b/2, -b/2, -b/2),
+          new THREE.Vector3(b/2, -b/2, -b/2),
+          new THREE.Vector3(b/2, b/2, -b/2),
+          new THREE.Vector3(-b/2, b/2, -b/2),
+          new THREE.Vector3(-b/2, -b/2, b/2),
+          new THREE.Vector3(b/2, -b/2, b/2),
+          new THREE.Vector3(b/2, b/2, b/2),
+          new THREE.Vector3(-b/2, b/2, b/2)
+        ];
+        
+        faces = [
+          [0, 1, 2, 3], // bottom
+          [4, 5, 6, 7], // top
+          [0, 1, 5, 4], // front
+          [2, 3, 7, 6], // back
+          [0, 3, 7, 4], // left
+          [1, 2, 6, 5]  // right
+        ];
+        break;
+    }
+    
+    // Create wireframe for Brillouin Zone
+    const material = new THREE.LineBasicMaterial({ 
+      color: 0x00ff00,
+      transparent: true,
+      opacity: 0.5
+    });
+    
+    faces.forEach(face => {
+      const points = face.map(idx => vertices[idx]);
+      // Connect the face vertices to form a polygon
+      for (let i = 0; i < points.length; i++) {
+        const geometry = new THREE.BufferGeometry().setFromPoints([
+          points[i],
+          points[(i + 1) % points.length]
+        ]);
+        const line = new THREE.Line(geometry, material);
+        scene.add(line);
+      }
+    });
+  }
+  
+  function updateInfoPanel() {
+    // Update lattice type display
+    let latticeTypeDisplay = '';
+    switch (latticeType) {
+      case 'sc': latticeTypeDisplay = 'Simple Cubic (SC)'; break;
+      case 'bcc': latticeTypeDisplay = 'Body-Centered Cubic (BCC)'; break;
+      case 'fcc': latticeTypeDisplay = 'Face-Centered Cubic (FCC)'; break;
+      case 'diamond': latticeTypeDisplay = 'Diamond'; break;
+      case 'hcp': latticeTypeDisplay = 'Hexagonal Close-Packed (HCP)'; break;
+    }
+    infoLatticeType.textContent = latticeTypeDisplay;
+    
+    // Update lattice constant display
+    infoLatticeConstant.textContent = latticeConstant.toFixed(2);
+    
+    // Update reciprocal lattice constant display
+    const reciprocalConstant = (2 * Math.PI / latticeConstant).toFixed(2);
+    infoReciprocalConstant.textContent = reciprocalConstant;
+    
+    // Update Brillouin zone display
+    let brillouinZoneType = '';
+    switch (latticeType) {
+      case 'sc': brillouinZoneType = 'Cubic'; break;
+      case 'bcc': brillouinZoneType = 'Rhombic Dodecahedron'; break;
+      case 'fcc': brillouinZoneType = 'Truncated Octahedron'; break;
+      case 'diamond': brillouinZoneType = 'Truncated Octahedron (like FCC)'; break;
+      case 'hcp': brillouinZoneType = 'Hexagonal Prism'; break;
+    }
+    infoBrillouinZone.textContent = brillouinZoneType;
+  }
+});
+</script>
