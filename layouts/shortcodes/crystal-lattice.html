@@ -1,8 +1,10 @@
-<div id="crystal-lattice-container" class="crystal-lattice">
-  <div class="control-panel">
-    <div class="control-group">
-      <label for="lattice-type">Lattice Type:</label>
-      <select id="lattice-type">
+<div class="w-full max-w-full mx-auto p-4 dark:bg-gray-900">
+  <!-- Control Panel -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4">
+    <!-- Lattice Type Controls -->
+    <div class="flex flex-col gap-2">
+      <label class="font-medium dark:text-gray-200" for="lattice-type">Lattice Type:</label>
+      <select id="lattice-type" class="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded dark:text-gray-200">
         <option value="sc">Simple Cubic (SC)</option>
         <option value="bcc">Body-Centered Cubic (BCC)</option>
         <option value="fcc">Face-Centered Cubic (FCC)</option>
@@ -10,61 +12,85 @@
         <option value="hcp">Hexagonal Close-Packed (HCP)</option>
       </select>
     </div>
-    
-    <div class="control-group">
-      <label for="lattice-constant">Lattice Constant (Å): <span id="constant-value">1.0</span></label>
-      <input type="range" id="lattice-constant" min="0.5" max="2" step="0.1" value="1">
 
-      
-        <label for="unit-cell-count">Unit Cells: <span id="cell-count-value">1</span></label>
-        <input type="range" id="unit-cell-count" min="1" max="10" step="1" value="1">
-      
+    <!-- Lattice Constants Controls -->
+    <div class="flex flex-col gap-2">
+      <label class="font-medium dark:text-gray-200" for="lattice-constant">
+        Lattice Constant (Å): <span id="constant-value" class="dark:text-gray-300">1.0</span>
+      </label>
+      <input type="range" id="lattice-constant" min="0.5" max="2" step="0.1" value="1" 
+             class="w-full accent-blue-600 dark:accent-blue-400">
+
+      <label class="font-medium dark:text-gray-200" for="unit-cell-count">
+        Unit Cells: <span id="cell-count-value" class="dark:text-gray-300">1</span>
+      </label>
+      <input type="range" id="unit-cell-count" min="1" max="10" step="1" value="1" 
+             class="w-full accent-blue-600 dark:accent-blue-400">
     </div>
-    
-    <div class="control-group">
-      <div class="checkbox-control">
-        <input type="checkbox" id="show-klabels">
-        <label for="show-klabels">Show k-space Labels</label>
+
+    <!-- Checkbox Controls -->
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="show-klabels" class="rounded text-blue-600 dark:text-blue-400 dark:bg-gray-700 dark:border-gray-600">
+        <label for="show-klabels" class="font-medium dark:text-gray-200">Show k-space Labels</label>
       </div>
       
-      <div class="checkbox-control">
-        <input type="checkbox" id="show-unit-cell-edges" checked>
-        <label for="show-unit-cell-edges">Show Unit Cell Edges</label>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="show-unit-cell-edges" checked class="rounded text-blue-600 dark:text-blue-400 dark:bg-gray-700 dark:border-gray-600">
+        <label for="show-unit-cell-edges" class="font-medium dark:text-gray-200">Show Unit Cell Edges</label>
       </div>
       
-      <div class="checkbox-control">
-        <input type="checkbox" id="show-atom-connections">
-        <label for="show-atom-connections">Show Atom Connections</label>
-      </div>
-    </div>
-  </div>
-  
-  <div class="visualization-area">
-    <div class="lattice-panel">
-      <h3>Real Space Lattice</h3>
-      <div class="canvas-container">
-        <canvas id="real-lattice-canvas"></canvas>
-      </div>
-    </div>
-    
-    <div class="lattice-panel" id="reciprocal-panel">
-      <h3>Reciprocal Space Lattice</h3>
-      <div class="canvas-container">
-        <canvas id="reciprocal-lattice-canvas"></canvas>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="show-atom-connections" class="rounded text-blue-600 dark:text-blue-400 dark:bg-gray-700 dark:border-gray-600">
+        <label for="show-atom-connections" class="font-medium dark:text-gray-200">Show Atom Connections</label>
       </div>
     </div>
   </div>
-  
-  <div class="info-panel">
-    <h3>Lattice Information</h3>
-    <div class="info-content">
+
+  <!-- Visualization Area -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 min-h-[600px]">
+    <!-- Real Space Lattice -->
+    <div class="flex flex-col">
+      <h4 class="text-lg font-semibold text-center mb-2 dark:text-gray-200">Real Space Lattice</h4>
+      <div class="flex-1 relative border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 min-h-[550px] overflow-hidden">
+        <canvas id="real-lattice-canvas" class="w-full h-full block"></canvas>
+      </div>
+    </div>
+
+    <!-- Reciprocal Space Lattice -->
+    <div class="flex flex-col" id="reciprocal-panel">
+      <h4 class="text-lg font-semibold text-center mb-2 dark:text-gray-200">Reciprocal Space Lattice</h4>
+      <div class="flex-1 relative border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 min-h-[550px] overflow-hidden">
+        <canvas id="reciprocal-lattice-canvas" class="w-full h-full block"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Panel -->
+  <div class="bg-blue-50 dark:bg-gray-800 p-4 rounded-lg border border-blue-100 dark:border-gray-700">
+    <h4 class="text-lg font-semibold mb-2 dark:text-gray-200">Lattice Information</h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <p><span class="label">Lattice Type:</span> <span id="info-lattice-type">Simple Cubic (SC)</span></p>
-        <p><span class="label">Lattice Constant:</span> <span id="info-lattice-constant">1.00</span> Å</p>
+        <p class="mb-2">
+          <span class="font-medium dark:text-gray-300">Lattice Type:</span>
+          <span id="info-lattice-type" class="dark:text-gray-200">Simple Cubic (SC)</span>
+        </p>
+        <p>
+          <span class="font-medium dark:text-gray-300">Lattice Constant:</span>
+          <span id="info-lattice-constant" class="dark:text-gray-200">1.00</span>
+          <span class="dark:text-gray-300">Å</span>
+        </p>
       </div>
       <div>
-        <p><span class="label">Reciprocal Lattice Constant:</span> <span id="info-reciprocal-constant">6.28</span> Å⁻¹</p>
-        <p><span class="label">Brillouin Zone:</span> <span id="info-brillouin-zone">Cubic</span></p>
+        <p class="mb-2">
+          <span class="font-medium dark:text-gray-300">Reciprocal Lattice Constant:</span>
+          <span id="info-reciprocal-constant" class="dark:text-gray-200">6.28</span>
+          <span class="dark:text-gray-300">Å⁻¹</span>
+        </p>
+        <p>
+          <span class="font-medium dark:text-gray-300">Brillouin Zone:</span>
+          <span id="info-brillouin-zone" class="dark:text-gray-200">Cubic</span>
+        </p>
       </div>
     </div>
   </div>
@@ -74,70 +100,62 @@
 .crystal-lattice {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   width: 100%;
-  max-width: 100%;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 1rem;
-  box-sizing: border-box;
+  background-color: transparent;
 }
 
 .control-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
-  background: #f0f0f0;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-@media (max-width: 768px) {
-  .control-panel {
-    grid-template-columns: 1fr;
-  }
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
+  min-width: 200px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a4a4a;
+  margin-bottom: 4px;
+}
+
+select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  width: 100%;
+  font-size: 14px;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin-top: 4px;
 }
 
 .checkbox-control {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-label {
-  font-weight: 500;
-}
-
-select, input[type="range"] {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.25rem;
-}
-
-.unit-cell-control {
-  background: #f0f0f0;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .visualization-area {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  min-height: 400px;
-}
-
-@media (max-width: 768px) {
-  .visualization-area {
-    grid-template-columns: 1fr;
-  }
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .lattice-panel {
@@ -146,21 +164,21 @@ select, input[type="range"] {
 }
 
 .lattice-panel h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 12px;
   text-align: center;
+  color: #333;
 }
 
 .canvas-container {
-  flex: 1;
+  height: 400px;
   position: relative;
   border: 1px solid #ddd;
-  border-radius: 0.25rem;
+  border-radius: 4px;
   overflow: hidden;
-  background: #f8f8f8;
-  min-height: 350px;
+  background-color: #f5f5f5;
 }
 
 canvas {
@@ -170,32 +188,59 @@ canvas {
 }
 
 .info-panel {
-  background: #e6f0f9;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  background-color: #e6f0f9;
+  border-radius: 4px;
+  padding: 16px;
 }
 
 .info-panel h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 12px;
+  color: #333;
 }
 
 .info-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 16px;
+  font-size: 14px;
 }
 
-@media (max-width: 768px) {
-  .info-content {
-    grid-template-columns: 1fr;
-  }
+.info-content p {
+  margin: 6px 0;
 }
 
 .label {
   font-weight: 500;
+  color: #4a4a4a;
+}
+
+.k-point-label {
+  position: absolute;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .control-panel {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .visualization-area {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-content {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 
@@ -931,7 +976,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         break;
     }
-    
+        
     // Add k-points to the scene
     const sphereGeometry = new THREE.SphereGeometry(0.1, 32, 32);
     const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff3366 });
