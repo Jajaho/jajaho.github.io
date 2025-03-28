@@ -8,9 +8,9 @@ tags:
   - threejs
 draft: false
 featured: true
+share: false
 ---
-
-This interactive tool visualizes various crystal lattice structures in both real and reciprocal space. You can explore Simple Cubic (SC), Body-Centered Cubic (BCC), Face-Centered Cubic (FCC), Diamond, and Hexagonal Close-Packed (HCP) structures.
+It's an interactive tool that visualizes various crystal lattice structures in both real and reciprocal space. You can explore Simple Cubic (SC), Body-Centered Cubic (BCC), Face-Centered Cubic (FCC), Diamond, and Hexagonal Close-Packed (HCP) structures. Discalimer: This has been build in an evening using Claude Sonnet 3.7.
 
 ## Features
 

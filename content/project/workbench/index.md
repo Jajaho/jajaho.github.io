@@ -1,6 +1,6 @@
 ---
 title: Workbench
-description: sturdy. modular. leveling feet. no drawers.
+summary: Design & fabricate a modular but sturdy workbench.
 date: 2024-11-28
 tags:
   - welding

@@ -10,7 +10,7 @@ params:
   startDate: 2022-08-03
   endDate: 2022-08-30
 draft: false
-featured: true
+featured: false
 ---
 
 Command line tool for nodal analysis of linear electrical circuits build with java.

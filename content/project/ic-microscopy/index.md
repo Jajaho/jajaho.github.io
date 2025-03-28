@@ -1,6 +1,6 @@
 ---
 title: IC Microscopy
-summary: Applying laser microscopy to acquire 3d point clouds of integrated circuits and displaying them here.
+summary: Visualizing integrated circuits in 3d.
 date: 2024-12-08
 authors:
     - admin
@@ -12,7 +12,7 @@ image:
 aliases: 
   - /HugoBloxSite/post/ic-microscopy/
 draft: false
-featured: false
+featured: true
 share: false
 ---
 This is my first attempt at applying laser confocal microscopy to acquire 3d point clouds of integrated circuits and displaying them here in the browser. This post shows of some features of googles model-viewer library along with some custom java script. Technical details on how to convert and process the data is discussed as well.

@@ -20,19 +20,19 @@ superuser: true
 highlight_name: true
 
 # Role/position/tagline
-role: Student
+role: Research Fellow
 
 # Organizations/Affiliations to display in Biography blox
 organizations:
-  - name: Ulm University
-    url: https://www.uni-ulm.de/in/fakultaet/
+  - name: German Aerospace Center (DLR)
+    url: https://www.dlr.de/en
 
 # Social network links
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
 profiles:
-  - icon: at-symbol
-    url: 'mailto:your-email@example.com'
-    label: E-mail Me
+  # - icon: at-symbol
+  #   url: 'mailto:your-email@example.com'
+  #   label: E-mail Me
   # - icon: brands/x
   #   url: https://twitter.com/GetResearchDev
   # - icon: brands/instagram
@@ -51,14 +51,14 @@ profiles:
 
 interests:
   - Quantum & Solid State Physics
-  - Embedded electronics
-  - Manufacturing
+  - Electronics & Signal Processing
+  - Manufacturing & Craftsmanship
 
 education:
   - area: BSc Electrical Engineering
     institution: Ulm University
     date_start: 2020-10-14
-    date_end: 2025-02-15 
+    date_end: 2025-03-31 
     summary: |   
       Courses included:
       - Quantum Mechanics
@@ -72,37 +72,48 @@ education:
 
 work:
   - position: Research Assistant
+    company_name: Institute of Quantum Technologies, DLR
+    date_start: 2024-07-15
+    date_end: 2025-03-31
+    # summary: |
+    #   Responsibilities included:
+    #   - Implementation of a microcontroller based physical unclonable function generator
+    #   - Hardware programming (HDL) on Xilinx Zynq SOCs
+    #   - Implementation of different normalization processes
+
+  - position: Research Assistant
     company_name: Institute for Microelectronics, University of Ulm
-    date_start: 2022-01-01
-    date_end: 2023-12-31
-    summary: |
-      Responsibilities included:
-      - Implementation of a microcontroller based physical unclonable function generator
-      - Hardware programming (HDL) on Xilinx Zynq SOCs
-      - Implementation of different normalization processes
+    date_start: 2022-10-01
+    date_end: 2023-10-01
+    # summary: |
+    #   Responsibilities included:
+    #   - Implementation of a microcontroller based physical unclonable function generator
+    #   - Hardware programming (HDL) on Xilinx Zynq SOCs
+    #   - Implementation of different normalization processes
   
   - position: Research Assistant
     company_name: Institute for Microelectronics, University of Ulm
-    date_start: 2021-01-01
-    date_end: 2021-12-31
-    summary: |
-      - Concept and implementation of a physical unclonable function readout system
-      - Hardware programming on Xilinx Zynq SOCs
+    date_start: 2021-04-01
+    date_end: 2022-02-01
+    # summary: |
+    #   - Concept and implementation of a physical unclonable function readout system
+    #   - Hardware programming on Xilinx Zynq SOCs
 
   - position: Development Engineer (Short-term)
     company_name: Kendrion Markdorf GmbH
-    date_start: 2019-06-01
-    date_end: 2019-08-31
-    summary: |
-      - Development and commissioning of a solenoid valve control and supervision circuit
+    date_start: 2019-08-01
+    date_end: 2019-09-01
+    # summary: |
+    #   - Development and commissioning of a solenoid valve control and supervision circuit
 
   - position: Development Engineer (Short-term)
     company_name: Kendrion Markdorf GmbH
-    date_start: 2018-06-01
-    date_end: 2018-08-31
-    summary: |
-      - Development of a time controlled universal switch
-      - Design of a current probe
+    date_start: 2018-07-01
+    date_end: 2018-08-01
+    # summary: |
+    #   - Development of a time controlled universal switch
+    #   - Design of a current probe
+
   # - position: Director of Cloud Infrastructure
   #   company_name: GenCoin
   #   company_url: ''
@@ -139,14 +150,15 @@ skills:
       #   description: ''
       #   percent: 100
       #   icon: chart-bar
+      - name: Electronics
+        description: ''
+        percent: 80
+        icon: hero/cpu-chip
       - name: CAD
         description: ''
         percent: 40
         icon: hero/cube-transparent
-      - name: 3D-printing
-        description: ''
-        percent: 40
-        icon: hero/square-3-stack-3d
+
   - name: Hobbies
     color: '#eeac02'
     color_border: '#f0bf23'
@@ -159,14 +171,15 @@ skills:
       #   description: ''
       #   percent: 100
       #   icon: cat
-      - name: Electronics
+      - name: 3D-printing
         description: ''
-        percent: 80
-        icon: hero/cpu-chip
+        percent: 40
+        icon: hero/square-3-stack-3d
       - name: Repairs
         description: ''
         percent: 80
         icon: hero/wrench-screwdriver
+
 
 languages:
   - name: German
