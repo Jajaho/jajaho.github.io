@@ -2,8 +2,8 @@
 title: IC Microscopy
 summary: Visualizing integrated circuits in 3d.
 date: 2024-12-08
-authors:
-    - admin
+# authors: # Commented out because new theme update adds the logo to posts
+#     - admin
 tags: 
     - ic-microscopy
     - model-viewer
