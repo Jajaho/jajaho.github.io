@@ -2,7 +2,28 @@
 
 Welcome to my website, a personal notebook and place to show off.
 
-## Development Setup
+## Initial Development Setup
+
+### Hugo Installation
+
+1. Check [HugoBlox/hugo-blox-builder/releases](https://github.com/HugoBlox/hugo-blox-builder/releases) for the latest `<VERSION>` of Hugo, compatible with hugo-blox-builder.
+
+2. Install Go, Nodejs and Hugo-Extended.
+    ```shell
+    winget install Hugo.Hugo.Extended --version <VERSION> GoLang.Go nodejs
+    ```
+
+    Note: As of 29.06.2025, the grid-article.html layout of the tailwind template is not compatible with the newest hugo version `v0.147.9-29bdbde19c288d190e889294a862103c6efb70bf+extended windows/amd64`
+
+
+3. Then restart shell, to reload environment variables and start the server with 
+    ```shell
+    hugo server
+    ```
+
+For more information, see [Installation](https://bootstrap.hugoblox.com/getting-started/install-hugo-extended/).
+
+### Content Infrastructure (no longer needed)
 
 This project uses Git LFS for storing large 3D model files. Before cloning, make sure you have Git LFS installed:
 
@@ -28,17 +49,6 @@ This project uses Git LFS for storing large 3D model files. Before cloning, make
 ## Resources & Links
 
 - 👉 [**Get Started**](https://hugoblox.com/templates/)
-
-[Installation](https://bootstrap.hugoblox.com/getting-started/install-hugo-extended/) 
-
-```shell
-winget install Hugo.Hugo.Extended GoLang.Go nodejs
-```
-Attention!: As of 29.06.2025, the grid-article.html layout of the tailwind template is not compatible with the newest hugo version `v0.147.9-29bdbde19c288d190e889294a862103c6efb70bf+extended windows/amd64`
-Only `--version 0.140.0`
-
-Then restart shell.
-
 - 📚 [View the **documentation**](https://docs.hugoblox.com/)
     - [more Documentation](https://gohugo.io/documentation/)
 - 💬 [Chat with the **Hugo Blox Builder community**](https://discord.gg/z8wNYzb) or [**Hugo community**](https://discourse.gohugo.io)
