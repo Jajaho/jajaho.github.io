@@ -28,6 +28,17 @@ This project uses Git LFS for storing large 3D model files. Before cloning, make
 ## Resources & Links
 
 - 👉 [**Get Started**](https://hugoblox.com/templates/)
+
+[Installation](https://bootstrap.hugoblox.com/getting-started/install-hugo-extended/) 
+
+```shell
+winget install Hugo.Hugo.Extended GoLang.Go nodejs
+```
+Attention!: As of 29.06.2025, the grid-article.html layout of the tailwind template is not compatible with the newest hugo version `v0.147.9-29bdbde19c288d190e889294a862103c6efb70bf+extended windows/amd64`
+Only `--version 0.140.0`
+
+Then restart shell.
+
 - 📚 [View the **documentation**](https://docs.hugoblox.com/)
     - [more Documentation](https://gohugo.io/documentation/)
 - 💬 [Chat with the **Hugo Blox Builder community**](https://discord.gg/z8wNYzb) or [**Hugo community**](https://discourse.gohugo.io)

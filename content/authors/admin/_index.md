@@ -39,14 +39,14 @@ profiles:
   #   url: https://www.instagram.com/
   - icon: brands/github
     url: https://github.com/Jajaho
-  # - icon: brands/linkedin
-  #   url: https://www.linkedin.com/
   # - icon: academicons/google-scholar
   #   url: https://scholar.google.com/
   # - icon: academicons/orcid
   #   url: https://orcid.org/
   - icon: grabcad
     url: https://grabcad.com/jakob.holz-1
+  - icon: brands/linkedin
+    url: https://www.linkedin.com/in/jakob-holz-19a218204/
     label: GrabCAD
 
 interests:
@@ -71,6 +71,11 @@ education:
       - Specialization in physics and computer science
 
 work:
+  - position: Research Fellow
+    company_name: Institute of Quantum Technologies, DLR
+    date_start: 2025-04-01
+    date_end: 2025-08-31
+
   - position: Research Assistant
     company_name: Institute of Quantum Technologies, DLR
     date_start: 2024-07-15
@@ -240,4 +245,4 @@ awards:
 
 ## About Me
 
-Jakob Holz is a student at Ulm University interested in quantum physics, embedded electronics and manufacturing. He has been tinkering since always and hopes to continue to do so.
+Jakob Holz is a passionate engineer interested in quantum physics, embedded electronics and manufacturing. He has started tinkering in school and is always excited to hone his skills and learn new techniques, preferably on personal projects.
