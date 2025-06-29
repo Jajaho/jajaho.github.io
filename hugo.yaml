@@ -1,7 +1,7 @@
 cascade:
   # Configure blog posts
   - _target:
-      path: /project/**
+      path: /projects/**
     pager: true
     editable: false
     reading_time: true

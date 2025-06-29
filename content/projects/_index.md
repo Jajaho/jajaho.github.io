@@ -16,7 +16,7 @@ sections:
       count: 0 # 0 shows all projects
       filters:
         folders:
-          - project
+          - projects
     design:
       view: article-grid
       fill_image: false

@@ -10,7 +10,7 @@ draft: false
 featured: false
 ---
 
-This was my first attempt at milling my own single sided circuit board on my [6040 CNC](/project/6040_cnc/) router.
+This was my first attempt at milling my own single sided circuit board on my [6040 CNC](/projects/6040_cnc/) router.
 Along the way I had some issues with the pcb blanks bowing, but I ended up with a functional LPT to USB adapter for [Estlcam](https://www.estlcam.de/).
 
 Design files are available on [GitHub](https://github.com/Jajaho/Estl-Board)
