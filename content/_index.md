@@ -44,12 +44,24 @@ sections:
   #   design:
   #     columns: '1'
   - block: collection
-    id: papers
+    id: projects
     content:
       title: Featured Projects
       filters:
         folders:
-          - project
+          - projects
+        featured_only: true
+    design:
+      view: article-grid
+      fill_image: false
+      columns: 2
+  - block: collection
+    id: posts
+    content:
+      title: Featured Posts
+      filters:
+        folders:
+          - post
         featured_only: true
     design:
       view: article-grid

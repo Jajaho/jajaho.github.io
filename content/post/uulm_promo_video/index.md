@@ -1,12 +1,12 @@
 ---
-title: Uni Ulm Promotional Video
+title: Ulm University Promotional Video
 description: I had the honor to be featured in the latest promotional video of the Engineering faculties promotional video.
 date: 2025-02-07
 tags:
   - UUlm
   - Promo
 draft: false
-featured: false
+featured: true
 featured_image: "content/post/uulm_promo_video/thumbnail.webp"  # Main image for the post
 featured_image_alt: "Image description"  # Alt text for accessibility
 
@@ -22,4 +22,4 @@ Check I out the (German) video we produced for Ulm Universities Engineering Facu
 
 {{< youtube TzoIbE487QY >}}
 
-It was a pleasure to work with the team of *protel Film & Medien* who shot and produced a small series of three short clips like the one above.
+It was a pleasure to work with the team of *protel Film & Medien* who shot and produced the small series of four clips like the one above. Make sure to also check out the other vidoes featuring [Ines](https://www.youtube.com/watch?v=dIpmYEmd6UY), [Tim](https://www.youtube.com/watch?v=1iOPkCpbgOc&t=2s) and [Elias](https://www.youtube.com/watch?v=8J-VbJcXvww&t=4s).

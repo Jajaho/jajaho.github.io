@@ -7,10 +7,17 @@ tags:
   - visualization
   - threejs
 draft: false
-featured: true
+featured: false
 share: false
 ---
-It's an interactive tool that visualizes various crystal lattice structures in both real and reciprocal space. You can explore Simple Cubic (SC), Body-Centered Cubic (BCC), Face-Centered Cubic (FCC), Diamond, and Hexagonal Close-Packed (HCP) structures. Discalimer: This has been build in an evening using Claude Sonnet 3.7.
+
+{{% callout warning %}}
+The code and parts of this post have been generated using Claude Sonnet 3.7.
+{{% /callout %}}
+
+This is an interactive tool that visualizes various crystal lattice structures in both real and reciprocal space. You can explore Simple Cubic (SC), Body-Centered Cubic (BCC), Face-Centered Cubic (FCC), Diamond, and Hexagonal Close-Packed (HCP) structures. 
+
+The elegance and power of Fourier's famous integral transformation was probably the single most fascinating thing which I got to know during my studies of electrical engineering. A theorist might note that his function is only a special case of LaPlace transformation, but when it comes to applications, Fourier's transform outshines it manyfold. The use of the impulse-/reciprocal space in material science is one particularly fascinating application, as it creates beautiful 3D structures, which help explain the real world.
 
 ## Features
 
