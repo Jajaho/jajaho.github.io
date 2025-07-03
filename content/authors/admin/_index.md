@@ -46,7 +46,7 @@ profiles:
   - icon: grabcad
     url: https://grabcad.com/jakob.holz-1
   - icon: brands/linkedin
-    url: https://www.linkedin.com/in/jakob-holz-19a218204/
+    url: https://www.linkedin.com/in/jakob-holz
     label: GrabCAD
 
 interests:
