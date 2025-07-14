@@ -85,8 +85,8 @@ Scene data: `.usdz`
 
 ## Alternatives
 
-- [Three.js](https://threejs.org/) (I will have to take a look at this in the future)
-- [Sketchfab](http://localhost:1313/post/sketchfab/)
+- [Three.js](https://threejs.org/) Powerful open source 3D library.
+- [Sketchfab](https://sketchfab.com) - Proprietary technology, popular viewer, no option to selfhost. I have tested it in this [post](https://www.jakobholz.com/post/sketchfab/).
 
 ## Resources
 
