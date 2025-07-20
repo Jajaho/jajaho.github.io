@@ -25,7 +25,8 @@
             id="model1-viewer"
             class="model-viewer"
             src="{{ .Get "src1" }}"
-            alt="{{ .Get "alt" | default "A 3D model comparison" }}"
+            orientation="{{.Get "rot1" | default "0 0 0" }}"
+            alt="{{ .Get "alt" | default "Model 1" }}"
             camera-controls
             camera-orbit="-30deg auto auto"
             max-camera-orbit="auto 100deg auto"
@@ -38,7 +39,8 @@
             id="model2-viewer"
             class="model-viewer"
             src="{{ .Get "src2" }}"
-            alt="{{ .Get "alt" | default "A 3D model comparison" }}"
+            orientation="{{.Get "rot2" | default "0 0 0" }}"
+            alt="{{ .Get "alt" | default "Model 2" }}"
             camera-controls
             camera-orbit="-30deg auto auto"
             max-camera-orbit="auto 100deg auto"
