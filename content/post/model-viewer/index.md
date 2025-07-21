@@ -17,11 +17,18 @@ Please see the examples below.
 
 ## Examples
 
+### A simple model viewer
+
+{{< model-viewer
+    src="testraeder_m.glb"
+    alt="A tetrahedron used for testing."
+>}}
+
 ### A viewer with fullscreen capability
 
 {{< model-viewer-fullscreen
     src="testraeder_m.glb"
-    alt="An old ic."
+    alt="A tetrahedron used for testing."
     camera-orbit="20deg 20deg 1500m"
 >}}
 
