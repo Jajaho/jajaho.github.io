@@ -49,6 +49,12 @@ There are other FOSS and commercial photogrammetry solutions which can substitut
 
 The Open Scan mini v2.2 in combination with the Open Scan cloud offer a good performance out of the box as you can see for your self with the 3D printed and scanned bust of Einstein from the beginning.
 
+## Assembly
+
+As is often the case for passion projects, documentation can be incomplete sometimes and I will not even attempt to remedy this. Though, some might find the basic connection diagram below useful. It's simplicity really goes to show however how little 
+it takes from the hardware side to achieve quite spectacular results, suitable for figures or as reference for use in CAD.
+
+{{< figure src="Black Shield V2.1 PCB.svg" caption="Connection Diagram" >}}
 
 
 
