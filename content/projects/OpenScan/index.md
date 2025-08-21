@@ -1,17 +1,17 @@
 ---
-title: OpenScan
+title: OpenScan 
 summary: A showcase of DIY photogrammetry performance.
-date: 2024-12-08
+date: 2025-08-21
 # authors: # Commented out because new theme update adds the logo to posts
 #     - admin
 tags: 
-    - ic-microscopy
+    - open-scan
     - model-viewer
 image:
   caption: "Photogrammetry rocks Einstein"
 aliases: 
   - /HugoBloxSite/post/ic-microscopy/
-draft: true
+draft: false
 featured: false
 share: false
 ---
@@ -21,17 +21,19 @@ share: false
     src2="Einstein_Scan_Pos.glb"
     rot1="0 -90 0"
     rot2="0 -90 0"
+    color1="#818691ff"
+    color2="#357097ff"
     btn1-text="Model" 
     btn2-text="Scan"
     alt="Einstein source and scan."
     camera-orbit="0deg 150deg 1500m"
 >}}
 
-While affordable 3d printers have been available for quite some time. The reverse path from object to file has been significantly harder and more expensive, often out of the reach of makers. Thanks to the work of Thomas Megel (founder) and a number incredibly passionate contributors in the community, they have developed a reliable and affordable photogrammetry solution, called [OpenScan](https://openscan.eu/). Motivated by the lack of better options, the project developed from a makeshift construction into an ecosystem with a rich of choice of hardware models and software solutions, to a point where it is also economically viable.
+While affordable 3d printers have been available for quite some time. The reverse path from object to file has been significantly harder and more expensive, often out of the reach of makers. Thanks to the work of Thomas Megel (founder) and a number incredibly passionate contributors in the community, they have developed a reliable and affordable photogrammetry solution, called [OpenScan](https://openscan.eu/). Motivated by the lack of better options, the project developed from a prototype construction into an ecosystem with a rich of choice of hardware variants and software solutions, even to a point where it is economically viable.
 
 ## What is OpenScan
 
-As of now, we can coarsely distinguish between these three categories:
+As of writing this, the OpenScan project can be divided into three categories:
 
 - Hardware-Models:
   - Classic
@@ -45,13 +47,13 @@ As of now, we can coarsely distinguish between these three categories:
 - Photogrammetry Software
   - Open Scan Cloud (free, first party, closed source with the intention of open sourcing in the future)
 
-There are other FOSS and commercial photogrammetry solutions which can substitute the Open Scan Cloud, such as [Meshroom](https://alicevision.org/), [KIRI Engine](https://www.kiriengine.app/), [3D Zephyr](https://www.3dflow.net/3df-zephyr-photogrammetry-software/) (paid), [Metashape](https://www.agisoft.com/) (paid).
+TheThere are other FOSS and commercial photogrammetry solutions which can substitute the Open Scan Cloud, such as [Meshroom](https://alicevision.org/), [KIRI Engine](https://www.kiriengine.app/), [3D Zephyr](https://www.3dflow.net/3df-zephyr-photogrammetry-software/) (paid), [Metashape](https://www.agisoft.com/) (paid).
 
 The Open Scan mini v2.2 in combination with the Open Scan cloud offer a good performance out of the box as you can see for your self with the 3D printed and scanned bust of Einstein from the beginning.
 
 ## Assembly
 
-As is often the case for passion projects, documentation can be incomplete sometimes and I will not even attempt to remedy this. Though, some might find the basic connection diagram below useful. It's simplicity really goes to show however how little 
+While there is some good documentation available - as is often the case for passion projects, it can be incomplete and or scattered sometimes. I thought, some might find the basic connection diagram below useful. It's simplicity really goes to show however how little 
 it takes from the hardware side to achieve quite spectacular results, suitable for figures or as reference for use in CAD.
 
 {{< figure src="Black Shield V2.1 PCB.svg" caption="Connection Diagram" >}}
