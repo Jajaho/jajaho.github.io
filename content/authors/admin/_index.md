@@ -20,12 +20,12 @@ superuser: true
 highlight_name: true
 
 # Role/position/tagline
-role: Research Fellow
+role: Quantum Engineering M.Sc.
 
 # Organizations/Affiliations to display in Biography blox
 organizations:
-  - name: German Aerospace Center (DLR)
-    url: https://www.dlr.de/en
+  - name: Student - ETH Zürich
+    url: https://ethz.ch
 
 # Social network links
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
@@ -55,14 +55,14 @@ interests:
   - Manufacturing & Craftsmanship
 
 education:
-  - area: BSc Electrical Engineering
+  - area: B.Sc. Electrical Engineering
     institution: Ulm University
     date_start: 2020-10-14
-    date_end: 2025-03-31 
+    date_end: 2025-03-15 
     summary: |   
-      Courses included:
-      - Quantum Mechanics
-      - Integrated Analog Circuits
+      - Minor in physics
+      - [Team Spatzenhirn](https://www.uni-ulm.de/in/spatzenhirn/)
+
   - area: Abitur
     institution: Gymnasium im Bildungszentrum Markdorf
     date_start: 2016-09-01
@@ -75,48 +75,43 @@ work:
     company_name: Institute of Quantum Technologies, DLR
     date_start: 2025-04-01
     date_end: 2025-08-31
+    summary: |
+      - Cold atom experiments 
 
   - position: Research Assistant
     company_name: Institute of Quantum Technologies, DLR
     date_start: 2024-07-15
     date_end: 2025-03-31
-    # summary: |
-    #   Responsibilities included:
-    #   - Implementation of a microcontroller based physical unclonable function generator
-    #   - Hardware programming (HDL) on Xilinx Zynq SOCs
-    #   - Implementation of different normalization processes
+    summary: |
+      - Clean room processes
 
   - position: Research Assistant
     company_name: Institute for Microelectronics, University of Ulm
     date_start: 2022-10-01
     date_end: 2023-10-01
-    # summary: |
-    #   Responsibilities included:
-    #   - Implementation of a microcontroller based physical unclonable function generator
-    #   - Hardware programming (HDL) on Xilinx Zynq SOCs
-    #   - Implementation of different normalization processes
+    summary: |
+      - PCB design & embedded programming
   
   - position: Research Assistant
     company_name: Institute for Microelectronics, University of Ulm
     date_start: 2021-04-01
     date_end: 2022-02-01
-    # summary: |
-    #   - Concept and implementation of a physical unclonable function readout system
-    #   - Hardware programming on Xilinx Zynq SOCs
+    summary: |
+      - Hardware programming (HDL) on Xilinx Zynq SOCs
 
   - position: Development Engineer (Short-term)
     company_name: Kendrion Markdorf GmbH
     date_start: 2019-08-01
     date_end: 2019-09-01
-    # summary: |
-    #   - Development and commissioning of a solenoid valve control and supervision circuit
+    summary: |
+      - PCB design & embedded programming
 
   - position: Development Engineer (Short-term)
     company_name: Kendrion Markdorf GmbH
     date_start: 2018-07-01
     date_end: 2018-08-01
-    # summary: |
-    #   - Development of a time controlled universal switch
+    summary: |
+      - Circuit-/PCB design
     #   - Design of a current probe
 
   # - position: Director of Cloud Infrastructure
@@ -151,15 +146,15 @@ skills:
       #   description: ''
       #   percent: 80
       #   icon: code-bracket
-      # - name: Data Science
-      #   description: ''
-      #   percent: 100
-      #   icon: chart-bar
+      - name: Python
+        description: ''
+        percent: 100
+        icon: python
       - name: Electronics
         description: ''
         percent: 80
         icon: hero/cpu-chip
-      - name: CAD
+      - name: CAD/CAE/CAM
         description: ''
         percent: 40
         icon: hero/cube-transparent
@@ -168,10 +163,10 @@ skills:
     color: '#eeac02'
     color_border: '#f0bf23'
     items:
-      # - name: Hiking
-      #   description: ''
-      #   percent: 60
-      #   icon: person-simple-walk
+      - name: Hiking
+        description: ''
+        percent: 60
+        icon: person-simple-walk
       # - name: Cats
       #   description: ''
       #   percent: 100
