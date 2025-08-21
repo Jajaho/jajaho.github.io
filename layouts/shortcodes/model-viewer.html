@@ -1,12 +1,12 @@
 <!-- layouts/shortcodes/model-viewer.html -->
 <div class="model-viewer-container">
-    <div class="firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; border-radius: 4px; max-width: 800px; margin: 0 auto;" 
+    <div class="firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; border-radius: 4px; max-width: 800px; margin: 0 auto;"
          class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200">
         ⚠️ This large 3D model may not display correctly in Firefox. Please use Chrome for the best experience.
     </div>
     <div style="width: 100%; height: 600px; max-width: 800px; margin: 0 auto;">
         <model-viewer
-            style="width: 100%; height: 100%;" 
+            style="width: 100%; height: 100%;"
             class="bg-gray-100 dark:bg-gray-800"
             src="{{ .Get "src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.glb"}}"
             alt="{{ .Get "alt" | default "A 3D model" }}"
@@ -21,6 +21,28 @@
 </div>
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    {{ with .Get "color" }}
+    const modelViewer = document.querySelector('model-viewer');
+    const color = '{{ . }}';
+    
+    modelViewer.addEventListener('load', () => {
+        const material = modelViewer.model?.materials?.[0];
+        if (material && material.pbrMetallicRoughness) {
+            // Convert hex color to RGB values (0-1 range)
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16) / 255;
+            const g = parseInt(hex.substr(2, 2), 16) / 255;
+            const b = parseInt(hex.substr(4, 2), 16) / 255;
+            
+            material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1]);
+        }
+    });
+    {{ end }}
+    
+    checkModelSize();
+});
+
 async function checkModelSize() {
     if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) return;
     const modelViewers = document.querySelectorAll('model-viewer');
@@ -28,7 +50,7 @@ async function checkModelSize() {
    
     modelViewers.forEach(async (viewer, index) => {
         const modelUrl = viewer.getAttribute('src');
-        console.log('Checking model URL:', modelUrl); // Debug log
+        console.log('Checking model URL:', modelUrl);
         try {
             const response = await fetch(modelUrl, { method: 'HEAD' });
             if (!response.ok) {
@@ -44,5 +66,4 @@ async function checkModelSize() {
         }
     });
 }
-checkModelSize();
 </script>

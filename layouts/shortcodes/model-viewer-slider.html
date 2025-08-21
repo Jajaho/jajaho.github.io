@@ -226,6 +226,33 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     let lastActiveModel = null;
 
+    // Apply color to model if specified
+    function applyColor(modelViewer, color) {
+        if (!color) return;
+        
+        modelViewer.addEventListener('load', () => {
+            const material = modelViewer.model?.materials?.[0];
+            if (material && material.pbrMetallicRoughness) {
+                // Convert hex color to RGB values (0-1 range)
+                const hex = color.replace('#', '');
+                const r = parseInt(hex.substr(0, 2), 16) / 255;
+                const g = parseInt(hex.substr(2, 2), 16) / 255;
+                const b = parseInt(hex.substr(4, 2), 16) / 255;
+                
+                material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1]);
+            }
+        });
+    }
+
+    // Apply colors to models if specified
+    {{ with .Get "color1" }}
+    applyColor(model1Viewer, '{{ . }}');
+    {{ end }}
+    
+    {{ with .Get "color2" }}
+    applyColor(model2Viewer, '{{ . }}');
+    {{ end }}
+
     // Track which model is being manipulated
     function handleUserInteraction(modelViewer) {
         modelViewer.addEventListener('pointerdown', () => {
