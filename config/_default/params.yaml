@@ -39,11 +39,11 @@ header:
 # Site footer
 footer:
   copyright:
-    notice: '© 2024 Jakob Holz. This work is licensed under MIT license'
+    notice: '© 2024-2025 Jakob Holz. All rights reserved.'
     license:
       enable: true
       allow_derivatives: false
-      share_alike: true
+      share_alike: false
       allow_commercial: false
 
 # Localization
