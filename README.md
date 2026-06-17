@@ -8,6 +8,24 @@ Welcome to my website, a personal notebook and place to show off.
 
 See [wiki/Initial-Setup](https://github.com/Jajaho/jajaho.github.io/wiki/Initial-Setup).
 
+### Running Locally
+
+From the repo root, start the dev server:
+
+```sh
+hugo server
+```
+
+Then open [http://localhost:1313/](http://localhost:1313/). The site live-reloads on save.
+
+To also preview drafts, future-dated, and expired content (e.g. posts with a `publishDate` in the future), add:
+
+```sh
+hugo server -D -F -E
+```
+
+> **Note:** Thumbnails in the homepage grids come from a page-bundle image named `featured.*` (e.g. `featured.webp`) inside the post/project folder — not from the `featured_image` frontmatter field, which the theme ignores.
+
 ## Tech
 
 - [Hugo](https://github.com/gohugoio/hugo) site generator

@@ -7,8 +7,6 @@ tags:
   - Promo
 draft: false
 featured: true
-featured_image: "content/post/uulm_promo_video/thumbnail.webp"  # Main image for the post
-featured_image_alt: "Image description"  # Alt text for accessibility
 
 # Hugo-specific fields
 publishDate: 2025-05-01T00:00:00Z  # Scheduled publish date
