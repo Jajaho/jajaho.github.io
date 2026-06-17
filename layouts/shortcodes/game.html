@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Rectangle Drawing Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5dc;
+            background-image: 
+                radial-gradient(circle at 25px 25px, rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(0deg, transparent 24px, rgba(0,0,0,0.05) 25px, rgba(0,0,0,0.05) 26px, transparent 27px),
+                linear-gradient(90deg, transparent 24px, rgba(0,0,0,0.05) 25px, rgba(0,0,0,0.05) 26px, transparent 27px);
+            background-size: 50px 50px, 50px 50px, 50px 50px;
+            font-family: 'Kalam', cursive;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 
+                0 2px 10px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            text-align: center;
+            border: 2px solid #e8e8e8;
+            position: relative;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ff6b6b;
+            opacity: 0.7;
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            font-size: 2.8em;
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            color: #2c3e50;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            transform: rotate(-1deg);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            font-family: 'Caveat', cursive;
+            gap: 30px;
+        }
+
+        .score, .status {
+            background: #fff3cd;
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 2px dashed #ffc107;
+            transform: rotate(1deg);
+        }
+
+        .status {
+            transform: rotate(-1deg);
+        }
+
+        .score-popup {
+            position: absolute;
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            font-family: 'Caveat', cursive;
+            pointer-events: none;
+            z-index: 1000;
+            animation: scoreFloat 2s ease-out forwards;
+        }
+
+        @keyframes scoreFloat {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5) translateY(-50px);
+            }
+        }
+
+        canvas {
+            border: 3px solid #34495e;
+            border-radius: 6px;
+            background: white;
+            display: block;
+            margin: 0 auto 20px auto;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.1),
+                inset 0 0 0 1px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+            transform: rotate(0.5deg);
+        }
+
+        .control-btn {
+            background: #3498db;
+            border: 3px solid #2980b9;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Caveat', cursive;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 55px;
+            box-shadow: 
+                0 3px 0 #2574a9,
+                0 4px 8px rgba(0,0,0,0.2);
+            user-select: none;
+            position: relative;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 5px 0 #2574a9,
+                0 6px 12px rgba(0,0,0,0.25);
+        }
+
+        .control-btn:active {
+            transform: translateY(2px);
+            box-shadow: 
+                0 1px 0 #2574a9,
+                0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-btn.invalid {
+            background: #95a5a6;
+            border-color: #7f8c8d;
+            box-shadow: 
+                0 3px 0 #6c757d,
+                0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .control-btn.invalid:hover {
+            transform: none;
+            box-shadow: 
+                0 3px 0 #6c757d,
+                0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        #up { grid-column: 2; grid-row: 1; }
+        #left { grid-column: 1; grid-row: 2; }
+        #right { grid-column: 3; grid-row: 2; }
+        #down { grid-column: 2; grid-row: 3; }
+
+        .restart-btn {
+            background: #e74c3c;
+            border: 3px solid #c0392b;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Caveat', cursive;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 
+                0 3px 0 #a93226,
+                0 4px 8px rgba(0,0,0,0.2);
+            transform: rotate(-0.5deg);
+        }
+
+        .restart-btn:hover {
+            transform: rotate(-0.5deg) translateY(-2px);
+            box-shadow: 
+                0 5px 0 #a93226,
+                0 6px 12px rgba(0,0,0,0.25);
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 15px;
+            line-height: 1.5;
+            transform: rotate(0.3deg);
+            font-family: 'Kalam', cursive;
+        }
+
+        .game-over {
+            color: #e74c3c;
+            font-weight: bold;
+            font-family: 'Caveat', cursive;
+            font-size: 1.1em;
+        }
+
+        .doodle {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.3;
+            transform: rotate(-15deg);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .doodle-1 { top: 20px; right: 20px; }
+        .doodle-2 { bottom: 20px; left: 60px; transform: rotate(12deg); }
+        .doodle-3 { top: 50%; right: 10px; transform: rotate(-8deg); }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="doodle doodle-1">✏️</div>
+        <div class="doodle doodle-2">📐</div>
+        <div class="doodle doodle-3">📏</div>
+        
+        <h1>Rectangle Sketcher</h1>
+        
+        <div class="game-info">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="status" id="status">Drawing...</div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="420" height="420"></canvas>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="up">↑</button>
+            <button class="control-btn" id="left">←</button>
+            <button class="control-btn" id="right">→</button>
+            <button class="control-btn" id="down">↓</button>
+        </div>
+
+        <button class="restart-btn" onclick="resetGame()">🔄 New Sketch</button>
+
+        <div class="difficulty-controls" style="margin-top: 15px;">
+            <label style="font-weight: bold; margin-right: 10px;">Difficulty:</label>
+            <select id="difficultySelect" onchange="changeDifficulty()" style="padding: 5px; font-family: 'Kalam', cursive;">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+                <option value="extreme">Extreme</option>
+            </select>
+        </div>
+
+        <div class="instructions">
+            <strong>How to Sketch Rectangles:</strong><br>
+            • Use arrows or WASD to draw lines between grid vertices<br>
+            • <strong>Each line can only be drawn once!</strong><br>
+            • <strong>Rectangles can be completed using obstacles (red blocked edges)!</strong><br>
+            • <strong>Score 2^n points for each rectangle, where n = connected rectangles + 1</strong><br>
+            • Connected rectangles share at least one edge (player-drawn or obstacle)<br>
+            • Game ends when no new lines can be drawn from current position<br>
+            • Create connected rectangle clusters for exponential scoring!<br>
+            • <strong>Colors: Green = all your edges, Yellow = 1 your edge + obstacles, Purple = mixed</strong>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const statusElement = document.getElementById('status');
+
+        // Game settings
+        const GRID_SIZE = 21; // 21 vertices = 20x20 cells
+        const VERTEX_SPACING = canvas.width / (GRID_SIZE - 1);
+
+        // Game state
+        let gameState = {
+            currentPos: { x: 10, y: 10 }, // Center vertex
+            path: [], // Array of positions in order visited
+            visitedVertices: new Set(), // Vertices that have been visited
+            usedEdges: new Set(), // Edges (lines) that have been drawn
+            closedRectangles: new Set(), // Set of closed rectangle keys
+            score: 0, // Current score
+            gameOver: false,
+            lastDirection: null,
+            timerDuration: 3000, // 3 seconds in milliseconds
+            timerStart: 0,
+            timerActive: false,
+            defaultDirection: null,
+            timerInterval: null
+        };
+
+        // Initialize game
+        function initGame() {
+            const startPos = { x: 10, y: 10 };
+            gameState.currentPos = startPos;
+            gameState.path = [startPos];
+            gameState.visitedVertices = new Set();
+            gameState.visitedVertices.add(`${startPos.x},${startPos.y}`);
+            gameState.usedEdges = new Set();
+            gameState.closedRectangles = new Set();
+            gameState.score = 0;
+            gameState.gameOver = false;
+            gameState.lastDirection = null;
+            // NEW TIMER INITIALIZATION
+            gameState.timerDuration = 1000; // 1 seconds
+            gameState.timerStart = 0;
+            gameState.timerActive = false;
+            gameState.defaultDirection = null;
+            gameState.timerInterval = null;
+            initObstacles();
+            generateObstacles();
+
+            stopMoveTimer(); // Clear any existing timers
+            
+            updateDisplay();
+            draw();
+            
+            // Start the first timer after a brief delay
+            setTimeout(() => startMoveTimer(), 1000);
+        }
+
+        // Create edge key for two positions (normalized so order doesn't matter)
+        function createEdgeKey(pos1, pos2) {
+            const minX = Math.min(pos1.x, pos2.x);
+            const maxX = Math.max(pos1.x, pos2.x);
+            const minY = Math.min(pos1.y, pos2.y);
+            const maxY = Math.max(pos1.y, pos2.y);
+            return `${minX},${minY}-${maxX},${maxY}`;
+        }
+
+        // Create rectangle key from top-left corner and dimensions
+        function createRectangleKey(x, y, width, height) {
+            return `${x},${y},${width},${height}`;
+        }
+
+        // Get all edges of a rectangle
+        function getRectangleEdges(x, y, width, height) {
+            return [
+                createEdgeKey({x, y}, {x: x + width, y}), // top
+                createEdgeKey({x: x + width, y}, {x: x + width, y: y + height}), // right
+                createEdgeKey({x: x + width, y: y + height}, {x, y: y + height}), // bottom
+                createEdgeKey({x, y: y + height}, {x, y}) // left
+            ];
+        }
+
+        // Check if a rectangle is closed (all 4 edges exist)
+        function isRectangleClosed(x, y, width, height) {
+            const edges = getRectangleEdges(x, y, width, height);
+            return edges.every(edge => 
+                gameState.usedEdges.has(edge) || gameState.blockedEdges.has(edge)
+            );
+        }
+
+        function rectangleHasPlayerEdges(x, y, width, height) {
+            const edges = getRectangleEdges(x, y, width, height);
+            return edges.some(edge => gameState.usedEdges.has(edge));
+        }
+
+        // Check if two rectangles are connected (share at least one visited edge)
+        function areRectanglesConnected(rect1Key, rect2Key) {
+            const [x1, y1, w1, h1] = rect1Key.split(',').map(Number);
+            const [x2, y2, w2, h2] = rect2Key.split(',').map(Number);
+            
+            const edges1 = getRectangleEdges(x1, y1, w1, h1);
+            const edges2 = getRectangleEdges(x2, y2, w2, h2);
+            
+            // Check if any edge is shared and has been visited
+            for (const edge1 of edges1) {
+                if (gameState.usedEdges.has(edge1)) {
+                    for (const edge2 of edges2) {
+                        if (edge1 === edge2) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Find all rectangles connected to a given rectangle
+        function findConnectedRectangles(targetRect, allRectangles) {
+            const connected = new Set();
+            const toCheck = [targetRect];
+            const checked = new Set();
+            
+            while (toCheck.length > 0) {
+                const currentRect = toCheck.pop();
+                if (checked.has(currentRect)) continue;
+                checked.add(currentRect);
+                
+                if (currentRect !== targetRect) {
+                    connected.add(currentRect);
+                }
+                
+                // Find all rectangles connected to current rectangle
+                for (const otherRect of allRectangles) {
+                    if (otherRect !== currentRect && !checked.has(otherRect)) {
+                        if (areRectanglesConnected(currentRect, otherRect)) {
+                            toCheck.push(otherRect);
+                        }
+                    }
+                }
+            }
+            
+            return connected;
+        }
+
+        // Find all closed rectangles in the grid
+        function findClosedRectangles() {
+            const rectangles = new Set();
+            
+            // Check all possible rectangle sizes and positions
+            for (let width = 1; width < GRID_SIZE; width++) {
+                for (let height = 1; height < GRID_SIZE; height++) {
+                    for (let x = 0; x <= GRID_SIZE - width - 1; x++) {
+                        for (let y = 0; y <= GRID_SIZE - height - 1; y++) {
+                            // Rectangle must be closed AND have at least one player-drawn edge
+                            if (isRectangleClosed(x, y, width, height) && 
+                                rectangleHasPlayerEdges(x, y, width, height)) {
+                                rectangles.add(createRectangleKey(x, y, width, height));
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return rectangles;
+        }
+
+        // Show score popup animation
+        function showScorePopup(points, canvasPos) {
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            popup.textContent = `+${points}`;
+            popup.style.left = (canvas.offsetLeft + canvasPos.x - 30) + 'px';
+            popup.style.top = (canvas.offsetTop + canvasPos.y - 30) + 'px';
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                document.body.removeChild(popup);
+            }, 2000);
+        }
+
+        // Get adjacent vertices
+        function getAdjacentVertices(pos) {
+            const adjacent = [];
+            const directions = [
+                { x: 0, y: -1 }, // up
+                { x: 0, y: 1 },  // down
+                { x: -1, y: 0 }, // left
+                { x: 1, y: 0 }   // right
+            ];
+
+            directions.forEach(dir => {
+                const newPos = { x: pos.x + dir.x, y: pos.y + dir.y };
+                if (newPos.x >= 0 && newPos.x < GRID_SIZE && 
+                    newPos.y >= 0 && newPos.y < GRID_SIZE) {
+                    adjacent.push(newPos);
+                }
+            });
+
+            return adjacent;
+        }
+
+        // Check if a move is valid (within bounds and edge not already used)
+        function isValidMove(fromPos, toPos) {
+            if (toPos.x < 0 || toPos.x >= GRID_SIZE || toPos.y < 0 || toPos.y >= GRID_SIZE) {
+                return false;
+            }
+            const edgeKey = createEdgeKey(fromPos, toPos);
+            
+            // Check if edge is blocked by obstacle
+            if (gameState.blockedEdges && gameState.blockedEdges.has(edgeKey)) {
+                return false;
+            }
+            
+            return !gameState.usedEdges.has(edgeKey);
+        }
+
+        // Check if current position is trapped (no valid moves available)
+        function isTrapped(pos) {
+            const adjacent = getAdjacentVertices(pos);
+            return adjacent.every(adjPos => !isValidMove(pos, adjPos));
+        }
+
+        // Convert vertex coordinates to canvas coordinates
+        function vertexToCanvas(pos) {
+            return {
+                x: pos.x * VERTEX_SPACING,
+                y: pos.y * VERTEX_SPACING
+            };
+        }
+
+        // Draw the game
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid vertices
+            ctx.fillStyle = 'rgba(52, 73, 94, 0.3)';
+            for (let x = 0; x < GRID_SIZE; x++) {
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    const canvasPos = vertexToCanvas({ x, y });
+                    ctx.beginPath();
+                    ctx.arc(canvasPos.x, canvasPos.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Draw grid lines (lighter)
+            ctx.strokeStyle = 'rgba(52, 73, 94, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                // Horizontal lines
+                ctx.beginPath();
+                ctx.moveTo(0, i * VERTEX_SPACING);
+                ctx.lineTo(canvas.width, i * VERTEX_SPACING);
+                ctx.stroke();
+                
+                // Vertical lines
+                ctx.beginPath();
+                ctx.moveTo(i * VERTEX_SPACING, 0);
+                ctx.lineTo(i * VERTEX_SPACING, canvas.height);
+                ctx.stroke();
+            }
+
+            // Highlight closed rectangles
+            gameState.closedRectangles.forEach(rectKey => {
+                const [x, y, width, height] = rectKey.split(',').map(Number);
+                const topLeft = vertexToCanvas({ x, y });
+                const rectWidth = width * VERTEX_SPACING;
+                const rectHeight = height * VERTEX_SPACING;
+                
+                const edges = getRectangleEdges(x, y, width, height);
+                const playerEdges = edges.filter(edge => gameState.usedEdges.has(edge)).length;
+                const obstacleEdges = edges.filter(edge => gameState.blockedEdges.has(edge)).length;
+                
+                // Different colors based on rectangle composition
+                let fillColor, strokeColor;
+                if (obstacleEdges === 0) {
+                    // Pure player rectangle (all player edges)
+                    fillColor = 'rgba(46, 204, 113, 0.3)';
+                    strokeColor = 'rgba(39, 174, 96, 0.8)';
+                } else if (playerEdges === 1) {
+                    // Mostly obstacles, 1 player edge
+                    fillColor = 'rgba(241, 196, 15, 0.2)';
+                    strokeColor = 'rgba(243, 156, 18, 0.6)';
+                } else {
+                    // Mixed rectangle (some player, some obstacle edges)
+                    fillColor = 'rgba(155, 89, 182, 0.2)';
+                    strokeColor = 'rgba(142, 68, 173, 0.6)';
+                }
+                
+                // Fill rectangle with appropriate color
+                ctx.fillStyle = fillColor;
+                ctx.fillRect(topLeft.x, topLeft.y, rectWidth, rectHeight);
+                
+                // Draw rectangle border
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(topLeft.x, topLeft.y, rectWidth, rectHeight);
+                
+                // Add text indicator for mixed rectangles
+                if (obstacleEdges > 0) {
+                    ctx.fillStyle = strokeColor;
+                    ctx.font = '12px Caveat';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${playerEdges}/${edges.length}`, 
+                                topLeft.x + rectWidth/2, 
+                                topLeft.y + rectHeight/2 + 4);
+                }
+            });
+
+            drawObstacles();
+
+            // Draw the path (drawn lines)
+            if (gameState.path.length > 1) {
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                ctx.beginPath();
+                const startCanvas = vertexToCanvas(gameState.path[0]);
+                ctx.moveTo(startCanvas.x, startCanvas.y);
+                
+                for (let i = 1; i < gameState.path.length; i++) {
+                    const canvasPos = vertexToCanvas(gameState.path[i]);
+                    ctx.lineTo(canvasPos.x, canvasPos.y);
+                }
+                ctx.stroke();
+            }
+
+            // Draw visited vertices
+            gameState.visitedVertices.forEach(vertexKey => {
+                const [x, y] = vertexKey.split(',').map(Number);
+                const canvasPos = vertexToCanvas({ x, y });
+                
+                ctx.fillStyle = '#2980b9';
+                ctx.beginPath();
+                ctx.arc(canvasPos.x, canvasPos.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw current position (larger and different color)
+            const currentCanvas = vertexToCanvas(gameState.currentPos);
+            ctx.fillStyle = gameState.gameOver ? '#e74c3c' : '#e67e22';
+            ctx.beginPath();
+            ctx.arc(currentCanvas.x, currentCanvas.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Add outline to current position
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw dashed circle around current position if not game over
+            if (!gameState.gameOver) {
+                ctx.strokeStyle = '#e67e22';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.arc(currentCanvas.x, currentCanvas.y, 12, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                drawTimerEdge();
+            }
+        }
+
+        // Move in a direction
+        function move(direction) {
+            if (gameState.gameOver) return;
+
+            let newPos = { ...gameState.currentPos };
+            
+            switch (direction) {
+                case 'up':
+                    newPos.y--;
+                    break;
+                case 'down':
+                    newPos.y++;
+                    break;
+                case 'left':
+                    newPos.x--;
+                    break;
+                case 'right':
+                    newPos.x++;
+                    break;
+            }
+
+            // Check if move is valid
+            if (!isValidMove(gameState.currentPos, newPos)) {
+                return;
+            }
+
+            // Stop the current timer
+            stopMoveTimer();
+
+            // Valid move - record the edge and update position
+            const edgeKey = createEdgeKey(gameState.currentPos, newPos);
+            gameState.usedEdges.add(edgeKey);
+            
+            gameState.currentPos = newPos;
+            gameState.path.push(newPos);
+            
+            const posKey = `${newPos.x},${newPos.y}`;
+            gameState.visitedVertices.add(posKey);
+            gameState.lastDirection = direction;
+            
+            // Check for new closed rectangles
+            const oldRectangles = gameState.closedRectangles;
+            const newRectangles = findClosedRectangles();
+            
+            // Find which rectangles are newly closed
+            const newlyClosedRectangles = new Set();
+            for (const rect of newRectangles) {
+                if (!oldRectangles.has(rect)) {
+                    newlyClosedRectangles.add(rect);
+                }
+            }
+            
+            gameState.closedRectangles = newRectangles;
+            
+            // Calculate score for each newly closed rectangle
+            let totalPointsGained = 0;
+            for (const newRect of newlyClosedRectangles) {
+                const connectedRects = findConnectedRectangles(newRect, newRectangles);
+                const n = connectedRects.size + 1;
+                const points = Math.pow(2, n);
+                totalPointsGained += points;
+                gameState.score += points;
+            }
+            
+            // Show popup if points were gained
+            if (totalPointsGained > 0) {
+                const canvasPos = vertexToCanvas(newPos);
+                showScorePopup(totalPointsGained, canvasPos);
+            }
+            
+            // Check if trapped
+            if (isTrapped(gameState.currentPos)) {
+                endGame('No more unused lines available!');
+                return;
+            }
+            
+            updateDisplay();
+            draw();
+
+            // Start new timer for next move
+            setTimeout(() => startMoveTimer(), 100); // Small delay before starting next timer
+
+            // Check for perfect game
+            const maxHorizontalLines = GRID_SIZE * (GRID_SIZE - 1);
+            const maxVerticalLines = (GRID_SIZE - 1) * GRID_SIZE;
+            const totalPossibleLines = maxHorizontalLines + maxVerticalLines;
+            
+            if (gameState.usedEdges.size === totalPossibleLines) {
+                stopMoveTimer();
+                endGame('Incredible! You drew every possible line!');
+            }
+        }
+
+        // End game
+        function endGame(reason) {
+            gameState.gameOver = true;
+            stopMoveTimer(); // Stop any active timer
+            statusElement.innerHTML = `<span class="game-over">${reason}</span>`;
+            updateControlButtons();
+        }
+
+        // Update display
+        function updateDisplay() {
+            scoreElement.textContent = gameState.score;
+            if (!gameState.gameOver) {
+                statusElement.textContent = `Drawing...`;
+                statusElement.className = 'status';
+            }
+            updateControlButtons();
+        }
+
+        // Update control button states
+        function updateControlButtons() {
+            const buttons = [
+                { id: 'up', direction: { x: 0, y: -1 } },
+                { id: 'down', direction: { x: 0, y: 1 } },
+                { id: 'left', direction: { x: -1, y: 0 } },
+                { id: 'right', direction: { x: 1, y: 0 } }
+            ];
+
+            buttons.forEach(({ id, direction }) => {
+                const button = document.getElementById(id);
+                if (gameState.gameOver) {
+                    button.disabled = true;
+                    button.className = 'control-btn';
+                } else {
+                    const newPos = {
+                        x: gameState.currentPos.x + direction.x,
+                        y: gameState.currentPos.y + direction.y
+                    };
+                    const validMove = isValidMove(gameState.currentPos, newPos);
+                    button.disabled = !validMove;
+                    button.className = validMove ? 'control-btn' : 'control-btn invalid';
+                }
+            });
+        }
+
+        // Reset game
+        function resetGame() {
+            initGame();
+        }
+
+        // Event listeners for buttons
+        document.getElementById('up').onclick = () => move('up');
+        document.getElementById('down').onclick = () => move('down');
+        document.getElementById('left').onclick = () => move('left');
+        document.getElementById('right').onclick = () => move('right');
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch (e.key.toLowerCase()) {
+                case 'arrowup':
+                case 'w':
+                    e.preventDefault();
+                    move('up');
+                    break;
+                case 'arrowdown':
+                case 's':
+                    e.preventDefault();
+                    move('down');
+                    break;
+                case 'arrowleft':
+                case 'a':
+                    e.preventDefault();
+                    move('left');
+                    break;
+                case 'arrowright':
+                case 'd':
+                    e.preventDefault();
+                    move('right');
+                    break;
+                case ' ':
+                case 'r':
+                    e.preventDefault();
+                    resetGame();
+                    break;
+            }
+        });
+
+        // Determine the default direction for auto-move
+        function determineDefaultDirection() {
+            const directionVectors = {
+                'up': { x: 0, y: -1 },
+                'down': { x: 0, y: 1 },
+                'left': { x: -1, y: 0 },
+                'right': { x: 1, y: 0 }
+            };
+            
+            // First try the same direction as last move
+            if (gameState.lastDirection) {
+                const newPos = {
+                    x: gameState.currentPos.x + directionVectors[gameState.lastDirection].x,
+                    y: gameState.currentPos.y + directionVectors[gameState.lastDirection].y
+                };
+                if (isValidMove(gameState.currentPos, newPos)) {
+                    return gameState.lastDirection;
+                }
+            }
+            
+            // Then try directions in priority order: right, up, down, left
+            const priorityOrder = ['right', 'up', 'down', 'left'];
+            for (const direction of priorityOrder) {
+                const newPos = {
+                    x: gameState.currentPos.x + directionVectors[direction].x,
+                    y: gameState.currentPos.y + directionVectors[direction].y
+                };
+                if (isValidMove(gameState.currentPos, newPos)) {
+                    return direction;
+                }
+            }
+            
+            return null; // No valid moves available
+        }
+
+        // Start the move timer
+        function startMoveTimer() {
+            if (gameState.gameOver) return;
+            
+            gameState.defaultDirection = determineDefaultDirection();
+            if (!gameState.defaultDirection) {
+                // No valid moves, game should end
+                endGame('No more unused lines available!');
+                return;
+            }
+            
+            gameState.timerStart = Date.now();
+            gameState.timerActive = true;
+            
+            // Clear any existing timer
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+            }
+            
+            // Start new timer
+            gameState.timerInterval = setInterval(() => {
+                if (!gameState.timerActive || gameState.gameOver) {
+                    clearInterval(gameState.timerInterval);
+                    return;
+                }
+                
+                const elapsed = Date.now() - gameState.timerStart;
+                if (elapsed >= gameState.timerDuration) {
+                    // Time's up! Make the default move
+                    clearInterval(gameState.timerInterval);
+                    gameState.timerActive = false;
+                    if (gameState.defaultDirection) {
+                        move(gameState.defaultDirection);
+                    }
+                } else {
+                    draw(); // Redraw to update timer visualization
+                }
+            }, 16); // ~60fps updates
+        }
+
+        // Stop the move timer
+        function stopMoveTimer() {
+            gameState.timerActive = false;
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+        }
+
+        // Draw the timer as a filling edge
+        function drawTimerEdge() {
+            if (!gameState.timerActive || !gameState.defaultDirection || gameState.gameOver) return;
+            
+            const elapsed = Date.now() - gameState.timerStart;
+            const progress = Math.min(elapsed / gameState.timerDuration, 1);
+            
+            const directionVectors = {
+                'up': { x: 0, y: -1 },
+                'down': { x: 0, y: 1 },
+                'left': { x: -1, y: 0 },
+                'right': { x: 1, y: 0 }
+            };
+            
+            const targetPos = {
+                x: gameState.currentPos.x + directionVectors[gameState.defaultDirection].x,
+                y: gameState.currentPos.y + directionVectors[gameState.defaultDirection].y
+            };
+            
+            const currentCanvas = vertexToCanvas(gameState.currentPos);
+            const targetCanvas = vertexToCanvas(targetPos);
+            
+            // Calculate intermediate position based on progress
+            const currentX = currentCanvas.x + (targetCanvas.x - currentCanvas.x) * progress;
+            const currentY = currentCanvas.y + (targetCanvas.y - currentCanvas.y) * progress;
+            
+            // Draw the filling line
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(currentCanvas.x, currentCanvas.y);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            // Add a pulsing red effect as timer gets close to expiring
+            if (progress > 0.7) {
+                const pulseAlpha = 0.3 + 0.4 * Math.sin(Date.now() * 0.01);
+                ctx.strokeStyle = `rgba(231, 76, 60, ${pulseAlpha})`;
+                ctx.lineWidth = 8;
+                ctx.stroke();
+            }
+        }
+
+        // Obstacle generation settings
+        const OBSTACLE_SETTINGS = {
+            density: 0.15,           // 15% of edges will be blocked
+            clusterProbability: 0.3,  // 30% chance to create obstacle clusters
+            minClusterSize: 2,        // Minimum edges in a cluster
+            maxClusterSize: 5,        // Maximum edges in a cluster
+            avoidStartArea: true,     // Don't place obstacles near starting position
+            startAreaRadius: 3,       // Radius around start to keep clear
+            ensurePaths: true         // Ensure some paths remain available
+        };
+
+        // Add this to your gameState object initialization
+        function initObstacles() {
+            gameState.blockedEdges = new Set();
+            gameState.obstacleVisuals = []; // For visual effects
+        }
+
+        // Generate random obstacles
+        function generateObstacles() {
+            const blockedEdges = new Set();
+            const allPossibleEdges = getAllPossibleEdges();
+            const startPos = gameState.currentPos;
+            
+            // Calculate target number of blocked edges
+            const targetBlocked = Math.floor(allPossibleEdges.length * OBSTACLE_SETTINGS.density);
+            let blockedCount = 0;
+            
+            // Create obstacle clusters
+            const clusters = Math.floor(targetBlocked * OBSTACLE_SETTINGS.clusterProbability / OBSTACLE_SETTINGS.maxClusterSize);
+            
+            for (let c = 0; c < clusters && blockedCount < targetBlocked; c++) {
+                const clusterSize = OBSTACLE_SETTINGS.minClusterSize + 
+                    Math.floor(Math.random() * (OBSTACLE_SETTINGS.maxClusterSize - OBSTACLE_SETTINGS.minClusterSize + 1));
+                
+                // Pick random starting edge for cluster
+                const startEdge = getRandomValidEdgeForObstacle(allPossibleEdges, blockedEdges, startPos);
+                if (!startEdge) continue;
+                
+                const clusterEdges = [startEdge];
+                blockedEdges.add(startEdge);
+                blockedCount++;
+                
+                // Grow cluster by adding connected edges
+                for (let i = 1; i < clusterSize && blockedCount < targetBlocked; i++) {
+                    const connectedEdge = getConnectedEdge(clusterEdges, allPossibleEdges, blockedEdges, startPos);
+                    if (connectedEdge) {
+                        clusterEdges.push(connectedEdge);
+                        blockedEdges.add(connectedEdge);
+                        blockedCount++;
+                    }
+                }
+                
+                // Add visual effect data for this cluster
+                gameState.obstacleVisuals.push({
+                    type: 'cluster',
+                    edges: [...clusterEdges],
+                    color: getRandomObstacleColor(),
+                    pattern: Math.random() > 0.5 ? 'zigzag' : 'cross'
+                });
+            }
+            
+            // Add individual random obstacles
+            while (blockedCount < targetBlocked) {
+                const edge = getRandomValidEdgeForObstacle(allPossibleEdges, blockedEdges, startPos);
+                if (!edge) break;
+                
+                blockedEdges.add(edge);
+                blockedCount++;
+                
+                // Add individual obstacle visual
+                gameState.obstacleVisuals.push({
+                    type: 'individual',
+                    edges: [edge],
+                    color: getRandomObstacleColor(),
+                    pattern: 'cross'
+                });
+            }
+            
+            gameState.blockedEdges = blockedEdges;
+            
+            // Ensure the starting position isn't completely trapped
+            if (isTrapped(startPos)) {
+                // Remove some nearby obstacles to create escape routes
+                clearStartAreaObstacles(startPos, 2);
+            }
+        }
+
+        // Get all possible edges in the grid
+        function getAllPossibleEdges() {
+            const edges = [];
+            
+            // Horizontal edges
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE - 1; x++) {
+                    const pos1 = { x, y };
+                    const pos2 = { x: x + 1, y };
+                    edges.push(createEdgeKey(pos1, pos2));
+                }
+            }
+            
+            // Vertical edges
+            for (let x = 0; x < GRID_SIZE; x++) {
+                for (let y = 0; y < GRID_SIZE - 1; y++) {
+                    const pos1 = { x, y };
+                    const pos2 = { x, y: y + 1 };
+                    edges.push(createEdgeKey(pos1, pos2));
+                }
+            }
+            
+            return edges;
+        }
+
+        // Get a random valid edge for placing obstacles
+        function getRandomValidEdgeForObstacle(allEdges, blockedEdges, startPos) {
+            const availableEdges = allEdges.filter(edge => {
+                if (blockedEdges.has(edge)) return false;
+                
+                // Avoid start area if enabled
+                if (OBSTACLE_SETTINGS.avoidStartArea) {
+                    const [pos1Str, pos2Str] = edge.split('-');
+                    const [x1, y1] = pos1Str.split(',').map(Number);
+                    const [x2, y2] = pos2Str.split(',').map(Number);
+                    
+                    const dist1 = Math.abs(x1 - startPos.x) + Math.abs(y1 - startPos.y);
+                    const dist2 = Math.abs(x2 - startPos.x) + Math.abs(y2 - startPos.y);
+                    
+                    if (dist1 <= OBSTACLE_SETTINGS.startAreaRadius || dist2 <= OBSTACLE_SETTINGS.startAreaRadius) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            if (availableEdges.length === 0) return null;
+            return availableEdges[Math.floor(Math.random() * availableEdges.length)];
+        }
+
+        // Get an edge connected to existing cluster edges
+        function getConnectedEdge(clusterEdges, allEdges, blockedEdges, startPos) {
+            const candidates = [];
+            
+            for (const edge of allEdges) {
+                if (blockedEdges.has(edge)) continue;
+                
+                // Check if this edge shares a vertex with any cluster edge
+                for (const clusterEdge of clusterEdges) {
+                    if (edgesShareVertex(edge, clusterEdge)) {
+                        // Avoid start area
+                        if (OBSTACLE_SETTINGS.avoidStartArea) {
+                            const [pos1Str, pos2Str] = edge.split('-');
+                            const [x1, y1] = pos1Str.split(',').map(Number);
+                            const [x2, y2] = pos2Str.split(',').map(Number);
+                            
+                            const dist1 = Math.abs(x1 - startPos.x) + Math.abs(y1 - startPos.y);
+                            const dist2 = Math.abs(x2 - startPos.x) + Math.abs(y2 - startPos.y);
+                            
+                            if (dist1 <= OBSTACLE_SETTINGS.startAreaRadius || dist2 <= OBSTACLE_SETTINGS.startAreaRadius) {
+                                continue;
+                            }
+                        }
+                        
+                        candidates.push(edge);
+                        break;
+                    }
+                }
+            }
+            
+            if (candidates.length === 0) return null;
+            return candidates[Math.floor(Math.random() * candidates.length)];
+        }
+
+        // Check if two edges share a vertex
+        function edgesShareVertex(edge1, edge2) {
+            const [pos1_1, pos1_2] = edge1.split('-');
+            const [pos2_1, pos2_2] = edge2.split('-');
+            
+            return pos1_1 === pos2_1 || pos1_1 === pos2_2 || pos1_2 === pos2_1 || pos1_2 === pos2_2;
+        }
+
+        // Clear obstacles near starting position
+        function clearStartAreaObstacles(startPos, radius) {
+            const toRemove = [];
+            
+            for (const edge of gameState.blockedEdges) {
+                const [pos1Str, pos2Str] = edge.split('-');
+                const [x1, y1] = pos1Str.split(',').map(Number);
+                const [x2, y2] = pos2Str.split(',').map(Number);
+                
+                const dist1 = Math.abs(x1 - startPos.x) + Math.abs(y1 - startPos.y);
+                const dist2 = Math.abs(x2 - startPos.x) + Math.abs(y2 - startPos.y);
+                
+                if (dist1 <= radius || dist2 <= radius) {
+                    toRemove.push(edge);
+                }
+            }
+            
+            toRemove.forEach(edge => gameState.blockedEdges.delete(edge));
+            
+            // Update visual effects
+            gameState.obstacleVisuals = gameState.obstacleVisuals.map(visual => ({
+                ...visual,
+                edges: visual.edges.filter(edge => !toRemove.includes(edge))
+            })).filter(visual => visual.edges.length > 0);
+        }
+
+        // Get random obstacle color
+        function getRandomObstacleColor() {
+            const colors = [
+                '#e74c3c', // Red
+                '#f39c12', // Orange  
+                '#9b59b6', // Purple
+                '#34495e', // Dark gray
+                '#e67e22', // Dark orange
+                '#c0392b'  // Dark red
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Enhanced drawing function for obstacles (add to existing draw function)
+        function drawObstacles() {
+            if (!gameState.blockedEdges) return;
+            
+            // Draw each obstacle visual group
+            gameState.obstacleVisuals.forEach((visual, index) => {
+                visual.edges.forEach(edgeKey => {
+                    const [pos1Str, pos2Str] = edgeKey.split('-');
+                    const [x1, y1] = pos1Str.split(',').map(Number);
+                    const [x2, y2] = pos2Str.split(',').map(Number);
+                    
+                    const canvasPos1 = vertexToCanvas({ x: x1, y: y1 });
+                    const canvasPos2 = vertexToCanvas({ x: x2, y: y2 });
+                    
+                    // Draw obstacle line
+                    ctx.strokeStyle = visual.color;
+                    ctx.lineWidth = 6;
+                    ctx.lineCap = 'round';
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(canvasPos1.x, canvasPos1.y);
+                    ctx.lineTo(canvasPos2.x, canvasPos2.y);
+                    ctx.stroke();
+                    
+                    // Draw pattern overlay
+                    drawObstaclePattern(canvasPos1, canvasPos2, visual.pattern, visual.color);
+                });
+            });
+        }
+
+        // Draw obstacle patterns
+        function drawObstaclePattern(pos1, pos2, pattern, color) {
+            const midX = (pos1.x + pos2.x) / 2;
+            const midY = (pos1.y + pos2.y) / 2;
+            
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            
+            if (pattern === 'cross') {
+                const size = 8;
+                ctx.beginPath();
+                ctx.moveTo(midX - size, midY - size);
+                ctx.lineTo(midX + size, midY + size);
+                ctx.moveTo(midX + size, midY - size);
+                ctx.lineTo(midX - size, midY + size);
+                ctx.stroke();
+            } else if (pattern === 'zigzag') {
+                const segments = 3;
+                const length = Math.sqrt((pos2.x - pos1.x) ** 2 + (pos2.y - pos1.y) ** 2);
+                const segmentLength = length / segments;
+                const perpX = -(pos2.y - pos1.y) / length * 4;
+                const perpY = (pos2.x - pos1.x) / length * 4;
+                
+                ctx.beginPath();
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    const x = pos1.x + (pos2.x - pos1.x) * t;
+                    const y = pos1.y + (pos2.y - pos1.y) * t;
+                    
+                    const offsetX = (i % 2 === 0) ? perpX : -perpX;
+                    const offsetY = (i % 2 === 0) ? perpY : -perpY;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x + offsetX, y + offsetY);
+                    } else {
+                        ctx.lineTo(x + offsetX, y + offsetY);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        // Difficulty settings
+        const DIFFICULTY_PRESETS = {
+            easy: {
+                density: 0.08,
+                clusterProbability: 0.2,
+                maxClusterSize: 3,
+                startAreaRadius: 4
+            },
+            medium: {
+                density: 0.15,
+                clusterProbability: 0.3,
+                maxClusterSize: 5,
+                startAreaRadius: 3
+            },
+            hard: {
+                density: 0.25,
+                clusterProbability: 0.4,
+                maxClusterSize: 7,
+                startAreaRadius: 2
+            },
+            extreme: {
+                density: 0.35,
+                clusterProbability: 0.5,
+                maxClusterSize: 10,
+                startAreaRadius: 1
+            }
+        };
+
+        // Set difficulty function
+        function setDifficulty(level) {
+            if (DIFFICULTY_PRESETS[level]) {
+                Object.assign(OBSTACLE_SETTINGS, DIFFICULTY_PRESETS[level]);
+            }
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>

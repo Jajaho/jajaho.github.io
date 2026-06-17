@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS Calendar Event Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen">
+        <!-- File Selection Screen -->
+        <div id="fileScreen" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+            <div class="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">ICS Calendar Manager</h1>
+                <p class="text-gray-600 mb-6">Select an ICS file to get started</p>
+                <label class="flex items-center justify-center w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg cursor-pointer transition">
+                    <span>📁 Choose File</span>
+                    <input type="file" id="fileInput" accept=".ics" class="hidden">
+                </label>
+            </div>
+        </div>
+
+        <!-- Calendar Screen -->
+        <div id="calendarScreen" class="hidden p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">ICS Calendar Event Manager</h1>
+                    
+                    <!-- Week Navigation -->
+                    <div class="flex items-center justify-between mb-6">
+                        <button id="prevWeekBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+                            ← Previous Week
+                        </button>
+                        <h2 id="weekLabel" class="text-xl font-semibold text-gray-700"></h2>
+                        <button id="nextWeekBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+                            Next Week →
+                        </button>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="text-sm text-blue-600 font-medium">
+                        <span id="infoLabel">Selected: 0 event(s)</span>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="grid grid-cols-7 gap-3 mb-6">
+                    <div id="dayHeaders" class="col-span-7 grid grid-cols-7 gap-3">
+                        <!-- Day headers will be populated dynamically -->
+                    </div>
+
+                    <!-- Day cells -->
+                    <div id="calendarGrid" class="col-span-7 grid grid-cols-7 gap-3"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 justify-end">
+                    <button id="deleteBtn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition font-semibold">
+                        🗑️ Delete Selected
+                    </button>
+                    <button id="saveBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition font-semibold">
+                        💾 Save File
+                    </button>
+                    <button id="openNewBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition font-semibold">
+                        📂 Open Another File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let events = [];
+        let originalContent = '';
+        let filename = '';
+        let selectedEvents = new Set();
+        let currentWeekStart = null;
+
+        const fileScreen = document.getElementById('fileScreen');
+        const calendarScreen = document.getElementById('calendarScreen');
+        const fileInput = document.getElementById('fileInput');
+        const prevWeekBtn = document.getElementById('prevWeekBtn');
+        const nextWeekBtn = document.getElementById('nextWeekBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const openNewBtn = document.getElementById('openNewBtn');
+        const weekLabel = document.getElementById('weekLabel');
+        const infoLabel = document.getElementById('infoLabel');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const dayHeaders = document.getElementById('dayHeaders');
+
+        fileInput.addEventListener('change', handleFileSelect);
+        prevWeekBtn.addEventListener('click', prevWeek);
+        nextWeekBtn.addEventListener('click', nextWeek);
+        deleteBtn.addEventListener('click', deleteSelected);
+        saveBtn.addEventListener('click', saveFile);
+        openNewBtn.addEventListener('click', () => {
+            fileScreen.classList.remove('hidden');
+            calendarScreen.classList.add('hidden');
+            selectedEvents.clear();
+        });
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const content = event.target.result;
+                    parseICSFile(content);
+                    filename = file.name;
+                    showCalendarScreen();
+                } catch (error) {
+                    alert('Error reading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseICSFile(content) {
+            originalContent = content;
+            events = [];
+
+            const eventRegex = /BEGIN:VEVENT(.*?)END:VEVENT/gs;
+            let match;
+
+            while ((match = eventRegex.exec(content)) !== null) {
+                const block = match[1];
+                const event = { raw: `BEGIN:VEVENT${block}END:VEVENT` };
+
+                const summaryMatch = block.match(/SUMMARY:(.+?)(?:\r?\n)/);
+                event.name = summaryMatch ? summaryMatch[1] : 'Untitled';
+
+                const dtstartMatch = block.match(/DTSTART(?:;[^:]*)?:(\d{8}T?\d{0,6})?/);
+                const dtendMatch = block.match(/DTEND(?:;[^:]*)?:(\d{8}T?\d{0,6})?/);
+                
+                let startTimeStr = '';
+                let endTimeStr = '';
+                if (dtstartMatch) {
+                    const fullStr = dtstartMatch[1];
+                    const dateStr = fullStr.substring(0, 8);
+                    if (fullStr.length > 8) {
+                        startTimeStr = fullStr.substring(9, 15);
+                        // Format time as HH:MM
+                        startTimeStr = `${startTimeStr.substring(0, 2)}:${startTimeStr.substring(2, 4)}`;
+                    }
+                    const year = parseInt(dateStr.substring(0, 4));
+                    const month = parseInt(dateStr.substring(4, 6)) - 1;
+                    const day = parseInt(dateStr.substring(6, 8));
+                    
+                    // Create date in UTC to avoid timezone issues
+                    event.date = new Date(Date.UTC(year, month, day));
+                    event.dayOfWeek = event.date.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+                    event.startTime = startTimeStr;
+                }
+
+                if (dtendMatch) {
+                    const fullStr = dtendMatch[1];
+                    if (fullStr.length > 8) {
+                        endTimeStr = fullStr.substring(9, 15);
+                        // Format time as HH:MM
+                        endTimeStr = `${endTimeStr.substring(0, 2)}:${endTimeStr.substring(2, 4)}`;
+                        event.endTime = endTimeStr;
+                    }
+                }
+
+                events.push(event);
+            }
+
+            if (events.length > 0) {
+                currentWeekStart = getWeekStart(events[0].date);
+            } else {
+                currentWeekStart = getWeekStart(new Date());
+            }
+        }
+
+        function getOccurrenceCount(event) {
+            return events.filter(e =>
+                e.name === event.name &&
+                e.dayOfWeek === event.dayOfWeek &&
+                e.startTime === event.startTime &&
+                e.endTime === event.endTime
+            ).length;
+        }
+
+        function showCalendarScreen() {
+            fileScreen.classList.add('hidden');
+            calendarScreen.classList.remove('hidden');
+            drawCalendar();
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const day = d.getUTCDay();
+            d.setUTCDate(d.getUTCDate() - (day === 0 ? 6 : day - 1));
+            return d;
+        }
+
+        function prevWeek() {
+            const d = new Date(currentWeekStart);
+            d.setUTCDate(d.getUTCDate() - 7);
+            currentWeekStart = d;
+            drawCalendar();
+        }
+
+        function nextWeek() {
+            const d = new Date(currentWeekStart);
+            d.setUTCDate(d.getUTCDate() + 7);
+            currentWeekStart = d;
+            drawCalendar();
+        }
+
+        function drawCalendar() {
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setUTCDate(weekEnd.getUTCDate() + 6);
+            weekLabel.textContent = `${formatDate(currentWeekStart)} - ${formatDate(weekEnd)}`;
+
+            // Update day headers
+            dayHeaders.innerHTML = '';
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setUTCDate(date.getUTCDate() + i);
+                const headerDate = date.toLocaleDateString(undefined, { 
+                    weekday: 'short',
+                    month: 'numeric',
+                    day: 'numeric'
+                });
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'bg-gray-700 text-white font-bold p-3 rounded-lg text-center';
+                dayHeader.textContent = headerDate;
+                dayHeaders.appendChild(dayHeader);
+            }
+
+            calendarGrid.innerHTML = '';
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setUTCDate(date.getUTCDate() + i);
+                const dayEvents = events.filter(e => {
+                    if (!e.date) return false;
+                    return e.date.getUTCFullYear() === date.getUTCFullYear() &&
+                           e.date.getUTCMonth() === date.getUTCMonth() &&
+                           e.date.getUTCDate() === date.getUTCDate();
+                });
+
+                const dayCell = document.createElement('div');
+                dayCell.className = 'bg-white rounded-lg shadow-md p-3 min-h-40 overflow-y-auto';
+
+                dayEvents.forEach(event => {
+                    const eventKey = `${event.name}|${event.date.getFullYear()}-${String(event.date.getMonth() + 1).padStart(2, '0')}-${String(event.date.getDate()).padStart(2, '0')}|${event.startTime || ''}|${event.endTime || ''}`;
+                    const isSelected = selectedEvents.has(eventKey);
+                    const occurrenceCount = getOccurrenceCount(event);
+                    const badge = occurrenceCount > 1 ? `<span class="text-xs bg-red-500 text-white rounded-full px-2 py-1 ml-1 font-bold">${occurrenceCount}</span>` : '';
+
+                    const btn = document.createElement('button');
+                    btn.className = `w-full text-xs p-2 rounded mb-2 transition text-left break-words ${
+                        isSelected
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`;
+                    const timeDisplay = event.startTime ? 
+                        `<div class="text-xs opacity-75">${event.startTime}${event.endTime ? ' - ' + event.endTime : ''}</div>` 
+                        : '';
+                    btn.innerHTML = `<div class="flex items-center justify-between">
+                        <div>
+                            <div>${event.name}</div>
+                            ${timeDisplay}
+                        </div>
+                        ${badge}
+                    </div>`;
+                    btn.addEventListener('click', () => toggleEvent(eventKey, event));
+                    dayCell.appendChild(btn);
+                });
+
+                calendarGrid.appendChild(dayCell);
+            }
+
+            updateInfoLabel();
+        }
+
+        function toggleEvent(eventKey, event) {
+            if (selectedEvents.has(eventKey)) {
+                selectedEvents.delete(eventKey);
+            } else {
+                selectedEvents.add(eventKey);
+            }
+            drawCalendar();
+        }
+
+        function updateInfoLabel() {
+            infoLabel.textContent = `Selected: ${selectedEvents.size} event(s)`;
+        }
+
+        function deleteSelected() {
+            if (selectedEvents.size === 0) {
+                alert('Please select events to delete.');
+                return;
+            }
+
+            const deleteDialog = document.createElement('div');
+            deleteDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            deleteDialog.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Delete Events</h2>
+                    <p class="text-gray-700 mb-6">You have ${selectedEvents.size} event(s) selected. How would you like to delete them?</p>
+                    <div class="space-y-3">
+                        <button id="deleteJustSelectedBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition font-semibold">
+                            Delete Selected Events Only
+                        </button>
+                        <button id="deleteAllOccurrencesBtn" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition font-semibold">
+                            Delete All Occurrences (Same Name & Date)
+                        </button>
+                        <button id="cancelDeleteBtn" class="w-full bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition font-semibold">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(deleteDialog);
+
+            document.getElementById('deleteJustSelectedBtn').addEventListener('click', () => {
+                deleteEventsMode('selected');
+                deleteDialog.remove();
+            });
+
+            document.getElementById('deleteAllOccurrencesBtn').addEventListener('click', () => {
+                deleteEventsMode('all');
+                deleteDialog.remove();
+            });
+
+            document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+                deleteDialog.remove();
+            });
+        }
+
+        function deleteEventsMode(mode) {
+            const toDelete = new Set();
+
+            if (mode === 'selected') {
+                // Delete only the selected events
+                selectedEvents.forEach(eventKey => {
+                    const [name, dateStr, startTime, endTime] = eventKey.split('|');
+                    events.forEach((event, index) => {
+                        if (event.name === name && event.date) {
+                            const eventDateStr = `${event.date.getFullYear()}-${String(event.date.getMonth() + 1).padStart(2, '0')}-${String(event.date.getDate()).padStart(2, '0')}`;
+                            if (eventDateStr === dateStr && 
+                                event.startTime === startTime && 
+                                event.endTime === endTime) {
+                                toDelete.add(index);
+                            }
+                        }
+                    });
+                });
+            } else if (mode === 'all') {
+                // Delete all occurrences of selected events (by name, day of week, and time)
+                const selectedEventSpecs = [];
+                selectedEvents.forEach(eventKey => {
+                    const [name, dateStr] = eventKey.split('|');
+                    const selectedEvent = events.find(e => {
+                        if (!e.date) return false;
+                        const eventDateStr = `${e.date.getFullYear()}-${String(e.date.getMonth() + 1).padStart(2, '0')}-${String(e.date.getDate()).padStart(2, '0')}`;
+                        return e.name === name && eventDateStr === dateStr;
+                    });
+                    if (selectedEvent) {
+                        selectedEventSpecs.push({
+                            name: selectedEvent.name,
+                            dayOfWeek: selectedEvent.dayOfWeek,
+                            time: selectedEvent.time
+                        });
+                    }
+                });
+
+                events.forEach((event, index) => {
+                    selectedEventSpecs.forEach(spec => {
+                        if (
+                            event.name === spec.name &&
+                            event.dayOfWeek === spec.dayOfWeek &&
+                            event.time === spec.time
+                        ) {
+                            toDelete.add(index);
+                        }
+                    });
+                });
+            }
+
+            const sortedIndices = Array.from(toDelete).sort((a, b) => b - a);
+            sortedIndices.forEach(index => {
+                events.splice(index, 1);
+            });
+
+            selectedEvents.clear();
+            drawCalendar();
+            alert(`Deleted ${toDelete.size} event(s).`);
+        }
+
+        function saveFile() {
+            if (!filename) {
+                alert('Please open a file first.');
+                return;
+            }
+
+            let newContent = originalContent.replace(/BEGIN:VEVENT.*?END:VEVENT/gs, '');
+            const eventsText = events.map(e => e.raw).join('\n');
+            newContent = newContent.replace('BEGIN:VCALENDAR', `BEGIN:VCALENDAR\n${eventsText}`);
+
+            const outputFilename = filename.replace('.ics', '_edited.ics');
+            const blob = new Blob([newContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = outputFilename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert(`File saved as: ${outputFilename}`);
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+    </script>
+</body>
+</html>
