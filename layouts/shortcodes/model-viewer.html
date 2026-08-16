@@ -1,69 +1,67 @@
-<!-- layouts/shortcodes/model-viewer.html -->
-<div class="model-viewer-container">
-    <div class="firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; border-radius: 4px; max-width: 800px; margin: 0 auto;"
-         class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200">
-        ⚠️ This large 3D model may not display correctly in Firefox. Please use Chrome for the best experience.
-    </div>
-    <div style="width: 100%; height: 600px; max-width: 800px; margin: 0 auto;">
-        <model-viewer
-            style="width: 100%; height: 100%;"
-            class="bg-gray-100 dark:bg-gray-800"
-            src="{{ .Get "src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.glb"}}"
-            alt="{{ .Get "alt" | default "A 3D model" }}"
-            camera-controls
-            {{ with .Get "ios-src" }}ios-src="{{ . }}"{{ end }}
-            shadow-intensity="1"
-            camera-orbit="{{ .Get "camera-orbit" | default "0deg 75deg 1500m" }}"
-            exposure="1"
-            shadow-softness="0.5">
-        </model-viewer>
-    </div>
+{{- /* A single 3D model on a stage.
+
+     Params: src, alt, ios-src, camera-orbit, color, title
+     Styling lives in layer 7 of assets/css/site.css — this file emits markup
+     and behaviour only. `.Ordinal` scopes every id and every querySelector so
+     a page can carry several viewers without them fighting over `document`.
+*/ -}}
+{{- $id  := printf "mv%d" .Ordinal -}}
+{{- $src := .Get "src" | default "https://modelviewer.dev/shared-assets/models/Astronaut.glb" -}}
+
+<div class="wgt" id="{{ $id }}">
+  <div class="wgt-hd"><b>{{ .Get "title" | default "3D model" }}</b><span class="r">drag to orbit</span></div>
+
+  <div class="wgt-note" data-ff hidden>
+    <b>Firefox</b>
+    <span>This model is large enough that Firefox may fail to display it. Chrome renders it reliably.</span>
+  </div>
+
+  <div class="wgt-stage">
+    <model-viewer
+      src="{{ $src }}"
+      alt="{{ .Get "alt" | default "A 3D model" }}"
+      camera-controls
+      {{ with .Get "ios-src" }}ios-src="{{ . }}"{{ end }}
+      shadow-intensity="1"
+      shadow-softness="0.5"
+      exposure="1"
+      loading="lazy"
+      touch-action="pan-y"
+      camera-orbit="{{ .Get "camera-orbit" | default "-30deg auto auto" }}">
+    </model-viewer>
+  </div>
 </div>
+
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    {{ with .Get "color" }}
-    const modelViewer = document.querySelector('model-viewer');
-    const color = '{{ . }}';
-    
-    modelViewer.addEventListener('load', () => {
-        const material = modelViewer.model?.materials?.[0];
-        if (material && material.pbrMetallicRoughness) {
-            // Convert hex color to RGB values (0-1 range)
-            const hex = color.replace('#', '');
-            const r = parseInt(hex.substr(0, 2), 16) / 255;
-            const g = parseInt(hex.substr(2, 2), 16) / 255;
-            const b = parseInt(hex.substr(4, 2), 16) / 255;
-            
-            material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1]);
-        }
-    });
-    {{ end }}
-    
-    checkModelSize();
-});
+(function () {
+  const root = document.getElementById({{ $id }});
+  const viewer = root.querySelector('model-viewer');
 
-async function checkModelSize() {
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) return;
-    const modelViewers = document.querySelectorAll('model-viewer');
-    const warnings = document.querySelectorAll('.firefox-warning');
-   
-    modelViewers.forEach(async (viewer, index) => {
-        const modelUrl = viewer.getAttribute('src');
-        console.log('Checking model URL:', modelUrl);
-        try {
-            const response = await fetch(modelUrl, { method: 'HEAD' });
-            if (!response.ok) {
-                console.error('Model file not found:', modelUrl);
-                return;
-            }
-            const sizeInMB = response.headers.get('content-length') / (1024 * 1024);
-            if (sizeInMB > 100 && warnings[index]) {
-                warnings[index].style.display = 'block';
-            }
-        } catch (error) {
-            console.error('Error checking model size:', error);
-        }
-    });
-}
+  {{ with .Get "color" }}
+  viewer.addEventListener('load', () => {
+    const material = viewer.model?.materials?.[0];
+    if (!material?.pbrMetallicRoughness) return;
+    const hex = {{ . }}.replace('#', '');
+    material.pbrMetallicRoughness.setBaseColorFactor([
+      parseInt(hex.substr(0, 2), 16) / 255,
+      parseInt(hex.substr(2, 2), 16) / 255,
+      parseInt(hex.substr(4, 2), 16) / 255,
+      1,
+    ]);
+  });
+  {{ end }}
+
+  /* Firefox chokes on very large glTF payloads. Only warn once we know the
+     file really is big — a blanket browser warning would be noise. */
+  if (navigator.userAgent.toLowerCase().includes('firefox')) {
+    fetch(viewer.getAttribute('src'), { method: 'HEAD' })
+      .then((res) => {
+        if (!res.ok) return;
+        const mb = res.headers.get('content-length') / (1024 * 1024);
+        if (mb > 100) root.querySelector('[data-ff]').hidden = false;
+      })
+      .catch(() => {});
+  }
+})();
 </script>

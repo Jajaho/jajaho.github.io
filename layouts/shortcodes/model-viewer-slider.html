@@ -1,396 +1,175 @@
-<!-- layouts/shortcodes/model-viewer-slider.html -->
-{{ $isDevelopment := eq hugo.Environment "development" }}
-{{ $modelFolder := site.Params.modelViewer.folder | default "models" }}
+{{- /* Two models stacked on one stage, revealed by a draggable wipe.
 
-{{/* Validate required parameters */}}
-{{ with .Get "src1" }}
-    {{ $model1Path := . }}
-{{ else }}
-    {{ errorf "The model-viewer-slider shortcode requires a 'src1' parameter" }}
-{{ end }}
+     Params: src1, src2, rot1, rot2, color1, color2, btn1-text, btn2-text,
+             alt, camera-orbit, title
 
-{{ with .Get "src2" }}
-    {{ $model2Path := . }}
-{{ else }}
-    {{ errorf "The model-viewer-slider shortcode requires a 'src2' parameter" }}
-{{ end }}
+     Both viewers are mounted and clipped against each other, so the wipe is a
+     pure CSS clip-path — no reload, no flash. Their cameras are kept in sync,
+     otherwise dragging the divider would compare two different viewpoints.
 
-<div class="model-viewer-container">
-    <div class="firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; border-radius: 4px; max-width: 800px; margin: 0 auto;"
-         class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200">
-        ⚠️ These large 3D models may not display correctly in Firefox. Please use Chrome for the best experience.
+     The sync used to run on a 60 Hz setInterval that never stopped, even with
+     the widget off-screen. It is event-driven now, with a re-entry guard: the
+     write to the target viewer fires its own camera-change, and without the
+     guard the two would push each other around forever.
+*/ -}}
+{{- $id := printf "mv%d" .Ordinal -}}
+{{- $a  := .Get "src1" -}}
+{{- $b  := .Get "src2" -}}
+{{- if not $a }}{{ errorf "model-viewer-slider: 'src1' is required (%s)" .Position }}{{ end -}}
+{{- if not $b }}{{ errorf "model-viewer-slider: 'src2' is required (%s)" .Position }}{{ end -}}
+{{- $labelA := .Get "btn1-text" | default "Model 1" -}}
+{{- $labelB := .Get "btn2-text" | default "Model 2" -}}
+
+<div class="wgt" id="{{ $id }}">
+  <div class="wgt-hd">
+    <b>{{ .Get "title" | default "Comparison" }}</b>
+    <span class="r">drag the divider</span>
+  </div>
+
+  <div class="wgt-note" data-ff hidden>
+    <b>Firefox</b>
+    <span>These models are large enough that Firefox may fail to display them. Chrome renders them reliably.</span>
+  </div>
+
+  <div class="wgt-stage wgt-stage--stack" data-stage>
+    <model-viewer data-a
+      src="{{ $a }}"
+      orientation="{{ .Get "rot1" | default "0 0 0" }}"
+      alt="{{ .Get "alt" | default $labelA }}"
+      camera-controls
+      camera-orbit="{{ .Get "camera-orbit" | default "-30deg auto auto" }}"
+      max-camera-orbit="auto 100deg auto"
+      interaction-prompt="none"
+      shadow-intensity="1"
+      loading="lazy"
+      touch-action="pan-y">
+    </model-viewer>
+
+    <model-viewer data-b
+      src="{{ $b }}"
+      orientation="{{ .Get "rot2" | default "0 0 0" }}"
+      alt="{{ .Get "alt" | default $labelB }}"
+      camera-controls
+      camera-orbit="{{ .Get "camera-orbit" | default "-30deg auto auto" }}"
+      max-camera-orbit="auto 100deg auto"
+      interaction-prompt="none"
+      shadow-intensity="1"
+      loading="lazy"
+      touch-action="pan-y">
+    </model-viewer>
+
+    <span class="wgt-tag wgt-tag--tl">{{ $labelA }}</span>
+    <span class="wgt-tag wgt-tag--tr">{{ $labelB }}</span>
+
+    <div class="wgt-split" data-split tabindex="0"
+         role="slider" aria-label="Reveal {{ $labelA }} or {{ $labelB }}"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <span class="wgt-split-grip" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6l-5 6 5 6M15 6l5 6-5 6"/>
+        </svg>
+      </span>
     </div>
-    
-    <div class="model-container">
-        <model-viewer 
-            id="model1-viewer"
-            class="model-viewer bg-gray-100 dark:bg-gray-800"
-            src="{{ .Get "src1" }}"
-            orientation="{{.Get "rot1" | default "0 0 0" }}"
-            alt="{{ .Get "alt" | default "Model 1" }}"
-            camera-controls
-            camera-orbit="-30deg auto auto"
-            max-camera-orbit="auto 100deg auto"
-            interaction-prompt-style="basic"
-            shadow-intensity="1"
-            touch-action="pan-y">
-        </model-viewer>
-        
-        <model-viewer 
-            id="model2-viewer"
-            class="model-viewer bg-gray-100 dark:bg-gray-800"
-            src="{{ .Get "src2" }}"
-            orientation="{{.Get "rot2" | default "0 0 0" }}"
-            alt="{{ .Get "alt" | default "Model 2" }}"
-            camera-controls
-            camera-orbit="-30deg auto auto"
-            max-camera-orbit="auto 100deg auto"
-            interaction-prompt-style="basic"
-            shadow-intensity="1"
-            touch-action="pan-y">
-        </model-viewer>
-
-        <div class="slider-container">
-            <div class="slider-line">
-                <div class="slider-handle"></div>
-            </div>
-        </div>
-
-        <!-- Labels for models -->
-        <div class="model-labels">
-            <div class="label-left">{{ .Get "btn1-text" | default "Model 1" }}</div>
-            <div class="label-right">{{ .Get "btn2-text" | default "Model 2" }}</div>
-        </div>
-    </div>
+  </div>
 </div>
 
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-
-<style>
-.model-container {
-    position: relative;
-    width: 100%;
-    height: 600px;
-    max-width: 800px;
-    margin: 0 auto;
-    overflow: hidden;
-    background-color: #f5f5f5;
-}
-
-@media (prefers-color-scheme: dark) {
-    .model-container {
-        background-color: #374151;
-    }
-}
-
-.model-viewer {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-}
-
-#model1-viewer {
-    clip-path: inset(0 50% 0 0);
-}
-
-#model2-viewer {
-    clip-path: inset(0 0 0 50%);
-}
-
-.slider-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.slider-line {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 4px;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.8);
-    transform: translateX(-50%);
-    pointer-events: all;
-    cursor: ew-resize;
-}
-
-@media (prefers-color-scheme: dark) {
-    .slider-line {
-        background: rgba(229, 231, 235, 0.8);
-    }
-}
-
-.slider-handle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    background: #ffffff;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: all;
-    cursor: ew-resize;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-@media (prefers-color-scheme: dark) {
-    .slider-handle {
-        background: #1f2937;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-}
-
-.slider-handle::before,
-.slider-handle::after {
-    content: '';
-    position: absolute;
-    width: 2px;
-    height: 16px;
-    background: #666;
-}
-
-@media (prefers-color-scheme: dark) {
-    .slider-handle::before,
-    .slider-handle::after {
-        background: #9ca3af;
-    }
-}
-
-.slider-handle::before {
-    transform: translateX(-4px);
-}
-
-.slider-handle::after {
-    transform: translateX(4px);
-}
-
-.model-labels {
-    position: absolute;
-    top: 16px;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 32px;
-    pointer-events: none;
-}
-
-.label-left, .label-right {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000000;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .label-left, .label-right {
-        background: rgba(31, 41, 55, 0.9);
-        color: #ffffff;
-    }
-}
-
-/* This keeps child nodes hidden while the element loads */
-:not(:defined) > * {
-    display: none;
-}
-</style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const container = document.querySelector('.model-container');
-    const model1Viewer = document.querySelector('#model1-viewer');
-    const model2Viewer = document.querySelector('#model2-viewer');
-    const sliderLine = document.querySelector('.slider-line');
-    const sliderHandle = document.querySelector('.slider-handle');
+(function () {
+  const root  = document.getElementById({{ $id }});
+  const stage = root.querySelector('[data-stage]');
+  const a     = root.querySelector('[data-a]');
+  const b     = root.querySelector('[data-b]');
+  const split = root.querySelector('[data-split]');
 
-    let isDragging = false;
-    let startX;
-    let sliderPosition = 50;
-    let lastSyncState = {
-        orbit: '',
-        target: '',
-        fov: '',
-        zoom: ''
-    };
-    let lastActiveModel = null;
+  /* — the wipe — */
+  let at = 50;
 
-    // Apply color to model if specified
-    function applyColor(modelViewer, color) {
-        if (!color) return;
-        
-        modelViewer.addEventListener('load', () => {
-            const material = modelViewer.model?.materials?.[0];
-            if (material && material.pbrMetallicRoughness) {
-                // Convert hex color to RGB values (0-1 range)
-                const hex = color.replace('#', '');
-                const r = parseInt(hex.substr(0, 2), 16) / 255;
-                const g = parseInt(hex.substr(2, 2), 16) / 255;
-                const b = parseInt(hex.substr(4, 2), 16) / 255;
-                
-                material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1]);
-            }
-        });
-    }
+  function place(pct) {
+    at = Math.max(0, Math.min(100, pct));
+    split.style.left = at + '%';
+    split.setAttribute('aria-valuenow', Math.round(at));
+    a.style.clipPath = `inset(0 ${100 - at}% 0 0)`;
+    b.style.clipPath = `inset(0 0 0 ${at}%)`;
+  }
 
-    // Apply colors to models if specified
-    {{ with .Get "color1" }}
-    applyColor(model1Viewer, '{{ . }}');
-    {{ end }}
-    
-    {{ with .Get "color2" }}
-    applyColor(model2Viewer, '{{ . }}');
-    {{ end }}
+  function fromEvent(e) {
+    const box = stage.getBoundingClientRect();
+    const x = e.clientX ?? e.touches?.[0]?.clientX;
+    if (x === undefined) return;
+    place(((x - box.left) / box.width) * 100);
+  }
 
-    // Track which model is being manipulated
-    function handleUserInteraction(modelViewer) {
-        modelViewer.addEventListener('pointerdown', () => {
-            lastActiveModel = modelViewer;
-        });
-        
-        // Also track scroll/zoom events
-        modelViewer.addEventListener('wheel', () => {
-            lastActiveModel = modelViewer;
-        });
-    }
+  let dragging = false;
+  const move = (e) => { if (dragging) { e.preventDefault(); fromEvent(e); } };
+  const stop = () => {
+    dragging = false;
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', stop);
+    document.removeEventListener('touchmove', move);
+    document.removeEventListener('touchend', stop);
+  };
+  const start = (e) => {
+    dragging = true;
+    e.preventDefault();
+    fromEvent(e);
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', stop);
+    document.addEventListener('touchmove', move, { passive: false });
+    document.addEventListener('touchend', stop);
+  };
 
-    // Add interaction tracking to both models
-    handleUserInteraction(model1Viewer);
-    handleUserInteraction(model2Viewer);
+  split.addEventListener('mousedown', start);
+  split.addEventListener('touchstart', start, { passive: false });
+  split.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 10 : 2;
+    if (e.key === 'ArrowLeft')  { place(at - step); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { place(at + step); e.preventDefault(); }
+    if (e.key === 'Home')       { place(0);   e.preventDefault(); }
+    if (e.key === 'End')        { place(100); e.preventDefault(); }
+  });
 
-    // Improved camera sync function with complete sync
-    function syncCamera() {
-        if (!lastActiveModel) return;
+  place(50);
 
-        const sourceViewer = lastActiveModel;
-        const targetViewer = sourceViewer === model1Viewer ? model2Viewer : model1Viewer;
+  /* — camera sync — */
+  let syncing = false;
+  function mirror(from, to) {
+    if (syncing) return;
+    syncing = true;
+    to.cameraOrbit  = from.getCameraOrbit().toString();
+    to.cameraTarget = from.getCameraTarget().toString();
+    to.fieldOfView  = from.getFieldOfView().toString();
+    requestAnimationFrame(() => { syncing = false; });
+  }
+  a.addEventListener('camera-change', () => mirror(a, b));
+  b.addEventListener('camera-change', () => mirror(b, a));
 
-        const currentOrbit = sourceViewer.getCameraOrbit().toString();
-        const currentTarget = sourceViewer.getCameraTarget().toString();
-        const currentFOV = sourceViewer.getFieldOfView().toString();
-        const currentZoom = sourceViewer.getCameraTarget().z.toString();
+  /* — optional per-model tint — */
+  function tint(viewer, hex) {
+    viewer.addEventListener('load', () => {
+      const material = viewer.model?.materials?.[0];
+      if (!material?.pbrMetallicRoughness) return;
+      const h = hex.replace('#', '');
+      material.pbrMetallicRoughness.setBaseColorFactor([
+        parseInt(h.substr(0, 2), 16) / 255,
+        parseInt(h.substr(2, 2), 16) / 255,
+        parseInt(h.substr(4, 2), 16) / 255,
+        1,
+      ]);
+    });
+  }
+  {{ with .Get "color1" }}tint(a, {{ . }});{{ end }}
+  {{ with .Get "color2" }}tint(b, {{ . }});{{ end }}
 
-        // Only update if any camera parameters have changed
-        if (currentOrbit !== lastSyncState.orbit ||
-            currentTarget !== lastSyncState.target ||
-            currentFOV !== lastSyncState.fov ||
-            currentZoom !== lastSyncState.zoom) {
-            
-            // Synchronize all camera parameters
-            targetViewer.cameraOrbit = currentOrbit;
-            targetViewer.cameraTarget = currentTarget;
-            targetViewer.fieldOfView = currentFOV;
-
-            // Force a proper zoom sync by updating the camera distance
-            const orbitParts = currentOrbit.split(' ');
-            if (orbitParts.length >= 3) {
-                const theta = orbitParts[0];
-                const phi = orbitParts[1];
-                const radius = orbitParts[2];
-                targetViewer.cameraOrbit = `${theta} ${phi} ${radius}`;
-            }
-
-            // Store new state
-            lastSyncState = {
-                orbit: currentOrbit,
-                target: currentTarget,
-                fov: currentFOV,
-                zoom: currentZoom
-            };
-        }
-    }
-
-    // Start periodic camera sync with higher frequency for smoother zoom
-    const syncInterval = setInterval(syncCamera, 1000 / 60); // 60fps sync rate
-
-    // Improved drag handling
-    function startDragging(e) {
-        isDragging = true;
-        startX = (e.clientX || e.touches[0].clientX);
-        
-        e.preventDefault();
-        
-        document.addEventListener('mousemove', onDrag);
-        document.addEventListener('mouseup', stopDragging);
-        document.addEventListener('touchmove', onDrag);
-        document.addEventListener('touchend', stopDragging);
-    }
-
-    function onDrag(e) {
-        if (!isDragging) return;
-
-        e.preventDefault();
-        
-        const containerRect = container.getBoundingClientRect();
-        const currentX = (e.clientX || e.touches[0].clientX);
-        
-        const positionInContainer = currentX - containerRect.left;
-        const percentage = (positionInContainer / containerRect.width) * 100;
-        
-        sliderPosition = Math.max(0, Math.min(100, percentage));
-        
-        updateSliderPosition(sliderPosition);
-    }
-
-    function stopDragging() {
-        isDragging = false;
-        document.removeEventListener('mousemove', onDrag);
-        document.removeEventListener('mouseup', stopDragging);
-        document.removeEventListener('touchmove', onDrag);
-        document.removeEventListener('touchend', stopDragging);
-    }
-
-    function updateSliderPosition(percentage) {
-        sliderLine.style.left = `${percentage}%`;
-        model1Viewer.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-        model2Viewer.style.clipPath = `inset(0 0 0 ${percentage}%)`;
-    }
-
-    // Initialize slider position
-    updateSliderPosition(50);
-
-    // Add event listeners for slider
-    sliderHandle.addEventListener('mousedown', startDragging);
-    sliderHandle.addEventListener('touchstart', startDragging);
-    sliderLine.addEventListener('mousedown', startDragging);
-    sliderLine.addEventListener('touchstart', startDragging);
-
-    // Cleanup function for when the component is destroyed
-    function cleanup() {
-        clearInterval(syncInterval);
-        stopDragging();
-    }
-
-    // Check for Firefox and large models
-    async function checkModelSize() {
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) return;
-        
-        try {
-            const model1Response = await fetch(model1Viewer.src, { method: 'HEAD' });
-            const model2Response = await fetch(model2Viewer.src, { method: 'HEAD' });
-            
-            const size1InMB = model1Response.headers.get('content-length') / (1024 * 1024);
-            const size2InMB = model2Response.headers.get('content-length') / (1024 * 1024);
-            
-            if (size1InMB > 100 || size2InMB > 100) {
-                document.querySelector('.firefox-warning').style.display = 'block';
-            }
-        } catch (error) {
-            console.error('Error checking model size:', error);
-        }
-    }
-
-    checkModelSize();
-});
+  if (navigator.userAgent.toLowerCase().includes('firefox')) {
+    Promise.all([a, b].map((v) => fetch(v.getAttribute('src'), { method: 'HEAD' })))
+      .then((responses) => {
+        const big = responses.some(
+          (r) => r.ok && r.headers.get('content-length') / (1024 * 1024) > 100
+        );
+        if (big) root.querySelector('[data-ff]').hidden = false;
+      })
+      .catch(() => {});
+  }
+})();
 </script>

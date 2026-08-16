@@ -1,55 +1,43 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
-</head>
+{{- /* A Sketchfab model driven through the viewer API rather than the plain
+     oEmbed iframe, so the page can start it, spin it, and hook viewer events.
 
-<body>
-    <!-- Insert an empty iframe with attributes -->
-    <iframe 
-        src="" 
-        id="api-frame" 
-        width="{{ .Get "width" | default "600" }}" 
-        height="{{ .Get "height" | default "480" }}" 
-        allow="autoplay; fullscreen; xr-spatial-tracking" 
-        xr-spatial-tracking 
-        execution-while-out-of-viewport 
-        execution-while-not-rendered 
-        web-share 
-        allowfullscreen 
-        mozallowfullscreen="true" 
-        webkitallowfullscreen="true">
-    </iframe>
+     Params: id (required), version, autospin, title
 
-    <!-- Initialize the viewer -->
-    <script type="text/javascript">
-        var version = '1.12.1'; 
-        var iframe = document.getElementById( 'api-frame' );
-        var uid = '7w7pAfrCfjovwykkEeRFLGw5SXS';
+     This used to emit a whole <!DOCTYPE html> document — <html>, <head>,
+     <body> and all — into the middle of an article, and the model uid was
+     hard-coded in the script. Both are fixed here.
+*/ -}}
+{{- $uid := .Get "id" -}}
+{{- if not $uid }}{{ errorf "sketchfab_custom: 'id' is required (%s)" .Position }}{{ end -}}
+{{- $version := .Get "version" | default "1.12.1" -}}
+{{- $frame := printf "sf%d" .Ordinal -}}
 
-        // By default, the latest version of the viewer API will be used.
-        var client = new Sketchfab( version, iframe );
+<div class="wgt">
+  <div class="wgt-hd">
+    <b>{{ .Get "title" | default "Sketchfab model" }}</b>
+    <span class="r">drag to orbit</span>
+  </div>
+  <div class="wgt-stage">
+    <iframe id="{{ $frame }}"
+      title="{{ .Get "title" | default "Sketchfab 3D model" }}"
+      allow="autoplay; fullscreen; xr-spatial-tracking"
+      xr-spatial-tracking
+      allowfullscreen
+      execution-while-out-of-viewport
+      execution-while-not-rendered
+      web-share></iframe>
+  </div>
+</div>
 
-        // Alternatively, you can request a specific version.
-        // var client = new Sketchfab( '1.12.1', iframe );
-
-        client.init( uid, {
-            success: function onSuccess( api ){
-                api.start();
-                api.addEventListener( 'viewerready', function() {
-
-                    // API is ready to use
-                    // Insert your code here
-                    console.log( 'Viewer is ready' );
-
-                } );
-            },
-            error: function onError() {
-                console.log( 'Viewer error' );
-            },
-            autostart: 1,
-            autospin: 0.5
-        } );
-    </script>
-</body>
-</html>
+<script src="https://static.sketchfab.com/api/sketchfab-viewer-{{ $version }}.js"></script>
+<script>
+(function () {
+  const frame = document.getElementById({{ $frame }});
+  new Sketchfab({{ $version }}, frame).init({{ $uid }}, {
+    autostart: 1,
+    autospin: {{ .Get "autospin" | default 0.5 }},
+    success: (api) => api.start(),
+    error: () => console.error('Sketchfab viewer failed to initialise'),
+  });
+})();
+</script>

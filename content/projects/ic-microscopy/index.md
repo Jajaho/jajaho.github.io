@@ -92,14 +92,14 @@ The hard way: Setting up your own service helper to the same. This can either be
 
 Adding the optical image as a normal map to the glb file greatly enhances visibility of small features:
 
-<div class="flex flex-col md:flex-row gap-4 justify-center items-start my-4">
-  <figure class="w-full md:w-1/2">
-    <img src="intel_no-normalMap.png" alt="Intel cpu without normal map" class="rounded-lg shadow-md">
-    <figcaption class="text-center text-sm mt-2">Without normal map</figcaption>
+<div class="figrow">
+  <figure>
+    <img src="intel_no-normalMap.png" alt="Intel cpu without normal map">
+    <figcaption>Without normal map</figcaption>
   </figure>
-  <figure class="w-full md:w-1/2">
-    <img src="intel_with-normalMap.png" alt="Intel cpu with normal map" class="rounded-lg shadow-md">
-    <figcaption class="text-center text-sm mt-2">With normal map</figcaption>
+  <figure>
+    <img src="intel_with-normalMap.png" alt="Intel cpu with normal map">
+    <figcaption>With normal map</figcaption>
   </figure>
 </div>
 
@@ -107,8 +107,6 @@ Adding the optical image as a normal map to the glb file greatly enhances visibi
 - ✅ Add dimensions 
     - Part the scale into two parts so the actual feature size can be interpreted more easily (like in the MultiFile Analyzer)
 - Add an animated or at least coloured texture to highlight certain parts of the ic.
-- Add hotspots for base emitter source 
-  <figure class="w-full md:w-1/2">
-    <img src="hotspots.png" alt="Phillips chip with hotspots" class="rounded-lg shadow-md">
-    <figcaption class="text-center text-sm mt-2">Base and emitter labeled with hotspots.</figcaption>
-  </figure>
+- Add hotspots for base emitter source
+
+{{< figure src="hotspots.png" caption="Base and emitter labeled with hotspots." >}}

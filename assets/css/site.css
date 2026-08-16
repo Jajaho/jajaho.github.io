@@ -9,6 +9,7 @@
      4. primitives  composable layout objects — these own ALL spacing
      5. components  site furniture built from primitives
      6. prose       article body (replaces `prose prose-slate dark:prose-invert`)
+     7. widgets     the interactive shortcodes, as one instrument vocabulary
 
    RULES:
      - No file outside layer 1 may contain a raw hex colour or px length.
@@ -32,6 +33,15 @@
   --cu:        #b4632f;   /* accent: PCB copper */
   --cu-2:      #8e4c22;
   --cu-soft:   #faede4;
+
+  /* Status. Only widgets use these, and only for genuinely semantic states
+     (destructive action, committed action) — never for decoration. */
+  --ok:        #1f7a52;
+  --danger:    #a83232;
+
+  /* Reciprocal space, in the lattice widget. It needs a second data colour
+     that survives next to copper without competing with it. */
+  --lat-k:     #3b6ea5;
 
   /* — type — */
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -87,6 +97,11 @@
   --rail-width: 18rem;   /* 288px */
   --thumb-ratio: 16 / 9;
 
+  /* Interactive widgets (3D viewers, canvases). One height for all of them,
+     so a page with several does not read as a pile of unrelated embeds.
+     Individual widgets raise it with a modifier, never with a literal. */
+  --wgt-stage-h: clamp(20rem, 55vh, 34rem);
+
   --border: 1px solid var(--line);
   --border-hair: 1px solid var(--hair);
 }
@@ -108,6 +123,9 @@ html.dark {
   --cu:      #e08a4e;
   --cu-2:    #f0a468;
   --cu-soft: #2a1d14;
+  --ok:      #4bb98a;
+  --danger:  #e5736b;
+  --lat-k:   #6ea8dd;
 }
 
 @media (max-width: 60rem) {
@@ -126,6 +144,8 @@ html {
 }
 
 img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
+/* Widgets toggle parts that set their own display, so [hidden] has to win. */
+[hidden] { display: none !important; }
 input, button, textarea, select { font: inherit; color: inherit; }
 table { border-collapse: collapse; }
 
@@ -604,125 +624,437 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 /* Wide content must scroll inside itself, never the page. */
 .prose > pre, .prose > table { max-width: 100%; }
 
+/* Callouts. Same shape as .wgt-note, but this one lives in the text flow, so
+   it is bordered rather than filled edge to edge. */
+.callout {
+  display: flex; gap: var(--s-3); align-items: baseline;
+  padding: var(--s-3) var(--s-4);
+  border-left: 2px solid var(--cu);
+  background: var(--cu-soft);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+.callout > b {
+  flex: none;
+  font-family: var(--font-mono); font-size: var(--t-tick); font-weight: 500;
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--cu-2);
+}
+.callout > div > * + * { margin-top: var(--s-3); }
+.callout--warning { border-left-color: var(--danger); }
+.callout--warning > b { color: var(--danger); }
+
+/* Two posts lay figures out side by side. That was the only thing they used
+   Tailwind for, so it becomes a primitive instead of a soup of utilities. */
+.figrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--s-4);
+}
+.figrow figure { margin: 0; }
+.figrow img { width: 100%; border: var(--border); }
+
 /* ==========================================================================
-   7. WIDGET COMPATIBILITY LAYER  —  TEMPORARY, DELETE AS WIDGETS ARE PORTED
+   7. WIDGETS  —  the interactive shortcodes
 
-   layouts/shortcodes/{crystal-lattice,ics_edit,model-viewer*}.html and
-   content/projects/ic-microscopy/index.md were written against the old
-   theme's Tailwind bundle (~102 utility classes across ~2,000 lines).
-   Dropping that bundle left them unstyled.
+   Every shortcode in layouts/shortcodes/ used to carry its own <style> block
+   with its own palette, its own button shape and its own idea of what a
+   control looks like. Three of them shipped a whole <!DOCTYPE html> document
+   into the middle of an article, so their body{} rules restyled the page
+   around them; one pulled the Tailwind CDN, one pulled Google Fonts, and the
+   ones that had a dark mode drove it off prefers-color-scheme — which the
+   site's own theme toggle cannot reach.
 
-   Rather than reproduce Tailwind, this layer implements only the classes
-   those widgets actually use, remapped onto the design tokens so the widgets
-   read as part of the site instead of as a foreign palette.
+   This layer replaces all of it. A widget is an INSTRUMENT: a bordered panel,
+   a strip that names it, a stage, and controls in the site's mono/copper
+   vocabulary. Shortcodes now emit markup and behaviour only, never style.
 
-   This is scaffolding, not architecture. Each rule here should disappear when
-   its widget is rewritten against layers 4–6. Do not add to it for new work.
+   Composition — order is free, the block draws the dividers:
+     <div class="wgt">
+       <div class="wgt-hd">…</div>      name strip
+       <div class="wgt-note">…</div>    warning
+       <div class="wgt-bar">…</div>     controls, repeatable
+       <div class="wgt-stage">…</div>   the canvas / viewer / iframe
+       <dl  class="wgt-specs">…</dl>    readouts
+     </div>
    ========================================================================== */
 
-/* — layout — */
-.flex { display: flex; }
-.grid { display: grid; }
-.block { display: block; }
-.inline { display: inline; }
-.hidden { display: none; }
-.relative { position: relative; }
-.absolute { position: absolute; }
-.flex-col { flex-direction: column; }
-.flex-1 { flex: 1 1 0%; }
-.items-center { align-items: center; }
-.items-start { align-items: flex-start; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.justify-end { justify-content: flex-end; }
-.text-center { text-align: center; }
-.overflow-hidden { overflow: hidden; }
-.cursor-pointer { cursor: pointer; }
-.mx-auto { margin-inline: auto; }
-.transition { transition: all 0.15s ease; }
-.opacity-75 { opacity: 0.75; }
-
-.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-.grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
-.col-span-7 { grid-column: span 7 / span 7; }
-.space-y-3 > * + * { margin-top: var(--s-3); }
-
-/* — sizing — */
-.w-full { width: 100%; }
-.h-full { height: 100%; }
-.max-w-full { max-width: 100%; }
-.max-w-md { max-width: 28rem; }
-.max-w-7xl { max-width: var(--page-max); }
-.min-h-screen { min-height: 100vh; }
-.min-h-\[550px\] { min-height: 550px; }
-.min-h-\[600px\] { min-height: 600px; }
-
-/* — spacing — */
-.p-2 { padding: var(--s-2); }
-.p-4 { padding: var(--s-4); }
-.p-6 { padding: var(--s-5); }
-.p-8 { padding: var(--s-6); }
-.px-2 { padding-inline: var(--s-2); }
-.px-4 { padding-inline: var(--s-4); }
-.px-6 { padding-inline: var(--s-5); }
-.py-1 { padding-block: var(--s-1); }
-.py-2 { padding-block: var(--s-2); }
-.py-3 { padding-block: var(--s-3); }
-.mb-2 { margin-bottom: var(--s-2); }
-.mb-4 { margin-bottom: var(--s-4); }
-.mb-6 { margin-bottom: var(--s-5); }
-.mt-2 { margin-top: var(--s-2); }
-.ml-1 { margin-left: var(--s-1); }
-.mx-4 { margin-inline: var(--s-4); }
-.my-4 { margin-block: var(--s-4); }
-.gap-2 { gap: var(--s-2); }
-.gap-3 { gap: var(--s-3); }
-.gap-4 { gap: var(--s-4); }
-
-/* — type — */
-.text-xs  { font-size: var(--t-label); }
-.text-sm  { font-size: var(--t-code); }
-.text-lg  { font-size: var(--t-prose); }
-.text-xl  { font-size: var(--t-heading); }
-.text-3xl { font-size: var(--t-display); letter-spacing: var(--track-tight); }
-.font-medium   { font-weight: 500; }
-.font-semibold { font-weight: 600; }
-.font-bold     { font-weight: 700; }
-
-/* — surface: all greys collapse onto the token palette — */
-.bg-white, .bg-gray-50, .bg-gray-100,
-.dark\:bg-gray-700, .dark\:bg-gray-800, .dark\:bg-gray-900 { background: var(--panel-2); }
-.bg-gray-400, .bg-gray-500 { background: var(--ink-3); color: var(--bg); }
-.text-gray-600, .text-gray-700, .text-gray-800,
-.dark\:text-gray-200, .dark\:text-gray-300 { color: var(--ink-2); }
-.text-white { color: #fff; }
-
-.border { border: var(--border-hair); }
-.border-gray-300, .dark\:border-gray-600, .dark\:border-gray-700 { border-color: var(--hair); }
-.rounded, .rounded-lg { border-radius: 0; }  /* Copper is square-cornered */
-.rounded-full { border-radius: 999px; }
-.shadow-md, .shadow-xl, .shadow-2xl { box-shadow: none; }
-
-/* — accent: blues become copper — */
-.bg-blue-50, .border-blue-100 { background: var(--cu-soft); border-color: var(--cu-soft); }
-.bg-blue-500, .from-blue-500, .to-purple-600, .bg-gradient-to-br { background: var(--cu); color: #fff; }
-.text-blue-600, .dark\:text-blue-400 { color: var(--cu); }
-.accent-blue-600, .dark\:accent-blue-400 { accent-color: var(--cu); }
-.hover\:bg-blue-600:hover, .hover\:bg-gray-500:hover, .hover\:bg-gray-600:hover { background: var(--cu-2); color: #fff; }
-
-/* — semantic states — */
-.bg-green-500 { background: #1f7a52; color: #fff; }
-.hover\:bg-green-600:hover { background: #17603f; }
-.bg-red-500 { background: #a83232; color: #fff; }
-.hover\:bg-red-600:hover { background: #8c2828; }
-.bg-yellow-50, .dark\:bg-yellow-900 { background: var(--cu-soft); }
-.border-yellow-200, .dark\:border-yellow-700 { border-color: var(--cu); }
-.text-yellow-800, .dark\:text-yellow-200 { color: var(--cu-2); }
-
-/* — responsive — */
-@media (min-width: 48rem) {
-  .md\:w-1\/2 { width: 50%; }
-  .md\:flex-row { flex-direction: row; }
-  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* — the block — */
+.wgt {
+  --wgt-pad: var(--s-4);
+  border: var(--border);
+  background: var(--panel);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
 }
+/* The block, not its children, owns every internal rule. */
+.wgt > * + *,
+.wgt-group > * + * { border-top: var(--border-hair); }
+.wgt > .wgt-hd + * { border-top-color: var(--line); }
+
+/* Widgets live inside .prose, which is capped at --measure. They fill it
+   rather than inventing their own width — that is what makes a page with
+   three viewers on it read as one document. */
+.prose .wgt { max-width: 100%; }
+
+/* — header strip — */
+.wgt-hd {
+  display: flex; align-items: baseline; gap: var(--s-3);
+  padding: var(--s-2) var(--wgt-pad);
+  font-family: var(--font-mono); font-size: var(--t-label);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.wgt-hd b { font-weight: 500; color: var(--ink-2); }
+.wgt-hd .r { margin-left: auto; }
+
+/* — stage: whatever actually renders — */
+.wgt-stage {
+  position: relative;
+  height: var(--wgt-stage-h);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.wgt-stage > model-viewer,
+.wgt-stage > canvas,
+.wgt-stage > iframe,
+.wgt-stage > img,
+.wgt-stage > video {
+  display: block; width: 100%; height: 100%; border: 0;
+  background: var(--panel-2);
+}
+.wgt-stage--tall  { --wgt-stage-h: clamp(24rem, 68vh, 40rem); }
+.wgt-stage--short { --wgt-stage-h: clamp(14rem, 38vh, 22rem); }
+/* Several viewers occupying one stage, revealed against each other by clip-path. */
+.wgt-stage--stack > model-viewer { position: absolute; inset: 0; }
+/* A canvas drawn at a fixed resolution: centre it and keep its aspect rather
+   than stretching the drawing surface to the stage. */
+.wgt-stage--fit { display: grid; place-items: center; padding: var(--s-4); }
+.wgt-stage--fit > canvas {
+  width: auto; height: auto;
+  max-width: 100%; max-height: 100%;
+}
+
+/* Side-by-side stages: real/reciprocal lattice, A/B comparisons. */
+.wgt-panes { display: grid; grid-template-columns: 1fr; }
+.wgt-pane  { display: grid; grid-template-rows: auto 1fr; min-width: 0; }
+.wgt-pane > * + * { border-top: var(--border-hair); }
+@media (min-width: 45rem) {
+  .wgt-panes { grid-template-columns: 1fr 1fr; }
+  .wgt-panes > * + * { border-left: var(--border-hair); }
+}
+@media (max-width: 45rem) {
+  .wgt-panes > * + * { border-top: var(--border-hair); }
+}
+
+/* — control bars — */
+.wgt-bar {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--s-3) var(--s-5);
+  padding: var(--s-3) var(--wgt-pad);
+}
+.wgt-bar--end { justify-content: flex-end; }
+.wgt-bar > .sep { flex: 1 1 auto; }
+
+/* A labelled control. Grows to fill the bar; several share one line. */
+.wgt-field {
+  display: flex; flex-direction: column; gap: var(--s-1);
+  min-width: 0; flex: 1 1 12rem;
+}
+.wgt-field--fixed { flex: 0 0 auto; }
+
+.wgt-lab {
+  display: flex; align-items: baseline; gap: var(--s-2);
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3);
+}
+/* Live readout of the control this labels. */
+.wgt-lab .v { margin-left: auto; color: var(--cu); font-variant-numeric: tabular-nums; }
+
+.wgt-check {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink-2); cursor: pointer;
+}
+
+/* — form controls — */
+.wgt select,
+.wgt input[type="text"],
+.wgt input[type="number"],
+.wgt input[type="date"] {
+  width: 100%;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink); background: var(--panel);
+  border: var(--border-hair); border-radius: 0;
+  padding: var(--s-2) var(--s-3);
+}
+.wgt select:focus,
+.wgt input:focus { outline: none; border-color: var(--cu); }
+
+.wgt input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: var(--s-4);
+  background: transparent; cursor: pointer;
+}
+.wgt input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: var(--line); }
+.wgt input[type="range"]::-moz-range-track { height: 1px; background: var(--line); }
+.wgt input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: var(--s-3); height: var(--s-3);
+  margin-top: calc(var(--s-3) / -2);
+  background: var(--cu); border: 0; border-radius: 0;
+}
+.wgt input[type="range"]::-moz-range-thumb {
+  width: var(--s-3); height: var(--s-3);
+  background: var(--cu); border: 0; border-radius: 0;
+}
+.wgt input[type="checkbox"] {
+  accent-color: var(--cu);
+  width: var(--s-3); height: var(--s-3);
+}
+
+/* — buttons — */
+.wgt-btn {
+  /* inline-block, not inline: a <label> can wear this class too (the file
+     picker in the ICS editor), and an inline box ignores vertical padding. */
+  display: inline-block;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  line-height: 1;
+  color: var(--ink); background: var(--panel);
+  border: var(--border); border-radius: 0;
+  padding: var(--s-2) var(--s-3);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.wgt-btn:hover { background: var(--cu-soft); color: var(--cu-2); border-color: var(--cu); }
+.wgt-btn[aria-pressed="true"],
+.wgt-btn.is-on { background: var(--cu); border-color: var(--cu); color: var(--bg); }
+.wgt-btn[disabled] { opacity: 0.4; cursor: default; }
+.wgt-btn[disabled]:hover { background: var(--panel); color: var(--ink); border-color: var(--line); }
+
+.wgt-btn--primary { background: var(--cu); border-color: var(--cu); color: var(--bg); }
+.wgt-btn--primary:hover { background: var(--cu-2); border-color: var(--cu-2); color: var(--bg); }
+.wgt-btn--ok { border-color: var(--ok); color: var(--ok); }
+.wgt-btn--ok:hover { background: var(--ok); border-color: var(--ok); color: var(--bg); }
+.wgt-btn--danger { border-color: var(--danger); color: var(--danger); }
+.wgt-btn--danger:hover { background: var(--danger); border-color: var(--danger); color: var(--bg); }
+
+.wgt-btn--icon {
+  padding: 0; width: var(--s-6); height: var(--s-6);
+  display: grid; place-items: center;
+}
+.wgt-btn--icon svg { width: var(--s-4); height: var(--s-4); stroke: currentColor; }
+
+/* A direction pad. Buttons carry data-dir; the grid places them. */
+.wgt-dpad { display: grid; grid-template-columns: repeat(3, var(--s-7)); gap: var(--s-1); }
+.wgt-dpad .wgt-btn {
+  width: 100%; height: var(--s-7); padding: 0;
+  display: grid; place-items: center; font-size: var(--t-body);
+}
+.wgt-dpad [data-dir="up"]    { grid-area: 1 / 2; }
+.wgt-dpad [data-dir="left"]  { grid-area: 2 / 1; }
+.wgt-dpad [data-dir="right"] { grid-area: 2 / 3; }
+.wgt-dpad [data-dir="down"]  { grid-area: 3 / 2; }
+
+/* — explanatory text inside a widget — */
+.wgt-help {
+  padding: var(--s-3) var(--wgt-pad);
+  font-size: var(--t-nav); line-height: var(--lh-body);
+  color: var(--ink-2);
+}
+.wgt-help strong { color: var(--ink); font-weight: 600; }
+.wgt-help ul { padding-left: 1.2em; margin-top: var(--s-2); }
+.wgt-help li + li { margin-top: var(--s-1); }
+
+.wgt-fail { color: var(--danger); }
+
+/* Score popup: rises out of the board and fades. */
+.wgt-pop {
+  position: absolute; z-index: 5; pointer-events: none;
+  font-family: var(--font-mono); font-size: var(--t-heading); font-weight: 600;
+  color: var(--ok);
+  animation: wgt-pop 1.6s ease-out forwards;
+}
+@keyframes wgt-pop {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(calc(var(--s-8) * -1)); }
+}
+
+/* — week calendar (the ICS editor) — */
+.wgt-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.wgt-cal-day {
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3); background: var(--panel-2);
+  padding: var(--s-2) var(--s-3);
+  border-left: var(--border-hair);
+}
+.wgt-cal-cell {
+  min-height: 9rem; max-height: 18rem; overflow-y: auto;
+  padding: var(--s-2);
+  display: flex; flex-direction: column; gap: var(--s-2);
+  border-left: var(--border-hair); border-top: var(--border-hair);
+}
+.wgt-cal-day:nth-child(7n + 1),
+.wgt-cal-cell:nth-child(7n + 1) { border-left: 0; }
+
+.wgt-event {
+  width: 100%; text-align: left;
+  display: flex; align-items: flex-start; gap: var(--s-2);
+  font-size: var(--t-meta); line-height: var(--lh-snug);
+  color: var(--ink); background: var(--panel-2);
+  border: var(--border-hair); border-radius: 0;
+  padding: var(--s-2);
+  cursor: pointer;
+}
+.wgt-event:hover { border-color: var(--cu); }
+.wgt-event[aria-pressed="true"] { background: var(--cu); border-color: var(--cu); color: var(--bg); }
+.wgt-event .t { display: block; font-family: var(--font-mono); font-size: var(--t-tick); opacity: 0.7; }
+/* Repeat count. Marks an event that recurs, so deleting one is a choice. */
+.wgt-event .n {
+  margin-left: auto; flex: none;
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  padding: 0 var(--s-1);
+  border: 1px solid currentColor;
+}
+
+/* — file drop / empty state — */
+.wgt-drop {
+  display: grid; place-items: center; gap: var(--s-4);
+  padding: var(--s-8) var(--wgt-pad);
+  text-align: center;
+}
+.wgt-drop p { color: var(--ink-2); max-width: 32ch; }
+/* The real input is hidden; the label is the button. Clicking a label still
+   opens the picker for an input it contains, even a display:none one. */
+.wgt-drop input[type="file"] { display: none; }
+
+/* — modal dialogue — */
+.wgt-dialog {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center; padding: var(--s-4);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.wgt-dialog-panel {
+  width: min(30rem, 100%);
+  background: var(--panel); border: var(--border);
+}
+.wgt-dialog-panel h2 {
+  font-family: var(--font-mono); font-size: var(--t-ui);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--cu);
+  padding: var(--s-3) var(--wgt-pad);
+  border-bottom: var(--border);
+}
+.wgt-dialog-panel p { padding: var(--s-4) var(--wgt-pad); color: var(--ink-2); }
+.wgt-dialog-panel .wgt-bar { flex-direction: column; align-items: stretch; }
+.wgt-dialog-panel .wgt-bar .wgt-btn { text-align: center; }
+
+/* — floating controls over a stage — */
+.wgt-hud {
+  position: absolute; z-index: 3;
+  top: var(--s-2); right: var(--s-2);
+  display: flex; flex-direction: column; gap: var(--s-2);
+}
+.wgt-hud--bl { top: auto; right: auto; bottom: var(--s-2); left: var(--s-2); flex-direction: row; }
+
+/* A chip pinned over the stage: model labels, dimension readouts. */
+.wgt-tag {
+  position: absolute; z-index: 2;
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink); background: var(--panel);
+  border: var(--border-hair); border-radius: 0;
+  padding: var(--s-1) var(--s-2);
+  pointer-events: none;
+}
+.wgt-tag--tl { top: var(--s-2); left: var(--s-2); }
+.wgt-tag--tr { top: var(--s-2); right: var(--s-2); }
+/* Projected onto the canvas from 3D coordinates, so JS owns top/left. */
+.k-point-label { z-index: 4; }
+
+/* — A/B wipe divider — */
+.wgt-split {
+  position: absolute; inset-block: 0; z-index: 2;
+  width: 1px; background: var(--line);
+  transform: translateX(-50%);
+  cursor: ew-resize; touch-action: none;
+}
+/* A 1px line is not a grab target; widen the hit area without widening the line. */
+.wgt-split::before {
+  content: ""; position: absolute; inset-block: 0; left: 50%;
+  width: var(--s-6); transform: translateX(-50%);
+}
+.wgt-split-grip {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--s-6); height: var(--s-6);
+  background: var(--panel); border: var(--border); color: var(--ink);
+  display: grid; place-items: center;
+}
+.wgt-split-grip svg { width: var(--s-4); height: var(--s-4); stroke: currentColor; }
+.wgt-split:focus-visible .wgt-split-grip { border-color: var(--cu); color: var(--cu); }
+
+/* model-viewer hotspots are slotted LIGHT-DOM children, so these rules reach
+   them from here; --min-hotspot-opacity stops the element fading when it
+   rotates behind the model. */
+.wgt-tag--hotspot { transform: translate3d(-50%, -50%, 0); --min-hotspot-opacity: 0; }
+/* Corner anchors: geometry only, never drawn. */
+.wgt-dot { display: none; }
+/* Dimension leader lines, drawn into an SVG overlay. */
+.wgt-rule { pointer-events: none; width: 100%; height: 100%; }
+.wgt-rule line { stroke: var(--cu); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+/* — note / warning — */
+.wgt-note {
+  display: flex; gap: var(--s-3); align-items: baseline;
+  padding: var(--s-3) var(--wgt-pad);
+  background: var(--cu-soft); color: var(--cu-2);
+  font-size: var(--t-nav);
+}
+.wgt-note b {
+  flex: none;
+  font-family: var(--font-mono); font-size: var(--t-tick); font-weight: 500;
+  letter-spacing: var(--track-label); text-transform: uppercase;
+}
+
+/* — readouts — */
+.wgt-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0 var(--s-6);
+  padding: var(--s-2) var(--wgt-pad) var(--s-3);
+}
+.wgt-specs > div {
+  display: flex; align-items: baseline; gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: var(--border-hair);
+}
+.wgt-specs dt {
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.wgt-specs dd {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink); font-variant-numeric: tabular-nums;
+}
+
+/* — fullscreen — */
+.wgt-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+}
+.wgt-modal.is-open { display: block; }
+.wgt-modal > .wgt-stage { height: 100%; background: var(--bg); }
+.wgt-modal .wgt-hud { top: var(--s-4); right: var(--s-4); }
+
+/* Custom elements are invisible until their module defines them; without this
+   their light-DOM children flash unstyled first. */
+:not(:defined) > * { display: none; }
+

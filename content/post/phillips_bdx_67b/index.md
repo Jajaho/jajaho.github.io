@@ -14,20 +14,18 @@ share: false
 
 ## Optical Images
 
-<figure class="w-full md:w-1/2">
-    <img src="mainImage_colour.png" alt="Second image description" class="rounded-lg shadow-md">
-    <figcaption class="text-center text-sm mt-2">The optical image</figcaption>
-</figure>
+{{< figure src="mainImage_colour.png" caption="The optical image." >}}
 
-<figure class="w-full md:w-1/2">
-    <img src="closeup1.png" alt="alt text" class="rounded-lg shadow-md">
-    <figcaption class="text-center text-sm mt-2">Close Up 1</figcaption>
-</figure>
-
-<figure class="w-full md:w-1/2">
-    <img src="closeup2.png" alt="alt text" class="rounded-lg shadow-md">
-    <figcaption class="text-center text-sm mt-2">Close Up 2</figcaption>
-</figure>
+<div class="figrow">
+  <figure>
+    <img src="closeup1.png" alt="Close-up of the die surface">
+    <figcaption>Close up 1</figcaption>
+  </figure>
+  <figure>
+    <img src="closeup2.png" alt="Second close-up of the die surface">
+    <figcaption>Close up 2</figcaption>
+  </figure>
+</div>
 
 ## Datasheet
 
