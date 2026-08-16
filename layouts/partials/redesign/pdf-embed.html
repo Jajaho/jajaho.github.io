@@ -1,0 +1,166 @@
+{{/* A PDF rendered page by page, stacked down the column.
+
+     Called from layouts/_default/_markup/render-image.html when a markdown
+     image points at a `.pdf`, so the authoring gesture is just
+
+         ![Workbench drawings](workbench.pdf)
+
+     Params: page (required), src (required), label
+
+     The pages are drawn to canvases by pdf.js rather than handed to the
+     browser's built-in viewer, because the built-in one is a fixed-height
+     scroll box with its own chrome — the reader leaves the article to use
+     it. Canvases stack like a run of figures and print with the page.
+
+     Third-party JS follows the house pattern set by the model-viewer and
+     crystal-lattice shortcodes: a version-pinned CDN URL, loaded by the
+     widget that needs it and on no other page. Per that same house rule
+     (assets/css/site.css:691) this file emits markup and behaviour only —
+     the styling lives in layer 7 as `.wgt-doc`.
+*/}}
+
+{{- $src := $.src -}}
+{{- $remote := strings.HasPrefix $src "http" -}}
+{{- $url := $src -}}
+
+{{- if not $remote -}}
+  {{- $res := $.page.Resources.GetMatch $src -}}
+  {{- if not $res -}}
+    {{- errorf "pdf-embed: %q is not in the page bundle for %s" $src $.page.Path -}}
+  {{- end -}}
+  {{- $url = $res.RelPermalink -}}
+{{- end -}}
+
+{{- $label := or $.label (path.Base $src) -}}
+
+{{- $lib := "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" -}}
+{{- $worker := "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs" -}}
+
+<div class="wgt">
+  <div class="wgt-hd">
+    <b>{{ $label }}</b>
+    <span class="r" data-pdf-count>document</span>
+  </div>
+  <div class="wgt-bar wgt-bar--end">
+    <a class="wgt-btn" href="{{ $url }}" target="_blank" rel="noopener">Open</a>
+    <a class="wgt-btn" href="{{ $url }}" download>Download</a>
+  </div>
+  <div class="wgt-doc" data-pdf-src="{{ $url }}">
+    <p class="wgt-doc-wait">Rendering&nbsp;…</p>
+    <noscript><p class="wgt-doc-wait"><a href="{{ $url }}">Open the PDF</a> — rendering it in the page needs JavaScript.</p></noscript>
+  </div>
+</div>
+<script>
+/* Classic script, not type="module": document.currentScript is null in a
+   module, and it is what lets this instance find its own widget without an
+   id. Dynamic import() works here all the same, and the browser caches an
+   ES module per URL — so several documents on one page parse pdf.js once. */
+(function () {
+  var root  = document.currentScript.previousElementSibling;
+  var doc   = root.querySelector('.wgt-doc');
+  var count = root.querySelector('[data-pdf-count]');
+  var src   = doc.getAttribute('data-pdf-src');
+
+  var pdf = null;      /* the loaded document, kept for re-draws on resize */
+  var run = 0;         /* bumped to abandon the draws of a superseded pass */
+  var lastWidth = 0;
+
+  /* Built as nodes rather than an HTML string: the filename reaches this
+     through a src attribute, and concatenating it into innerHTML would make
+     a stray quote in a filename an injection point. */
+  function fail() {
+    var note = document.createElement('div');
+    note.className = 'wgt-note';
+
+    var tag = document.createElement('b');
+    tag.textContent = 'note';
+
+    var link = document.createElement('a');
+    link.href = src;
+    link.textContent = 'Open the PDF';
+
+    var text = document.createElement('span');
+    text.append('This document could not be rendered here. ', link, ' instead.');
+
+    note.append(tag, text);
+    root.replaceChild(note, doc);
+  }
+
+  /* Draw at the container's CSS width times the device pixel ratio, so a
+     dense drawing stays legible. The ratio is capped at 2 — beyond that the
+     bitmap grows quadratically for no visible gain, and a large multi-page
+     schematic starts costing tens of megabytes of canvas. */
+  function draw(n, mine) {
+    return pdf.getPage(n).then(function (page) {
+      if (mine !== run) return;
+      var base  = page.getViewport({ scale: 1 });
+      var dpr   = Math.min(window.devicePixelRatio || 1, 2);
+      var vp    = page.getViewport({ scale: (lastWidth / base.width) * dpr });
+      var canvas = document.createElement('canvas');
+      canvas.width  = Math.round(vp.width);
+      canvas.height = Math.round(vp.height);
+      canvas.setAttribute('role', 'img');
+      canvas.setAttribute('aria-label', 'Page ' + n + ' of ' + pdf.numPages);
+      doc.appendChild(canvas);
+      return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+    });
+  }
+
+  /* Pages are drawn one after another rather than all at once: a browser
+     rendering twelve schematic pages in parallel drops frames, and in order
+     means the reader can start reading page one while the rest arrive. */
+  function drawAll() {
+    /* A zero-width container (inside a collapsed <details>, say) would scale
+       every page to nothing and take the render down with it. Wait for a
+       width instead of drawing garbage. */
+    if (!doc.clientWidth) return Promise.resolve();
+    var mine = ++run;
+    lastWidth = doc.clientWidth;
+    doc.textContent = '';
+    var chain = Promise.resolve();
+    for (var n = 1; n <= pdf.numPages; n++) {
+      chain = chain.then(draw.bind(null, n, mine));
+    }
+    return chain;
+  }
+
+  var started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    import('{{ $lib }}').then(function (pdfjs) {
+      pdfjs.GlobalWorkerOptions.workerSrc = '{{ $worker }}';
+      return pdfjs.getDocument(src).promise;
+    }).then(function (loaded) {
+      pdf = loaded;
+      count.textContent = pdf.numPages + (pdf.numPages === 1 ? ' page' : ' pages');
+      return drawAll();
+    }).catch(fail);
+  }
+
+  /* Nothing is fetched until the document is near the viewport. A 200 KB
+     schematic at the foot of a long article should cost the reader who
+     never scrolls to it exactly nothing. */
+  if (typeof IntersectionObserver === 'function') {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { io.disconnect(); start(); }
+    }, { rootMargin: '400px 0px' });
+    io.observe(root);
+  } else {
+    start();
+  }
+
+  /* Canvases are bitmaps: widening the column without redrawing leaves them
+     upscaled and soft. Re-draw on a real width change only — a scrollbar
+     appearing, or mobile browser chrome collapsing, must not trigger a full
+     re-render of every page. */
+  if (typeof ResizeObserver === 'function') {
+    var timer;
+    new ResizeObserver(function () {
+      if (!pdf || Math.abs(doc.clientWidth - lastWidth) < 48) return;
+      clearTimeout(timer);
+      timer = setTimeout(drawAll, 200);
+    }).observe(doc);
+  }
+}());
+</script>

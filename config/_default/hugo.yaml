@@ -48,6 +48,15 @@ taxonomies:
   publication_type: publication_types
 markup:
   _merge: deep
+  goldmark:
+    parser:
+      # A lone image on its own line becomes a block-level node instead of
+      # being wrapped in <p>. The image render hook turns a `.pdf` destination
+      # into a <div class="wgt"> viewer, and the HTML parser auto-closes an
+      # open <p> before a <div> — which would strand an empty paragraph after
+      # every embedded document. Plain images gain from it too: they render a
+      # <figure>, which never belonged inside a paragraph either.
+      wrapStandAloneImageWithinParagraph: false
   highlight:
     lineNos: false
 security:

@@ -29,4 +29,4 @@ share: false
 
 ## Datasheet
 
-<a href="SEMELAB_BDX67B_datasheet.pdf">SEMELAB BDX67B</a>
+![SEMELAB BDX67B datasheet](SEMELAB_BDX67B_datasheet.pdf)

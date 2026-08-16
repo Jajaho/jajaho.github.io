@@ -49,7 +49,7 @@ To do so you will need to open the `.f3z` archive file in Fusion360. Visit the c
 
 Since I built this project in the summer of 2021, before I even had any plans to document my work on an English website, I can unfortunately only provide German drawings. However, you may use these plans for free and do whatever you want with them. If you do decide to build it, I would appreciate it if you could reach out and let me know, thank you.
 
-<a href="workbench.pdf">Open drawings</a>
+![Workbench drawings](workbench.pdf)
 
 ## Fabrication
 

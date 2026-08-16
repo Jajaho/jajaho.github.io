@@ -22,6 +22,8 @@ The input signal is selected by switch S1 from either a 3.5 mm audio jack or the
 
 [![Static Badge](https://img.shields.io/badge/GitHub-Audio--Spectrum--Analyser-2ea44f?style=flat&logo=github)](https://github.com/Jajaho/Audio-Spektrum-Analysator) 
 
+![Schematic](audio_spectrum_analyzer.pdf)
+
 ## Mistakes & Learnings
 
 IC1B is a linear amplifier, but the loudness of sound is inherently exponential. Therefore any music file contains waves with multiple different magnitudes of amplitude. A logarithmic amplifier is a must.

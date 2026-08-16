@@ -774,6 +774,34 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   max-width: 100%; max-height: 100%;
 }
 
+/* — document: a PDF drawn page by page —
+
+   Not a .wgt-stage modifier. A stage is a fixed-height window with its
+   contents stretched to fill it and clipped; a document is the opposite —
+   the pages set the height and the block grows to hold them, so a drawing
+   set reads as part of the article rather than as a scroll box parked in
+   the middle of it. Sharing the class would have meant undoing the height,
+   the overflow and the child stretch, which is not a modifier. */
+.wgt-doc { background: var(--panel-2); }
+.wgt-doc > canvas {
+  display: block;
+  width: 100%; height: auto;   /* the bitmap's own ratio sets the height */
+  background: var(--bg);       /* paper, while the page is still drawing */
+}
+/* Page breaks. The hairline is the only thing separating one sheet from the
+   next, since both are white on the same ground. */
+.wgt-doc > canvas + canvas { border-top: var(--border-hair); }
+
+/* Holds the block open before the first page paints, so the widget does not
+   collapse to nothing and shove the article up as it loads. */
+.wgt-doc-wait {
+  display: grid; place-items: center;
+  min-height: var(--wgt-stage-h);
+  padding: var(--s-4);
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink-3); text-align: center;
+}
+
 /* Side-by-side stages: real/reciprocal lattice, A/B comparisons. */
 .wgt-panes { display: grid; grid-template-columns: 1fr; }
 .wgt-pane  { display: grid; grid-template-rows: auto 1fr; min-width: 0; }

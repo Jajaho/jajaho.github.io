@@ -27,7 +27,7 @@ The PCB has the markings: PCB1857V1
 {{< figure src="reverse-engineering-front-23-09-2023.webp" caption="Front side of the Dremel pcb." >}}
 {{< figure src="reverse-engineering-back-23-09-2023.webp" caption="Back side of the Dremel pcb, labeled." >}}
 
-<a href="schematic-24-09-2023.pdf">Open charger schematic</a>
+![Charger schematic](schematic-24-09-2023.pdf)
 
 ## Proposed Working Principle
 
@@ -51,7 +51,7 @@ The kicker however is that inside the Bosch GSR BAT411 both C1 and C2 are not ac
 From what I could gather by probing the battery terminals and looking at some pictures online the battery is connected like this internally. I would suspect that the charging current is advertised this way.
 
 
-<a href="battery-schematic-24-09-2023.pdf">Open battery schematic</a>
+![Battery schematic](battery-schematic-24-09-2023.pdf)
  
 ### Why could this be a problem?  
 

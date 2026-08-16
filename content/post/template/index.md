@@ -96,6 +96,27 @@ Figure Shortcode Options:
 - width/height: Dimensions in px
 - loading: lazy/eager loading
 
+### PDFs
+
+A PDF is embedded with the same syntax as an image — put the file in the page
+bundle next to `index.md` and point a markdown image at it:
+
+```markdown
+![Workbench drawings](workbench.pdf)
+```
+
+Every page is rendered into the article, stacked one below the next, with the
+page count and Open / Download buttons in the header strip. Nothing is fetched
+until the reader scrolls near it.
+
+Notes:
+- The alt text becomes the label in the header strip. Left out, the filename is
+  used instead.
+- Put it on a line of its own. A `.pdf` written in the middle of a sentence
+  becomes an ordinary link rather than a viewer, since the embed is a block and
+  cannot sit inside a paragraph.
+- A missing filename fails the build rather than 404ing for the reader.
+
 ### Links
 
 [Link text](https://example.com)
