@@ -1,0 +1,15 @@
+{{/* Site header. Reads config/_default/menus.yaml, so navigation stays configurable. */}}
+<header class="site-header">
+  <nav class="wrap nav">
+    <a class="brand" href="{{ "" | relURL }}">
+      <span class="dot" aria-hidden="true"></span>{{ site.Params.header.navbar.logo.text | default site.Title }}
+    </a>
+    <ul>
+      {{ range site.Menus.main }}
+        <li>
+          <a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} class="on" aria-current="page"{{ end }}>{{ .Name }}</a>
+        </li>
+      {{ end }}
+    </ul>
+  </nav>
+</header>

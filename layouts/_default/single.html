@@ -1,0 +1,30 @@
+{{ define "main" }}
+{{ $featured := partial "functions/get_featured_image.html" . }}
+
+<article class="wrap article">
+  <header class="article-head">
+    <div class="lbl">
+      {{- with .Section }}{{ . }}{{ end -}}
+      {{- range first 2 (.GetTerms "tags") }} · {{ .LinkTitle }}{{ end -}}
+    </div>
+    <h1>{{ .Title }}</h1>
+    <div class="article-meta">
+      {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ . | time.Format (site.Params.locale.date_format | default ":date_long") }}</time>{{ end }}
+      {{ if ne .Params.reading_time false }}<span>·</span><span>{{ .ReadingTime }} {{ i18n "minute_read" }}</span>{{ end }}
+    </div>
+  </header>
+
+  {{ with $featured }}
+    {{ $img := .Fit "1400x1400 webp" }}
+    <figure class="article-figure">
+      <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
+           alt="{{ $.Params.image.alt_text | default $.Title }}" />
+      {{ with $.Params.image.caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+    </figure>
+  {{ end }}
+
+  <div class="prose">
+    {{ .Content }}
+  </div>
+</article>
+{{ end }}
