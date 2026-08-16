@@ -1,0 +1,18 @@
+{{ define "main" }}
+{{/* Plain document page — imprint, licence, and other prose-only pages.
+     Selected with `layout: page` in front matter. */}}
+<section class="section">
+  <div class="center">
+    <div class="stack stack-3" style="max-width: var(--measure)">
+      <div class="lbl">{{ .Params.eyebrow | default "Document" }}</div>
+      <h1 style="font-size: var(--t-2xl)">{{ .Title }}</h1>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="center">
+    <div class="prose">{{ .Content }}</div>
+  </div>
+</section>
+{{ end }}

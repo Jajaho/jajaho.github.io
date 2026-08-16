@@ -1,15 +1,18 @@
-{{/* Site header. Reads config/_default/menus.yaml, so navigation stays configurable. */}}
+{{/* Site header. Navigation comes from config/_default/menus.yaml. */}}
 <header class="site-header">
-  <nav class="wrap nav">
-    <a class="brand" href="{{ "" | relURL }}">
-      <span class="dot" aria-hidden="true"></span>{{ site.Params.header.navbar.logo.text | default site.Title }}
-    </a>
-    <ul>
-      {{ range site.Menus.main }}
-        <li>
-          <a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} class="on" aria-current="page"{{ end }}>{{ .Name }}</a>
-        </li>
-      {{ end }}
-    </ul>
-  </nav>
+  <div class="center bar">
+    <a class="mark" href="{{ "" | relURL }}" aria-label="Home">JH</a>
+    <span class="who">{{ site.Params.header.navbar.logo.text | default site.Title }}</span>
+    <nav aria-label="Main">
+      <ul class="site-nav">
+        {{ range site.Menus.main }}
+          {{ $on := or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) }}
+          <li><a href="{{ .URL | relURL }}"{{ if $on }} class="on" aria-current="page"{{ end }}>{{ .Name }}</a></li>
+        {{ end }}
+        {{/* Driven by the theme's bundled hb-theme.js, which toggles `.dark`
+             on <html> and mirrors the state onto this button's data-theme. */}}
+        <li><button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"></button></li>
+      </ul>
+    </nav>
+  </div>
 </header>

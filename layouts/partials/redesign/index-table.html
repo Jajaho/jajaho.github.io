@@ -1,0 +1,53 @@
+{{/* The single index renderer. Every list of pages on the site goes through this
+     partial, which is what keeps the homepage, /projects/ and /post/ identical.
+
+     dict "pages"    <page slice>   required
+          "numbered" true|false     descending index column, else em-dash
+          "status"   true|false     show the Status column (projects only)
+          "dateFmt"  "2006"         year for projects, "2006-01" for writing
+          "head"     true|false     render the <thead>
+*/}}
+{{ $pages    := .pages }}
+{{ $numbered := .numbered | default false }}
+{{ $status   := .status | default false }}
+{{ $dateFmt  := .dateFmt | default "2006" }}
+{{ $total    := len $pages }}
+
+<table class="tbl">
+  {{ if .head }}
+    <thead>
+      <tr>
+        <th class="id">#</th>
+        <th>{{ .label | default "Title" }}</th>
+        <th class="dom">Domain</th>
+        {{ if $status }}<th class="st">Status</th>{{ end }}
+        <th class="yr">{{ if eq $dateFmt "2006" }}Year{{ else }}Date{{ end }}</th>
+      </tr>
+    </thead>
+  {{ end }}
+  <tbody>
+    {{ range $i, $p := $pages }}
+      {{ $summary := $p.Params.summary | default $p.Params.description }}
+      {{ $external := $p.Params.external_link }}
+      <tr>
+        <td class="id">{{ if $numbered }}{{ sub $total $i }}{{ else }}—{{ end }}</td>
+        <td>
+          <a href="{{ with $external }}{{ . }}{{ else }}{{ $p.RelPermalink }}{{ end }}"
+             {{ with $external }}rel="noopener" target="_blank"{{ end }}>
+            <span class="nm">{{ $p.LinkTitle }}{{ with $external }} ↗{{ end }}</span>
+            {{ with $summary }}<span class="ds">{{ . }}</span>{{ end }}
+          </a>
+        </td>
+        <td class="dom">
+          {{ range first 2 ($p.GetTerms "tags") }}<span class="chip">{{ .LinkTitle }}</span> {{ end }}
+        </td>
+        {{ if $status }}
+          <td class="st">
+            {{ with $p.Params.status }}<b>{{ . }}</b>{{ end }}
+          </td>
+        {{ end }}
+        <td class="yr">{{ $p.Date.Format $dateFmt }}</td>
+      </tr>
+    {{ end }}
+  </tbody>
+</table>

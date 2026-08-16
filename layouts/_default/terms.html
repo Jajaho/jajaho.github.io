@@ -1,0 +1,22 @@
+{{ define "main" }}
+<section class="section">
+  <div class="center">
+    <div class="stack stack-3" style="max-width: var(--measure)">
+      <div class="lbl">Taxonomy</div>
+      <h1 style="font-size: var(--t-2xl)">{{ .Title }}</h1>
+      {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "01" "title" .Title "linkText" (printf "%d terms" (len .Data.Terms))) }}
+    <div class="cluster" style="--cluster-space: var(--s-2)">
+      {{ range .Data.Terms.ByCount }}
+        <a class="chip" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }} <span class="cu">{{ .Count }}</span></a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

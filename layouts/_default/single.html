@@ -1,30 +1,84 @@
 {{ define "main" }}
-{{ $featured := partial "functions/get_featured_image.html" . }}
+{{/* ARCHETYPE DISPATCH
+     external  — a link-out stub with no body of its own (e.g. Bodeplot)
+     teardown  — repair / reverse-engineering write-up
+     build-log — default: a project or article with a narrative body
+   Declared as `archetype:` in front matter; `external_link` with an empty body
+   is detected automatically so existing content keeps working. */}}
+{{ $archetype := .Params.archetype }}
+{{ if not $archetype }}
+  {{ if and .Params.external_link (lt (len .RawContent) 200) }}
+    {{ $archetype = "external" }}
+  {{ else }}
+    {{ $archetype = "build-log" }}
+  {{ end }}
+{{ end }}
 
-<article class="wrap article">
-  <header class="article-head">
+{{ $featured := partial "functions/get_featured_image.html" . }}
+{{ $summary  := .Params.summary | default .Params.description }}
+{{ $hasToc   := and (ne $archetype "external") (gt (len .TableOfContents) 60) }}
+
+<article class="article center">
+  <header class="article-head stack stack-3">
     <div class="lbl">
-      {{- with .Section }}{{ . }}{{ end -}}
-      {{- range first 2 (.GetTerms "tags") }} · {{ .LinkTitle }}{{ end -}}
+      {{ .Section }}
+      {{ with $archetype }}<span class="cu">/</span> {{ replace . "-" " " }}{{ end }}
     </div>
     <h1>{{ .Title }}</h1>
+    {{ with $summary }}<p class="lede" style="color: var(--ink-2); max-width: 54ch">{{ . }}</p>{{ end }}
     <div class="article-meta">
-      {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ . | time.Format (site.Params.locale.date_format | default ":date_long") }}</time>{{ end }}
-      {{ if ne .Params.reading_time false }}<span>·</span><span>{{ .ReadingTime }} {{ i18n "minute_read" }}</span>{{ end }}
+      {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006-01-02" }}</time><span>/</span>{{ end }}
+      {{ if ne .Params.reading_time false }}<span>{{ .ReadingTime }} min</span><span>/</span>{{ end }}
+      {{ range first 3 (.GetTerms "tags") }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
     </div>
   </header>
 
-  {{ with $featured }}
-    {{ $img := .Fit "1400x1400 webp" }}
-    <figure class="article-figure">
-      <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
-           alt="{{ $.Params.image.alt_text | default $.Title }}" />
-      {{ with $.Params.image.caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
-    </figure>
-  {{ end }}
+  {{ if eq $archetype "external" }}
 
-  <div class="prose">
-    {{ .Content }}
-  </div>
+    {{/* — external stub — */}}
+    <div class="stack stack-5" style="margin-top: var(--s-6)">
+      <div class="stub stack stack-3">
+        <div class="lbl">Hosted externally</div>
+        <p>This project lives in its own repository. There is no write-up here.</p>
+        <a class="go" href="{{ .Params.external_link }}" rel="noopener" target="_blank">
+          {{ .Params.external_link }} ↗
+        </a>
+      </div>
+      {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    </div>
+
+  {{ else }}
+
+    {{ with $featured }}
+      {{ $img := .Fit "1600x1600 webp q85" }}
+      <figure class="article-figure">
+        <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
+             alt="{{ $.Params.image.alt_text | default $.Title }}" />
+        {{ with $.Params.image.caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+      </figure>
+    {{ end }}
+
+    <div class="sidebar" style="--sidebar-width: 13rem; margin-top: var(--s-6)">
+      <div class="prose">
+        {{ .Content }}
+      </div>
+
+      <aside class="aside">
+        {{ if $hasToc }}
+          <div class="hd">Contents</div>
+          <nav aria-label="Table of contents">{{ .TableOfContents }}</nav>
+        {{ end }}
+        {{ with .GetTerms "tags" }}
+          <div class="hd" style="margin-top: var(--s-5)">Tags</div>
+          {{ range . }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+        {{ end }}
+        {{ with .Params.external_link }}
+          <div class="hd" style="margin-top: var(--s-5)">Source</div>
+          <a href="{{ . }}" rel="noopener" target="_blank">Repository ↗</a>
+        {{ end }}
+      </aside>
+    </div>
+
+  {{ end }}
 </article>
 {{ end }}
