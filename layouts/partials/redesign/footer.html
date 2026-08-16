@@ -3,9 +3,7 @@
   <div class="center fgrid">
     <span>{{ site.Params.footer.copyright.notice }}</span>
     <span class="cluster" style="--cluster-space: var(--s-3)">
-      {{ range (site.GetPage "/authors/admin").Params.profiles }}
-        <a href="{{ .url }}" rel="me noopener" target="_blank">{{ .label | default (index (split .icon "/") 1) | default .icon }}</a>
-      {{ end }}
+      {{ partial "redesign/social" . }}
       <a href="{{ "index.xml" | relURL }}">RSS</a>
       <a href="{{ "terms/" | relURL }}">Imprint</a>
     </span>

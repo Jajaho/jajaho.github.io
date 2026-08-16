@@ -1,0 +1,28 @@
+{{- /* The single renderer for social links, so the hero and the footer cannot
+     disagree about which networks exist or what they are called.
+
+     Source of truth is `profiles:` in content/authors/admin/_index.md.
+     The display name is derived from `icon`, NOT from `label` — a stray
+     label once made the LinkedIn entry render as "GrabCAD", and the icon is
+     the field that actually identifies the network. `label` becomes the
+     title attribute only, where it cannot contradict the destination.
+
+     Accepts either a config dict or a bare page context:
+       dict "primary" "github"   which network gets .p emphasis (optional)
+*/ -}}
+{{- $names := dict
+    "github"   "GitHub"
+    "linkedin" "LinkedIn"
+    "grabcad"  "GrabCAD"
+    "gitlab"   "GitLab"
+    "mastodon" "Mastodon"
+    "x"        "X"
+-}}
+{{- $primary := "" -}}
+{{- if reflect.IsMap . }}{{ $primary = .primary | default "" }}{{ end -}}
+
+{{- range (site.GetPage "/authors/admin").Params.profiles -}}
+  {{- $key := index (last 1 (split .icon "/")) 0 -}}
+  {{- $name := index $names $key | default (title $key) -}}
+  <a href="{{ .url }}" rel="me noopener" target="_blank"{{ with .label }} title="{{ . }}"{{ end }}{{ if and $primary (eq $key $primary) }} class="p"{{ end }}>{{ $name }}</a>
+{{ end -}}

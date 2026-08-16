@@ -47,7 +47,6 @@ profiles:
     url: https://grabcad.com/jakob.holz-1
   - icon: brands/linkedin
     url: https://www.linkedin.com/in/jakob-holz
-    label: GrabCAD
 
 interests:
   - Quantum & Solid State Physics

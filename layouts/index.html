@@ -15,13 +15,10 @@
       <h1>{{ site.Params.hero.headline | default "Electronics, physics, and things taken apart." }}</h1>
       <p class="lede">{{ site.Params.hero.lede | default site.Params.marketing.seo.description }}</p>
       <div class="trace" aria-hidden="true"></div>
+      {{/* Social only — Projects/Writing/CV already live in the header nav,
+           so repeating them here just buries the links that aren't elsewhere. */}}
       <div class="acts">
-        <a class="p" href="{{ "projects/" | relURL }}">Projects</a>
-        <a href="{{ "post/" | relURL }}">Writing</a>
-        <a href="{{ "cv/" | relURL }}">CV</a>
-        {{ range $author.Params.profiles }}
-          {{ if in .url "github" }}<a href="{{ .url }}" rel="me noopener" target="_blank">GitHub</a>{{ end }}
-        {{ end }}
+        {{ partial "redesign/social" (dict "primary" "github") }}
       </div>
     </div>
 
