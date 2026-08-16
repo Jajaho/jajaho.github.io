@@ -82,6 +82,11 @@
   --page-max: 77.5rem;   /* 1240px */
   --page-pad: var(--s-6);
 
+  /* The right rail. Shared by the article thumbnail and the Contents/Tags
+     aside so the page keeps one vertical edge from the title downwards. */
+  --rail-width: 18rem;   /* 288px */
+  --thumb-ratio: 16 / 9;
+
   --border: 1px solid var(--line);
   --border-hair: 1px solid var(--hair);
 }
@@ -194,7 +199,7 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 /* Sidebar: main + fixed-width aside, collapses when cramped. */
 .sidebar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--sidebar-width, 21rem);
+  grid-template-columns: minmax(0, 1fr) var(--sidebar-width, var(--rail-width));
   gap: var(--sidebar-gap, var(--s-7));
 }
 @media (max-width: 60rem) {
@@ -454,9 +459,26 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
   padding-bottom: var(--s-4); border-bottom: var(--border-hair);
 }
-.article-figure { margin-block: var(--s-6); }
-.article-figure img { border: var(--border); }
-.article-figure figcaption,
+/* Masthead: header text left, uniform thumbnail in the right rail.
+   Same column width as the aside below, so the page holds one vertical edge. */
+.article-masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--rail-width);
+  gap: var(--s-7);
+  align-items: start;
+}
+.article-thumb .frame {
+  --frame-ratio: var(--thumb-ratio);
+  border: var(--border);
+}
+
+@media (max-width: 60rem) {
+  .article-masthead { grid-template-columns: 1fr; gap: var(--s-5); }
+  /* Thumbnail follows the header text rather than pushing the title down. */
+  .article-thumb { max-width: 26rem; }
+}
+
+.article-thumb figcaption,
 .prose figure figcaption {
   font-family: var(--font-mono); font-size: var(--t-nav);
   color: var(--ink-3); margin-top: var(--s-2);

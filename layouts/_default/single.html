@@ -19,18 +19,36 @@
 {{ $hasToc   := and (ne $archetype "external") (gt (len .TableOfContents) 60) }}
 
 <article class="article center">
-  <header class="article-head stack stack-3">
-    <div class="lbl">
-      {{ .Section }}
-      {{ with $archetype }}<span class="cu">/</span> {{ replace . "-" " " }}{{ end }}
+  {{/* Masthead: header text left, thumbnail in the right rail. The rail is the
+       same width as the Contents/Tags aside below, so the page keeps one
+       vertical edge from the title all the way down. */}}
+  <header class="article-masthead">
+    <div class="article-head stack stack-3">
+      <div class="lbl">
+        {{ .Section }}
+        {{ with $archetype }}<span class="cu">/</span> {{ replace . "-" " " }}{{ end }}
+      </div>
+      <h1>{{ .Title }}</h1>
+      {{ with $summary }}<p class="lede">{{ . }}</p>{{ end }}
+      <div class="article-meta">
+        {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006-01-02" }}</time><span>/</span>{{ end }}
+        {{ if ne .Params.reading_time false }}<span>{{ .ReadingTime }} min</span><span>/</span>{{ end }}
+        {{ range first 3 (.GetTerms "tags") }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+      </div>
     </div>
-    <h1>{{ .Title }}</h1>
-    {{ with $summary }}<p class="lede">{{ . }}</p>{{ end }}
-    <div class="article-meta">
-      {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006-01-02" }}</time><span>/</span>{{ end }}
-      {{ if ne .Params.reading_time false }}<span>{{ .ReadingTime }} min</span><span>/</span>{{ end }}
-      {{ range first 3 (.GetTerms "tags") }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
-    </div>
+
+    {{ with $featured }}
+      {{/* Fill, not Fit: every thumbnail renders at the same size regardless of
+           the source aspect ratio. Doubled for 2x displays. */}}
+      {{ $img := .Fill "576x324 Center webp q82" }}
+      <figure class="article-thumb">
+        <div class="frame">
+          <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
+               alt="{{ $.Params.image.alt_text | default $.Title }}" />
+        </div>
+        {{ with $.Params.image.caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+      </figure>
+    {{ end }}
   </header>
 
   {{ if eq $archetype "external" }}
@@ -49,16 +67,7 @@
 
   {{ else }}
 
-    {{ with $featured }}
-      {{ $img := .Fit "1600x1600 webp q85" }}
-      <figure class="article-figure">
-        <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
-             alt="{{ $.Params.image.alt_text | default $.Title }}" />
-        {{ with $.Params.image.caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
-      </figure>
-    {{ end }}
-
-    <div class="sidebar spaced" style="--sidebar-width: 13rem">
+    <div class="sidebar spaced">
       <div class="prose">
         {{ .Content }}
       </div>
