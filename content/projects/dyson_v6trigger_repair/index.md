@@ -2,6 +2,7 @@
 title: Dyson V6 Trigger+ Repair
 description: Planned obsolescence or incompetence?
 date: 2023-12-31
+lastmod: 2026-08-16
 tags:
   - repair
   - electronics
@@ -10,7 +11,7 @@ draft: false
 featured: false
 ---
 
-I repaired this for my girlfriends mum who wanted to throw it away.
+I repaired this Dyson vacuum for my girlfriends mum who would have had to throw it away otherwise.
 
 ## DC61 Battery Pack
 
@@ -51,30 +52,27 @@ Cell voltages:
 | 5 | 3.89 |
 | 6 | 3.914 |
 
-Clearly cell 1 & 2 were to low. (According to tinfever's README they should be within 300 mV of each other)
-After pealing back the hot glue coating I traced the connections from the cells to the battery management chip (ISL94208).
-The cells are connected to bmc via a simple voltage divider with a 1k resistor and varying second resistor values.
+Clearly cell nr. two was significantly lower than the others. After pealing back the hot glue coating I traced the connections from the cells to the ISL94208 battery management chip (BMC).
+The cells are connected to BMC via a simple voltage divider with a 1k resistor and varying second resistor values.
 
-According to the datasheet the ISL94208 is capable not only of sensing the cell voltages but can also balance out any differences. How the unbalance could happen is unclear.  
+According to the datasheet the BMC is capable of not only sensing the cell voltages but can also balance out any differences. How the cells were allowed to become unbalanced is a mystery. The BMC communicates with the onboard micro controller via I2C so maybe we could spy on them with a serial decoder and find out why it died? After finding [tinfever's](https://github.com/tinfever) DIY firmware for the battery it became clear however, that the feature was intentionally disabled by omitting the required external balancing resistors. Maybe because they tried to implement and test it (there exists a version of the PCB with unpopulated footprints for the required resistors) but failed, but you can surely think of a different reason.  
 
-Note: After finding [tinfever's](https://github.com/tinfever) diy firmware for the battery however it was clear that the feature was intentionally disabled by omitting the required external balancing resistors. Maybe because they tried to implement and test it (there exists a version of the pcb with unpopulated footprints for the required resistors) but failed, but you can surely think of a different reason.  
+I charged cell nr. two with 4.15 V at 1 A (The power adapter is rated at 750 mA but 1 A should be fine because they were not over discharged) with my bench power supply while watching it like a hawk (wearing safety glasses) and with a closeable metal bin below the table so I could quickly get rid of it in case things got to hot. 
 
-The bmc communicates with the mC via I2C so maybe we could spy on them with a serial decoder and find out why it died?
-
-I charged cell 2 with 4.15 V at 1 A (The power adapter is rated at 750 mA but 1 A should be fine because they were not over discharged) with my bench power supply while watching it like a hawk (wearing safety glasses) and with a closeable metal bin below the table so I could quickly get rid of it in case things got to hot. 
-
-After charging the 2. cell voltage is 3.85 V.
+After charging the 2. cell voltage is 3.85 V and all cell voltages are similar, according to tinfever's README they should be within 300 mV of each other.
+So I proceeded to solder pin headers to the PCBs exposed THT pads and connected a them via a Microchip programmer to my laptop. Uploading the FU-Dyson-BMS software revived the board, many thanks to [tinfever](https://github.com/tinfever).
 
 ## Battery PCB
-pcb markings: 18802 - 01/04
 
-The pcb features a micro controller U1 and a battery management analog front end ic U2.
-The output voltage is controlled by a low side switch Q3 which is a n-channel fet.
 
+The PCB features a micro controller U1 from Microchip and a battery management analog front end IC U2.
+The output voltage is controlled by a low side switch Q3 which is a n-channel FET.
+
+PCB markings: 18802 - 01/04  
 BM-IC: Renesas ISL94208 (RZ 743WLQ)
 
-For more hardware info see: https://github.com/tinfever/FU-Dyson-BMS/tree/main/hardware-info   
-Uploading the FU-Dyson-BMS software revived the board, many tanks to [tinfever's](https://github.com/tinfever).
+For more hardware info see tinfever's [hardware info section](https://github.com/tinfever/FU-Dyson-BMS/tree/main/hardware-info).
+
 
 ## Resources
 - https://github.com/tinfever/FU-Dyson-BMS (BMS firmware and additional resources)

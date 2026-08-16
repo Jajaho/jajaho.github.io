@@ -8,6 +8,9 @@ tags:
   - reverse-engineering 
 draft: false
 featured: false
+# This is the only page using $$…$$, so KaTeX is opted into here rather than
+# loaded site-wide (see features.math in config/_default/params.yaml).
+math: true
 ---
 
 Reverse engineering of a Dremel 12 V battery charger.
