@@ -2,6 +2,7 @@
 title: OpenScan 
 summary: A showcase of DIY photogrammetry performance.
 date: 2025-08-21
+lastmod: 2026-08-16
 # authors: # Commented out because new theme update adds the logo to posts
 #     - admin
 tags: 
@@ -10,7 +11,7 @@ tags:
 image:
   caption: "Photogrammetry rocks Einstein"
 aliases: 
-  - /HugoBloxSite/post/ic-microscopy/
+  - /HugoBloxSite/post/openscan/
 draft: false
 featured: false
 share: false
@@ -33,23 +34,23 @@ While affordable 3d printers have been available for quite some time. The revers
 
 ## What is OpenScan
 
-As of writing this, the OpenScan project can be divided into three categories:
+As of writing this, the OpenScan project can be divided into three different pieces that come together: First the hardware taking the photos of the subject, basically an automated camera rig. Second, the firmware running on the hardware and last but certainly not least: The photogrammetry software running on a host PC or cloud creating a 3D model from the photos. Here is a short overiew:
 
-- Hardware-Models:
+- Hardware models:
   - Classic
   - Midi
   - Mini
-- Firmware
+- Firmware:
   - Original firmware
   - Meanwhile
   - Composer (free, third party, closed source)
   - Open Scan 3 (in development)
-- Photogrammetry Software
+- Photogrammetry software:
   - Open Scan Cloud (free, first party, closed source with the intention of open sourcing in the future)
 
 TheThere are other FOSS and commercial photogrammetry solutions which can substitute the Open Scan Cloud, such as [Meshroom](https://alicevision.org/), [KIRI Engine](https://www.kiriengine.app/), [3D Zephyr](https://www.3dflow.net/3df-zephyr-photogrammetry-software/) (paid), [Metashape](https://www.agisoft.com/) (paid).
 
-The Open Scan mini v2.2 in combination with the Open Scan cloud offer a good performance out of the box as you can see for your self with the 3D printed and scanned bust of Einstein from the beginning.
+The Open Scan mini v2.2 in combination with the Open Scan cloud offers a good performance out of the box as you can see for your self with the 3D printed and scanned bust of Einstein from the beginning.
 
 ## Assembly
 
