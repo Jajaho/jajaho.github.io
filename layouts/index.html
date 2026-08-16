@@ -18,7 +18,7 @@
       <div class="acts">
         <a class="p" href="{{ "projects/" | relURL }}">Projects</a>
         <a href="{{ "post/" | relURL }}">Writing</a>
-        <a href="{{ "experience/" | relURL }}">CV</a>
+        <a href="{{ "cv/" | relURL }}">CV</a>
         {{ range $author.Params.profiles }}
           {{ if in .url "github" }}<a href="{{ .url }}" rel="me noopener" target="_blank">GitHub</a>{{ end }}
         {{ end }}

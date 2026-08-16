@@ -3,9 +3,9 @@
      Selected with `layout: page` in front matter. */}}
 <section class="section">
   <div class="center">
-    <div class="stack stack-3" style="max-width: var(--measure)">
+    <div class="page-head stack stack-3">
       <div class="lbl">{{ .Params.eyebrow | default "Document" }}</div>
-      <h1 style="font-size: var(--t-2xl)">{{ .Title }}</h1>
+      <h1 class="page-title">{{ .Title }}</h1>
     </div>
   </div>
 </section>

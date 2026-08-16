@@ -37,15 +37,24 @@
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
 
-  --t-3xl: 2.5rem;    /* 40px — article title */
-  --t-2xl: 2rem;      /* 32px — hero */
-  --t-xl:  1.25rem;   /* 20px — card heading */
-  --t-lg:  1.03125rem;/* 16.5px — prose body */
-  --t-md:  0.9375rem; /* 15px — UI body */
-  --t-sm:  0.90625rem;/* 14.5px — table body */
-  --t-xs:  0.8125rem; /* 13px — code, dense meta */
-  --t-2xs: 0.71875rem;/* 11.5px — mono labels */
-  --t-3xs: 0.65625rem;/* 10.5px — eyebrow labels */
+  /* Type scale. Named by ROLE, not by size, so "which token?" has one answer.
+     Dense technical UI needs finer steps than a t-shirt scale provides —
+     rounding 10px labels up to a shared 10.5px step visibly inflates the
+     whole interface, which is exactly what the first pass got wrong. */
+  --t-display: 3.25rem;    /* 52px   hero headline (max of clamp) */
+  --t-title:   2.5rem;     /* 40px   article / page title (max of clamp) */
+  --t-heading: 1.25rem;    /* 20px   tile + card headings */
+  --t-prose:   1.03125rem; /* 16.5px article body, lede */
+  --t-body:    0.9375rem;  /* 15px   UI body */
+  --t-dense:   0.90625rem; /* 14.5px table body */
+  --t-note:    0.84375rem; /* 13.5px table sub-line */
+  --t-code:    0.8125rem;  /* 13px   code, wordmark */
+  --t-num:     0.78125rem; /* 12.5px tabular year column */
+  --t-ui:      0.75rem;    /* 12px   spec rows, section headings, site name */
+  --t-nav:     0.71875rem; /* 11.5px nav, buttons, aside */
+  --t-meta:    0.6875rem;  /* 11px   article meta, status, section links */
+  --t-label:   0.65625rem; /* 10.5px eyebrow labels */
+  --t-tick:    0.625rem;   /* 10px   table headers, chips */
 
   --lh-tight: 1.1;
   --lh-snug:  1.35;
@@ -125,7 +134,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: var(--t-md);
+  font-size: var(--t-body);
   line-height: var(--lh-body);
 }
 
@@ -147,7 +156,7 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
   position: absolute; left: var(--s-2); top: var(--s-2);
   padding: var(--s-2) var(--s-3);
   background: var(--cu); color: #fff;
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-nav);
   transform: translateY(-200%);
 }
 .skip-link:focus { transform: none; z-index: 100; }
@@ -211,7 +220,7 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 /* mono eyebrow label — used everywhere */
 .lbl {
   font-family: var(--font-mono);
-  font-size: var(--t-3xs);
+  font-size: var(--t-label);
   font-weight: 500;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
@@ -219,7 +228,26 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 }
 .cu { color: var(--cu); }
 
+/* Page title — every non-article page heading. Exists so templates never
+   carry an inline font-size, per the rules at the top of this file. */
+.page-title { font-size: clamp(1.75rem, 4.4vw, var(--t-title)); }
+
+/* Standard intro block: eyebrow + title + optional prose. */
+.page-head { max-width: var(--measure); }
+
+/* Small shared utilities, so templates carry no raw values.
+   Setting a primitive's custom property inline (--grid-min, --sidebar-width,
+   --cluster-space) is the intended API and stays allowed. */
+.dim  { color: var(--ink-2); }
+.lede { color: var(--ink-2); font-size: var(--t-prose); line-height: 1.65; max-width: 54ch; }
+.spaced { margin-top: var(--s-6); }
+.spec--boxed { border: var(--border); }
+.cv-date { text-align: left; width: 11rem; }
+.cv-detail { font-size: var(--t-code); margin-top: var(--s-2); }
+.aside .hd + a ~ .hd, .aside nav + .hd { margin-top: var(--s-5); }
+
 /* — header — */
+.site-header nav { margin-left: auto; }
 .site-header {
   border-bottom: var(--border);
   background: var(--bg);
@@ -230,18 +258,18 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
   display: flex; align-items: center;
 }
 .mark {
-  font-family: var(--font-mono); font-weight: 600; font-size: var(--t-xs);
+  font-family: var(--font-mono); font-weight: 600; font-size: var(--t-code);
   border: var(--border); padding: var(--s-1) var(--s-2);
   background: var(--cu); color: #fff;
 }
 .who {
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-ui);
   letter-spacing: var(--track-label); text-transform: uppercase;
   margin-left: var(--s-3); color: var(--ink-2);
 }
 .site-nav {
-  margin-left: auto; display: flex;
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  display: flex;
+  font-family: var(--font-mono); font-size: var(--t-nav);
   letter-spacing: 0.1em; text-transform: uppercase;
   border-left: var(--border-hair);
   list-style: none; padding: 0;
@@ -259,10 +287,10 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
   border: 0; border-right: var(--border-hair);
   background: none; color: var(--ink-2); cursor: pointer;
   display: grid; place-items: center;
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-nav);
 }
 .theme-toggle:hover { background: var(--cu-soft); color: var(--cu); }
-.theme-toggle::before { content: "\25D1"; font-size: var(--t-lg); line-height: 1; }
+.theme-toggle::before { content: "\25D1"; font-size: var(--t-prose); line-height: 1; }
 .theme-toggle[data-theme="dark"]::before { content: "\25D0"; }
 
 /* — section bar — */
@@ -273,11 +301,11 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
   margin-bottom: var(--s-5);
 }
 .sbar h2 {
-  font-family: var(--font-mono); font-size: var(--t-2xs); font-weight: 600;
+  font-family: var(--font-mono); font-size: var(--t-ui); font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase;
 }
 .sbar .n {
-  font-family: var(--font-mono); font-size: var(--t-3xs);
+  font-family: var(--font-mono); font-size: var(--t-label);
   color: #fff; background: var(--cu);
   padding: 0.125rem var(--s-2); letter-spacing: 0.1em;
 }
@@ -286,7 +314,7 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
   background: repeating-linear-gradient(90deg, var(--hair) 0 4px, transparent 4px 8px);
 }
 .sbar a {
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-meta);
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
 }
 .sbar a:hover { color: var(--cu); }
@@ -300,12 +328,12 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 .hero-l { padding: var(--s-7) var(--s-6) var(--s-6) 0; }
 .hero-r { border-left: var(--border-hair); }
 .hero h1 {
-  font-size: clamp(2.125rem, 4.6vw, var(--t-2xl));
+  font-size: clamp(2.125rem, 4.6vw, var(--t-display));
   margin-top: var(--s-3);
   max-width: 17ch;
 }
 .hero .lede {
-  color: var(--ink-2); font-size: var(--t-lg);
+  color: var(--ink-2); font-size: var(--t-prose);
   line-height: 1.65; max-width: 54ch; margin-top: var(--s-4);
 }
 .trace {
@@ -323,7 +351,7 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 .acts {
   display: flex; width: max-content; max-width: 100%; flex-wrap: wrap;
   border: var(--border); margin-top: var(--s-5);
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-nav);
   letter-spacing: 0.1em; text-transform: uppercase;
 }
 .acts a { padding: var(--s-3) var(--s-4); border-right: var(--border-hair); }
@@ -333,11 +361,11 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 .acts a.p:hover { background: var(--cu); color: #fff; }
 
 /* — spec panel (key/value block) — */
-.spec { font-family: var(--font-mono); font-size: var(--t-xs); }
+.spec { font-family: var(--font-mono); font-size: var(--t-ui); }
 .spec .h {
   padding: var(--s-2) var(--s-5);
   border-bottom: var(--border-hair); background: var(--panel-2);
-  font-size: var(--t-3xs); letter-spacing: var(--track-label);
+  font-size: var(--t-label); letter-spacing: var(--track-label);
   text-transform: uppercase; color: var(--ink-2);
   display: flex; justify-content: space-between;
 }
@@ -363,19 +391,19 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 }
 .tile:hover { background: var(--panel); }
 .tile .frame { border-bottom: var(--border-hair); position: relative; }
-.tile .frame::after {
-  content: ""; position: absolute; inset: 0;
-  background: repeating-linear-gradient(45deg, transparent 0 9px, rgb(180 99 47 / 0.05) 9px 18px);
+/* Hatch fill marks an ABSENT image. Never overlay it on real artwork. */
+.frame--empty {
+  background-image: repeating-linear-gradient(45deg, transparent 0 9px, rgb(180 99 47 / 0.06) 9px 18px);
 }
 .tile .tx { padding: var(--s-4) var(--s-5) var(--s-5); }
-.tile h3 { font-size: var(--t-xl); margin-block: var(--s-2) var(--s-2); }
+.tile h3 { font-size: var(--t-heading); margin-block: var(--s-2) var(--s-2); }
 .tile:hover h3 { color: var(--cu); }
-.tile p { color: var(--ink-2); font-size: var(--t-sm); }
+.tile p { color: var(--ink-2); font-size: var(--t-dense); }
 
 /* — index table — */
-.tbl { width: 100%; font-size: var(--t-sm); }
+.tbl { width: 100%; font-size: var(--t-dense); }
 .tbl th {
-  font-family: var(--font-mono); font-size: var(--t-3xs);
+  font-family: var(--font-mono); font-size: var(--t-tick);
   letter-spacing: var(--track-label); text-transform: uppercase;
   color: var(--ink-3); text-align: left; font-weight: 500;
   padding: var(--s-3); border-bottom: var(--border);
@@ -383,18 +411,18 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 .tbl td { padding: var(--s-3); border-bottom: var(--border-hair); vertical-align: top; }
 .tbl tbody tr { transition: background 0.12s; }
 .tbl tbody tr:hover { background: var(--cu-soft); }
-.tbl .id { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-3); width: 3.25rem; }
+.tbl .id { font-family: var(--font-mono); font-size: var(--t-ui); color: var(--ink-3); width: 3.25rem; }
 .tbl .nm { font-weight: 500; letter-spacing: -0.01em; }
 .tbl tbody tr:hover .nm { color: var(--cu); }
-.tbl .ds { color: var(--ink-2); font-size: var(--t-xs); margin-top: 0.125rem; }
+.tbl .ds { color: var(--ink-2); font-size: var(--t-note); margin-top: 0.125rem; }
 .tbl .yr {
-  font-family: var(--font-mono); font-size: var(--t-xs);
+  font-family: var(--font-mono); font-size: var(--t-num);
   color: var(--ink-3); width: 5rem; text-align: right; white-space: nowrap;
 }
 .tbl a { display: block; }
 
 .chip {
-  font-family: var(--font-mono); font-size: var(--t-3xs);
+  font-family: var(--font-mono); font-size: var(--t-tick);
   letter-spacing: 0.08em; text-transform: uppercase;
   border: var(--border-hair); padding: 0.125rem var(--s-2);
   white-space: nowrap; color: var(--ink-2);
@@ -403,7 +431,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 
 .st { width: 7rem; }
 .st b {
-  font-family: var(--font-mono); font-weight: 500; font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-weight: 500; font-size: var(--t-meta);
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--cu);
   display: flex; align-items: center; gap: var(--s-2);
 }
@@ -417,12 +445,12 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 .article { padding-block: var(--space-section); }
 .article-head { max-width: var(--measure); }
 .article-head h1 {
-  font-size: clamp(1.75rem, 4.4vw, var(--t-3xl));
+  font-size: clamp(1.75rem, 4.4vw, var(--t-title));
   margin-block: var(--s-2) var(--s-3);
 }
 .article-meta {
   display: flex; gap: var(--s-3); flex-wrap: wrap;
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-meta);
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
   padding-bottom: var(--s-4); border-bottom: var(--border-hair);
 }
@@ -430,14 +458,14 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 .article-figure img { border: var(--border); }
 .article-figure figcaption,
 .prose figure figcaption {
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-nav);
   color: var(--ink-3); margin-top: var(--s-2);
   display: flex; gap: var(--s-2); letter-spacing: 0.04em;
 }
 
 /* article aside (contents + tags) */
 .aside {
-  font-family: var(--font-mono); font-size: var(--t-2xs); line-height: 1.9;
+  font-family: var(--font-mono); font-size: var(--t-nav); line-height: 1.9;
   color: var(--ink-3);
   position: sticky; top: 5rem; align-self: start;
   border-left: var(--border-hair); padding-left: var(--s-4);
@@ -457,7 +485,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   padding: var(--s-5); max-width: var(--measure);
 }
 .stub .go {
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-nav);
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--cu);
 }
 .stub .go:hover { text-decoration: underline; }
@@ -466,7 +494,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 .pager {
   display: flex; gap: var(--s-2); justify-content: center;
   margin-top: var(--s-6);
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-nav);
 }
 .pager a, .pager span {
   border: var(--border-hair); padding: var(--s-2) var(--s-3); color: var(--ink-2);
@@ -478,7 +506,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 .site-footer {
   border-top: var(--border);
   padding-block: var(--s-6) var(--s-7);
-  font-family: var(--font-mono); font-size: var(--t-2xs);
+  font-family: var(--font-mono); font-size: var(--t-meta);
   letter-spacing: 0.06em; color: var(--ink-3);
 }
 .site-footer .fgrid {
@@ -490,7 +518,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 /* ---------- 6. prose ----------------------------------------------------- */
 .prose {
   max-width: var(--measure);
-  font-size: var(--t-lg);
+  font-size: var(--t-prose);
   line-height: var(--lh-prose);
 }
 .prose > * + * { margin-top: var(--space-block); }
@@ -504,12 +532,12 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   display: flex; align-items: center; gap: var(--s-3);
   margin-top: var(--s-7);
 }
-.prose h2 { font-size: var(--t-2xs); }
-.prose h3 { font-size: var(--t-3xs); color: var(--ink-2); }
+.prose h2 { font-size: var(--t-ui); }
+.prose h3 { font-size: var(--t-nav); color: var(--ink-2); }
 .prose h2::after, .prose h3::after {
   content: ""; flex: 1; height: 1px; background: var(--hair);
 }
-.prose h4 { font-size: var(--t-md); margin-top: var(--s-5); }
+.prose h4 { font-size: var(--t-body); margin-top: var(--s-5); }
 
 .prose a { color: var(--cu); border-bottom: 1px solid var(--cu); }
 .prose a:hover { background: var(--cu-soft); }
@@ -528,7 +556,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   background: var(--panel); border: var(--border);
   padding: var(--s-4) var(--s-5);
   overflow-x: auto;
-  font-size: var(--t-xs); line-height: 1.62;
+  font-size: var(--t-code); line-height: 1.62;
 }
 .prose pre code { background: none; border: 0; padding: 0; font-size: inherit; }
 
@@ -543,10 +571,10 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 
 .prose hr { border: 0; border-top: var(--border-hair); }
 
-.prose table { width: 100%; font-size: var(--t-sm); display: block; overflow-x: auto; }
+.prose table { width: 100%; font-size: var(--t-dense); display: block; overflow-x: auto; }
 .prose th, .prose td { text-align: left; padding: var(--s-2) var(--s-3); border-bottom: var(--border-hair); }
 .prose th {
-  font-family: var(--font-mono); font-size: var(--t-3xs);
+  font-family: var(--font-mono); font-size: var(--t-label);
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
   border-bottom: var(--border);
 }
@@ -630,11 +658,11 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 .gap-4 { gap: var(--s-4); }
 
 /* — type — */
-.text-xs  { font-size: var(--t-3xs); }
-.text-sm  { font-size: var(--t-xs); }
-.text-lg  { font-size: var(--t-lg); }
-.text-xl  { font-size: var(--t-xl); }
-.text-3xl { font-size: var(--t-2xl); letter-spacing: var(--track-tight); }
+.text-xs  { font-size: var(--t-label); }
+.text-sm  { font-size: var(--t-code); }
+.text-lg  { font-size: var(--t-prose); }
+.text-xl  { font-size: var(--t-heading); }
+.text-3xl { font-size: var(--t-display); letter-spacing: var(--track-tight); }
 .font-medium   { font-weight: 500; }
 .font-semibold { font-weight: 600; }
 .font-bold     { font-weight: 700; }

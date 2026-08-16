@@ -25,7 +25,7 @@
       {{ with $archetype }}<span class="cu">/</span> {{ replace . "-" " " }}{{ end }}
     </div>
     <h1>{{ .Title }}</h1>
-    {{ with $summary }}<p class="lede" style="color: var(--ink-2); max-width: 54ch">{{ . }}</p>{{ end }}
+    {{ with $summary }}<p class="lede">{{ . }}</p>{{ end }}
     <div class="article-meta">
       {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006-01-02" }}</time><span>/</span>{{ end }}
       {{ if ne .Params.reading_time false }}<span>{{ .ReadingTime }} min</span><span>/</span>{{ end }}
@@ -36,7 +36,7 @@
   {{ if eq $archetype "external" }}
 
     {{/* — external stub — */}}
-    <div class="stack stack-5" style="margin-top: var(--s-6)">
+    <div class="stack stack-5 spaced">
       <div class="stub stack stack-3">
         <div class="lbl">Hosted externally</div>
         <p>This project lives in its own repository. There is no write-up here.</p>
@@ -58,7 +58,7 @@
       </figure>
     {{ end }}
 
-    <div class="sidebar" style="--sidebar-width: 13rem; margin-top: var(--s-6)">
+    <div class="sidebar spaced" style="--sidebar-width: 13rem">
       <div class="prose">
         {{ .Content }}
       </div>
@@ -69,11 +69,11 @@
           <nav aria-label="Table of contents">{{ .TableOfContents }}</nav>
         {{ end }}
         {{ with .GetTerms "tags" }}
-          <div class="hd" style="margin-top: var(--s-5)">Tags</div>
+          <div class="hd">Tags</div>
           {{ range . }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
         {{ end }}
         {{ with .Params.external_link }}
-          <div class="hd" style="margin-top: var(--s-5)">Source</div>
+          <div class="hd">Source</div>
           <a href="{{ . }}" rel="noopener" target="_blank">Repository ↗</a>
         {{ end }}
       </aside>

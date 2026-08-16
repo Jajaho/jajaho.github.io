@@ -3,7 +3,8 @@
 {{ $summary := .Params.summary | default .Params.description }}
 <a class="tile" href="{{ with .Params.external_link }}{{ . }}{{ else }}{{ .RelPermalink }}{{ end }}"
    {{ with .Params.external_link }}rel="noopener" target="_blank"{{ end }}>
-  <div class="frame">
+  {{/* The hatch fill is a placeholder for a missing image, never an overlay. */}}
+  <div class="frame{{ if not $featured }} frame--empty{{ end }}">
     {{ with $featured }}
       {{ $img := .Fill "960x540 Center webp q82" }}
       <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"

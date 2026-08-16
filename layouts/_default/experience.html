@@ -4,9 +4,9 @@
 
 <section class="section">
   <div class="center">
-    <div class="stack stack-3" style="max-width: var(--measure)">
+    <div class="page-head stack stack-3">
       <div class="lbl">{{ $a.Params.role }}</div>
-      <h1 style="font-size: var(--t-2xl)">{{ .Title }}</h1>
+      <h1 class="page-title">{{ .Title }}</h1>
       {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
     </div>
   </div>
@@ -20,14 +20,14 @@
       <tbody>
         {{ range $a.Params.work }}
           <tr>
-            <td class="yr" style="text-align: left; width: 11rem">
+            <td class="yr cv-date">
               {{ (time .date_start).Format $df }} –
               {{ if .date_end }}{{ (time .date_end).Format $df }}{{ else }}present{{ end }}
             </td>
             <td>
               <div class="nm">{{ .position }}</div>
               <div class="ds">{{ .company_name }}</div>
-              {{ with .summary }}<div class="prose" style="font-size: var(--t-xs); margin-top: var(--s-2)">{{ . | markdownify }}</div>{{ end }}
+              {{ with .summary }}<div class="prose cv-detail">{{ . | markdownify }}</div>{{ end }}
             </td>
           </tr>
         {{ end }}
@@ -44,14 +44,14 @@
       <tbody>
         {{ range $a.Params.education }}
           <tr>
-            <td class="yr" style="text-align: left; width: 11rem">
+            <td class="yr cv-date">
               {{ (time .date_start).Format $df }} –
               {{ if .date_end }}{{ (time .date_end).Format $df }}{{ else }}present{{ end }}
             </td>
             <td>
               <div class="nm">{{ .area }}</div>
               <div class="ds">{{ .institution }}</div>
-              {{ with .summary }}<div class="prose" style="font-size: var(--t-xs); margin-top: var(--s-2)">{{ . | markdownify }}</div>{{ end }}
+              {{ with .summary }}<div class="prose cv-detail">{{ . | markdownify }}</div>{{ end }}
             </td>
           </tr>
         {{ end }}
@@ -66,12 +66,12 @@
     {{ partial "redesign/section-bar" (dict "n" "03" "title" "Skills & languages") }}
     <div class="grid-auto" style="--grid-min: 17rem; --grid-gap: var(--s-6)">
       {{ range $a.Params.skills }}
-        <div class="spec" style="border: var(--border)">
+        <div class="spec spec--boxed">
           <div class="h"><span>{{ .name }}</span></div>
           {{ range .items }}<div class="r"><span>{{ .name }}</span><span></span></div>{{ end }}
         </div>
       {{ end }}
-      <div class="spec" style="border: var(--border)">
+      <div class="spec spec--boxed">
         <div class="h"><span>Languages</span></div>
         {{ range $a.Params.languages }}
           <div class="r"><span>{{ .name }}</span><span>{{ .percent }}%</span></div>
@@ -90,7 +90,7 @@
       <tbody>
         {{ range . }}
           <tr>
-            <td class="yr" style="text-align: left; width: 11rem">{{ (time .date).Format "2006" }}</td>
+            <td class="yr cv-date">{{ (time .date).Format "2006" }}</td>
             <td>
               <div class="nm">
                 {{ with .url }}<a href="{{ . }}" rel="noopener" target="_blank">{{ end }}

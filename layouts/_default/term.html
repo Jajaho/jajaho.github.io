@@ -2,9 +2,9 @@
 {{ $pages := .RegularPages.ByDate.Reverse }}
 <section class="section">
   <div class="center">
-    <div class="stack stack-3" style="max-width: var(--measure)">
+    <div class="page-head stack stack-3">
       <div class="lbl">{{ .Data.Singular }}</div>
-      <h1 style="font-size: var(--t-2xl)">{{ .Title }}</h1>
+      <h1 class="page-title">{{ .Title }}</h1>
       {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
     </div>
   </div>
