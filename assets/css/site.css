@@ -17,6 +17,9 @@
      - Templates never set margins. They pick a primitive (.stack, .cluster,
        .grid-auto, .sidebar, .center, .frame). This is what keeps pages
        consistent with each other.
+     - Links that leave the site are marked with a trailing ↗, applied by the
+       external-link rule in layer 6. Never type the arrow in a template or
+       in content.
    ========================================================================== */
 
 /* ---------- 1. tokens ---------------------------------------------------- */
@@ -268,7 +271,17 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 .spaced { margin-top: var(--s-6); }
 .spec--boxed { border: var(--border); }
 .cv-date { text-align: left; width: 11rem; }
-.cv-detail { font-size: var(--t-code); margin-top: var(--s-2); }
+/* CV entry detail bullets — sized with the .ds line above them and dimmed, so
+   a scan reads position → institution → detail. Written as .prose.cv-detail
+   because the element carries both classes: at equal specificity the later
+   .prose block in layer 6 would win and reimpose article body type. */
+.prose.cv-detail {
+  font-size: var(--t-note);
+  line-height: var(--lh-snug);
+  margin-top: var(--s-2);
+  color: var(--ink-3);
+}
+.cv-detail li::marker { color: var(--hair); }
 .aside .hd + a ~ .hd, .aside nav + .hd { margin-top: var(--s-5); }
 
 /* — header — */
@@ -445,6 +458,9 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
   color: var(--ink-3); width: 5rem; text-align: right; white-space: nowrap;
 }
 .tbl a { display: block; }
+/* prose links inside a cell (e.g. CV summary bullets) stay inline, so the
+   underline hugs the text instead of stretching the full column width */
+.tbl .prose a { display: inline; }
 
 .chip {
   font-family: var(--font-mono); font-size: var(--t-tick);
@@ -530,7 +546,7 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   font-family: var(--font-mono); font-size: var(--t-nav);
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--cu);
 }
-.stub .go:hover { text-decoration: underline; }
+.stub .go:hover { background: var(--cu-soft); }
 
 /* — pagination — */
 .pager {
@@ -581,8 +597,26 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 }
 .prose h4 { font-size: var(--t-body); margin-top: var(--s-5); }
 
-.prose a { color: var(--cu); border-bottom: 1px solid var(--cu); }
+/* Links carry no underline — copper plus the ↗ marker below is the affordance. */
+.prose a { color: var(--cu); }
 .prose a:hover { background: var(--cu-soft); }
+
+/* — external-link marker —————————————————————————————————————————————
+   Site rule: a link that leaves the site carries a trailing ↗, and this rule
+   is its only source — templates and content must never type the arrow.
+   Internal links are relative, so [href^="http"] finds the externals by
+   itself; the :not() guard covers the odd absolute self-link. Index tables
+   wrap several lines in one <a>, so there the marker sits on the title span.
+   Applies to content links only — header, footer and nav chrome stay clean. */
+:is(.prose, .aside, .stub) a[href^="http"]:not([href*="jakobholz.com"])::after,
+.tbl .nm > a[href^="http"]:not([href*="jakobholz.com"])::after,
+.tbl a[href^="http"]:not([href*="jakobholz.com"]) .nm::after {
+  content: "\2197";
+  margin-left: 0.25em;
+  font-size: 0.85em;
+  line-height: 1;
+  vertical-align: 0.05em;
+}
 
 .prose ul, .prose ol { padding-left: 1.3em; }
 .prose li + li { margin-top: var(--s-1); }

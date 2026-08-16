@@ -293,10 +293,17 @@
             };
         }
 
+        /* The stage paints --panel-2 behind the (transparent) canvas, so anything
+           meant to read as a hole punched in a drawn shape has to be that colour,
+           not white — the board is dark in dark mode. Resolved once per frame:
+           it is a computed style lookup, and obstacle patterns want it per edge. */
+        let stageBg = '#fff';
+
         // Draw the game
         function draw() {
+            stageBg = getComputedStyle(canvas).backgroundColor;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // Draw grid vertices
             ctx.fillStyle = 'rgba(52, 73, 94, 0.3)';
             for (let x = 0; x < GRID_SIZE; x++) {
@@ -989,9 +996,9 @@
             const midX = (pos1.x + pos2.x) / 2;
             const midY = (pos1.y + pos2.y) / 2;
             
-            ctx.strokeStyle = 'white';
+            ctx.strokeStyle = stageBg;
             ctx.lineWidth = 2;
-            
+
             if (pattern === 'cross') {
                 const size = 8;
                 ctx.beginPath();

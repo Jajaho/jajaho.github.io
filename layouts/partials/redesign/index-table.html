@@ -34,7 +34,8 @@
         <td>
           <a href="{{ with $external }}{{ . }}{{ else }}{{ $p.RelPermalink }}{{ end }}"
              {{ with $external }}rel="noopener" target="_blank"{{ end }}>
-            <span class="nm">{{ $p.LinkTitle }}{{ with $external }} ↗{{ end }}</span>
+            {{/* the ↗ marker is applied by CSS, see the external-link rule in site.css */}}
+            <span class="nm">{{ $p.LinkTitle }}</span>
             {{ with $summary }}<span class="ds">{{ . }}</span>{{ end }}
           </a>
         </td>

@@ -95,7 +95,7 @@
               <div class="nm">
                 {{ with .url }}<a href="{{ . }}" rel="noopener" target="_blank">{{ end }}
                 {{ .title }}
-                {{ if .url }} ↗</a>{{ end }}
+                {{ if .url }}</a>{{ end }}
               </div>
               <div class="ds">{{ .awarder }}</div>
               {{ with .summary }}<div class="ds">{{ . | markdownify | plainify }}</div>{{ end }}
