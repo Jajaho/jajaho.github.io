@@ -13,6 +13,6 @@ draft: false
 featured: false
 ---
 
-Command line tool for nodal analysis of linear electrical circuits build with java.
+Command line tool for nodal analysis of linear electrical circuits built with Java.
 
 <!--more-->

@@ -16,7 +16,7 @@ The name audio spectrum analyzer is probably a bit too high trotting. A more bef
 
 ## Theory of Operation
 
-The input signal is selected by switch S1 from either a 3.5 mm audio jack or the microphone. Both have individual pre-amplifiers with adjustable gain. The selected signal is then fed into a filter bank comprised of ten band pass filters with fixed center frequencies from 32 Hz to 16kHz. The individual frequency components are then rectified and buffered. The buffer is formed by a RC circuit with a time constant of 100 ms, resulting in a discharge time of about 0.5 s which is chosen purely for aesthetic reasons, so that the bar graph drops nicely. Each signal is display on it's own ten-segment bar graph display. Each bar graph is driven by a LM3914 Dot/Bar Display Driver. The diode D7 roughly compensates for the forward voltage drop of the rectifier in the signal path.
+The input signal is selected by switch S1 from either a 3.5 mm audio jack or the microphone. Both have individual pre-amplifiers with adjustable gain. The selected signal is then fed into a filter bank comprised of ten band pass filters with fixed center frequencies from 32 Hz to 16 kHz. The individual frequency components are then rectified and buffered. The buffer is formed by an RC circuit with a time constant of 100 ms, resulting in a discharge time of about 0.5 s which is chosen purely for aesthetic reasons, so that the bar graph drops nicely. Each signal is displayed on its own ten-segment bar graph display. Each bar graph is driven by an LM3914 Dot/Bar Display Driver. The diode D7 roughly compensates for the forward voltage drop of the rectifier in the signal path.
 
 ## Schematics and Layout
 
@@ -30,4 +30,4 @@ The caps for the peak detection circuit, even though this isn't a precision inst
 
 Replacing 9 of the 10 expensive LM3914Ns by multiplexing the different frequency signals.  
 
-**Edit (20.11.2022):** Looking back four years and five Semesters EE later, I see that I was more focused on making the device look good, rather than electrically sound. I wasted a lot of time aligning vias and arranging components rather than calculating and verifying my choices.
+**Edit (20.11.2022):** Looking back four years and five semesters EE later, I see that I was more focused on making the device look good, rather than electrically sound. I wasted a lot of time aligning vias and arranging components rather than calculating and verifying my choices.

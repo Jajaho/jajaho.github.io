@@ -1,5 +1,5 @@
 ---
-title: Phillips BDX 67B
+title: Philips BDX 67B
 summary: A Darlington power transistor.
 date: 2024-12-15
 authors:

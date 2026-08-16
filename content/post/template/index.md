@@ -46,7 +46,7 @@ data_files:
 ---
 
 
-The featured imge is presented above.  
+The featured image is presented above.  
 Start writing your post content here using Markdown syntax.
 
 ## Sections

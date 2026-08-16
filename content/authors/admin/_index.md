@@ -54,6 +54,11 @@ interests:
   - Manufacturing & Craftsmanship
 
 education:
+  - area: M.Sc. Quantum Engineering
+    institution: ETH Zürich
+    date_start: 2025-09-13
+    date_end: 
+
   - area: B.Sc. Electrical Engineering
     institution: Ulm University
     date_start: 2020-10-14
@@ -145,18 +150,18 @@ skills:
       #   description: ''
       #   percent: 80
       #   icon: code-bracket
-      - name: Python
-        description: ''
-        percent: 100
-        icon: python
       - name: Electronics
         description: ''
-        percent: 80
+        percent: 100
         icon: hero/cpu-chip
       - name: CAD/CAE/CAM
         description: ''
-        percent: 40
+        percent: 80
         icon: hero/cube-transparent
+      - name: Coding
+        description: ''
+        percent: 60
+        icon: python
 
   - name: Hobbies
     color: '#eeac02'
@@ -239,4 +244,4 @@ awards:
 
 ## About Me
 
-Jakob Holz is a passionate engineer interested in quantum physics, embedded electronics and manufacturing. He has started tinkering in school and is always excited to hone his skills and learn new techniques, preferably on personal projects.
+Jakob Holz is a passionate engineer interested in quantum physics, embedded electronics and manufacturing. He started tinkering in school and is always excited to hone his skills and learn new techniques, preferably on personal projects.

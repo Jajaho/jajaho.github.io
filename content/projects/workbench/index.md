@@ -25,11 +25,11 @@ The first step for any project is always a sketch in my notebook. Here the requi
 ### Modularity
 
 The frame of the table can be separated into six individual parts, which are all light enough to be carried by a single person.
-They are hold together by M10 screws which mate with tapped, flat steel pieces that are welded to the tubes.
+They are held together by M10 screws which mate with tapped, flat steel pieces that are welded to the tubes.
 
 ### Tabletop
 
-The most economic option would have been to use an off-the-shelf kitchen top from the hardware store. But here in Germany, these are only about 60 cm wide, which is not enough for my needs. So I settled on a solid 40 mm thick 2000 x 720 mm oak worktop, which I bought online. Over time the tabletop can expand and shrink orthogonal to the wood grain. When working with solid wood (e.g. not MDF or multiplex) it’s important to allow for this movement in the wood. Here this is done by seating the screws that hold onto the wood into slits that are cut into the steel frame. These slits have to be orthogonal to the wood grain.
+The most economical option would have been to use an off-the-shelf kitchen top from the hardware store. But here in Germany, these are only about 60 cm wide, which is not enough for my needs. So I settled on a solid 40 mm thick 2000 x 720 mm oak worktop, which I bought online. Over time the tabletop can expand and shrink orthogonal to the wood grain. When working with solid wood (e.g. not MDF or multiplex) it’s important to allow for this movement in the wood. Here this is done by seating the screws that hold onto the wood into slits that are cut into the steel frame. These slits have to be orthogonal to the wood grain.
 
 ### Feet
 
@@ -37,17 +37,17 @@ To compensate for an uneven floor the legs feature adjustable feet for leveling.
 
 ## CAD
 
-The entire cad-process from sketch to drawing was done in Autodesk Fusion360.
-The design you see below is my third iteration, I had to start over because the way I set up my sketches wasn't allowing my to move forward efficiently.
+The entire CAD process from sketch to drawing was done in Autodesk Fusion360.
+The design you see below is my third iteration, I had to start over because the way I set up my sketches wasn't allowing me to move forward efficiently.
 
 {{< figure src="explosion.png" caption="Explosion drawing" >}}
 
-Editing the and adjusting the model is easy to do since the design is parametric, feel free to try it yourself.
-To do so you will need to open the `.f3z` archive file in Fusion360. Visit the change parameters pane to edit it's dimensions. Please visit [my GrabCAD page](https://grabcad.com/library/workbench-plans-included-2) where I have uploaded the ``.step`` and ``.f3z`` files.
+Editing and adjusting the model is easy to do since the design is parametric, feel free to try it yourself.
+To do so you will need to open the `.f3z` archive file in Fusion360. Visit the change parameters pane to edit its dimensions. Please visit [my GrabCAD page](https://grabcad.com/library/workbench-plans-included-2) where I have uploaded the ``.step`` and ``.f3z`` files.
 
 ### Drawings 
 
-Since I built this project in the summer of 2021, before I even had any plans to document my workings on an English website, I can unfortunately only provide German drawings. However, you may use these plans for free and do whatever you want with them. If you do decide to build it, I would appreciate it if you could reach out and let me know, thank you.
+Since I built this project in the summer of 2021, before I even had any plans to document my work on an English website, I can unfortunately only provide German drawings. However, you may use these plans for free and do whatever you want with them. If you do decide to build it, I would appreciate it if you could reach out and let me know, thank you.
 
 <a href="workbench.pdf">Open drawings</a>
 
@@ -59,12 +59,12 @@ The problem with building your first workbench is having no workbench to build t
 
 ## Cost breakdown
 
-| Item        | Prize       |
+| Item        | Price       |
 | ----------- | ----------- |
-| steel       | 212,00 €     |
-| worktop     | 249,00 €     |
-| consumeables| ~20,00 €
-| **total**   | **481,00 €** |
+| steel       | 212.00 €     |
+| worktop     | 249.00 €     |
+| consumables | ~20.00 €
+| **total**   | **481.00 €** |
 	
 
 ## Conclusion

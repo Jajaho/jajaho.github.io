@@ -1,6 +1,6 @@
 ---
 title: Intel in 1976
-summary: A cpu from almost 50 years ago.
+summary: A CPU from almost 50 years ago.
 date: 2024-12-15
 authors:
   - admin

@@ -39,7 +39,7 @@ header:
 # Site footer
 footer:
   copyright:
-    notice: '© 2024-2025 Jakob Holz. All rights reserved.'
+    notice: '© 2024-2026 Jakob Holz. All rights reserved.'
     license:
       enable: true
       allow_derivatives: false
