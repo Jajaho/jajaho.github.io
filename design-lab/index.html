@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Lab · jakobholz.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;450&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{--bg:#0B0C0E;--panel:#131519;--line:#24272E;--ink:#E9ECF1;--ink-2:#A4ABB6;--ink-3:#6B7280;--acc:#F5A524}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:64px 32px 80px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-family:'Inter Tight',sans-serif;font-size:40px;font-weight:600;letter-spacing:-.03em;margin:12px 0 10px}
+.sub{color:var(--ink-2);max-width:64ch;margin:0 0 44px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.c{border:1px solid var(--line);background:var(--panel);padding:24px;transition:.16s;display:block}
+.c:hover{border-color:var(--acc);transform:translateY(-2px)}
+.sw{display:flex;gap:6px;margin-bottom:18px}
+.sw i{width:26px;height:26px;border:1px solid rgba(255,255,255,.08)}
+.c h2{font-family:'Inter Tight',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+.c p{color:var(--ink-2);font-size:14px;margin:0 0 16px}
+.c ul{margin:0;padding-left:16px;color:var(--ink-3);font-size:13px;line-height:1.85}
+.c .go{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-top:18px;display:block}
+.note{margin-top:48px;border-left:2px solid var(--acc);padding:14px 0 14px 18px;color:var(--ink-2);font-size:14px;max-width:74ch}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lbl">jakobholz.com · redesign</div>
+  <h1>Three directions</h1>
+  <p class="sub">Each mockup is a full vertical slice — nav, hero, featured work, project index,
+  writing list and an article view — using your real content. Scroll each one end to end,
+  then pick a direction (or mix: e.g. B's typography with C's project table).</p>
+
+  <div class="grid">
+    <a class="c" href="a-instrument.html">
+      <div class="sw"><i style="background:#0A0B0D"></i><i style="background:#15181D"></i><i style="background:#F5A524"></i><i style="background:#E9ECF1"></i></div>
+      <div class="lbl">Direction A</div>
+      <h2>Instrument</h2>
+      <p>Dark, technical, lab-equipment feel. Signal amber on near-black, hairline grid.</p>
+      <ul>
+        <li>Inter Tight + JetBrains Mono</li>
+        <li>Spec-sheet rail beside the bio</li>
+        <li>Dense hover-highlight project rows</li>
+        <li>Most "engineering instrument"</li>
+      </ul>
+      <span class="go">Open →</span>
+    </a>
+
+    <a class="c" href="b-editorial.html">
+      <div class="sw"><i style="background:#FCFBF8"></i><i style="background:#F4F2EC"></i><i style="background:#1B3FCC"></i><i style="background:#16181C"></i></div>
+      <div class="lbl">Direction B</div>
+      <h2>Editorial</h2>
+      <p>Light, print-journal typography. Serif display, ink blue, strong hierarchy.</p>
+      <ul>
+        <li>Newsreader serif + Inter</li>
+        <li>Numbered index, sticky article gutter</li>
+        <li>Best long-form reading experience</li>
+        <li>Auto dark mode included</li>
+      </ul>
+      <span class="go">Open →</span>
+    </a>
+
+    <a class="c" href="c-copper.html">
+      <div class="sw"><i style="background:#F6F5F2"></i><i style="background:#EFEDE8"></i><i style="background:#B4632F"></i><i style="background:#111214"></i></div>
+      <div class="lbl">Direction C</div>
+      <h2>Copper</h2>
+      <p>Datasheet density. Mono-labelled, sharp edges, PCB-copper accent, real tables.</p>
+      <ul>
+        <li>IBM Plex Sans + Plex Mono</li>
+        <li>Sortable-looking project table w/ status</li>
+        <li>Highest information density</li>
+        <li>Auto dark mode included</li>
+      </ul>
+      <span class="go">Open →</span>
+    </a>
+  </div>
+
+  <div class="note">
+    <b>Current site for comparison:</b> HugoBlox <code>academic-cv</code> + <code>blox-tailwind</code>
+    — fixed "blox" sections with a 6rem spacing scale, which is where the rigidity and empty
+    space come from. Whichever direction wins, the implementation replaces those blox layouts
+    with custom Hugo templates and a small CSS layer, so the layout stops fighting you.
+  </div>
+</div>
+</body>
+</html>
