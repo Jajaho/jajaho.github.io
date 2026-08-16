@@ -1,74 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICS Calendar Event Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div id="app" class="min-h-screen">
-        <!-- File Selection Screen -->
-        <div id="fileScreen" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
-            <div class="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">ICS Calendar Manager</h1>
-                <p class="text-gray-600 mb-6">Select an ICS file to get started</p>
-                <label class="flex items-center justify-center w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg cursor-pointer transition">
-                    <span>📁 Choose File</span>
-                    <input type="file" id="fileInput" accept=".ics" class="hidden">
-                </label>
-            </div>
-        </div>
+{{- /* ICS calendar event manager: open a .ics file, browse it a week at a
+     time, select events, delete them, save the file back out.
 
-        <!-- Calendar Screen -->
-        <div id="calendarScreen" class="hidden p-6">
-            <div class="max-w-7xl mx-auto">
-                <!-- Header -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-4">ICS Calendar Event Manager</h1>
-                    
-                    <!-- Week Navigation -->
-                    <div class="flex items-center justify-between mb-6">
-                        <button id="prevWeekBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-                            ← Previous Week
-                        </button>
-                        <h2 id="weekLabel" class="text-xl font-semibold text-gray-700"></h2>
-                        <button id="nextWeekBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-                            Next Week →
-                        </button>
-                    </div>
+     No parameters. Only one may appear per page — the script addresses its
+     controls by fixed id. Everything happens in the browser; nothing is
+     uploaded anywhere.
 
-                    <!-- Info -->
-                    <div class="text-sm text-blue-600 font-medium">
-                        <span id="infoLabel">Selected: 0 event(s)</span>
-                    </div>
-                </div>
+     This shortcode used to emit a full <!DOCTYPE html> document into the
+     article, complete with `<script src="https://cdn.tailwindcss.com">` —
+     a ~400 KB JIT compiler downloaded at runtime, on a page that already had
+     a stylesheet. It builds its DOM from the widget vocabulary now.
+*/ -}}
+<div class="wgt" id="ics">
+  <div class="wgt-hd">
+    <b>ICS calendar manager</b>
+    <span class="r">runs entirely in your browser</span>
+  </div>
 
-                <!-- Calendar Grid -->
-                <div class="grid grid-cols-7 gap-3 mb-6">
-                    <div id="dayHeaders" class="col-span-7 grid grid-cols-7 gap-3">
-                        <!-- Day headers will be populated dynamically -->
-                    </div>
+  {{- /* — screen 1: pick a file — */ -}}
+  <div class="wgt-drop" id="fileScreen">
+    <p>Open an <code>.ics</code> file to browse and prune its events. Nothing leaves this page.</p>
+    <label class="wgt-btn wgt-btn--primary">
+      Choose file
+      <input type="file" id="fileInput" accept=".ics">
+    </label>
+  </div>
 
-                    <!-- Day cells -->
-                    <div id="calendarGrid" class="col-span-7 grid grid-cols-7 gap-3"></div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex gap-3 justify-end">
-                    <button id="deleteBtn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition font-semibold">
-                        🗑️ Delete Selected
-                    </button>
-                    <button id="saveBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition font-semibold">
-                        💾 Save File
-                    </button>
-                    <button id="openNewBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition font-semibold">
-                        📂 Open Another File
-                    </button>
-                </div>
-            </div>
-        </div>
+  {{- /* — screen 2: the calendar — */ -}}
+  <div class="wgt-group" id="calendarScreen" hidden>
+    <div class="wgt-bar">
+      <button type="button" class="wgt-btn" id="prevWeekBtn">← Previous</button>
+      <span class="wgt-lab" id="weekLabel"></span>
+      <button type="button" class="wgt-btn" id="nextWeekBtn">Next →</button>
+      <span class="sep"></span>
+      <span class="wgt-lab">Selected <span class="v" id="infoLabel">0</span></span>
     </div>
+
+    <div class="wgt-cal" id="dayHeaders"></div>
+    <div class="wgt-cal" id="calendarGrid"></div>
+
+    <div class="wgt-bar wgt-bar--end">
+      <button type="button" class="wgt-btn" id="openNewBtn">Open another file</button>
+      <button type="button" class="wgt-btn wgt-btn--danger" id="deleteBtn">Delete selected</button>
+      <button type="button" class="wgt-btn wgt-btn--ok" id="saveBtn">Save file</button>
+    </div>
+  </div>
+</div>
 
     <script>
         let events = [];
@@ -96,8 +72,8 @@
         deleteBtn.addEventListener('click', deleteSelected);
         saveBtn.addEventListener('click', saveFile);
         openNewBtn.addEventListener('click', () => {
-            fileScreen.classList.remove('hidden');
-            calendarScreen.classList.add('hidden');
+            fileScreen.hidden = false;
+            calendarScreen.hidden = true;
             selectedEvents.clear();
         });
 
@@ -186,8 +162,8 @@
         }
 
         function showCalendarScreen() {
-            fileScreen.classList.add('hidden');
-            calendarScreen.classList.remove('hidden');
+            fileScreen.hidden = true;
+            calendarScreen.hidden = false;
             drawCalendar();
         }
 
@@ -228,7 +204,7 @@
                     day: 'numeric'
                 });
                 const dayHeader = document.createElement('div');
-                dayHeader.className = 'bg-gray-700 text-white font-bold p-3 rounded-lg text-center';
+                dayHeader.className = 'wgt-cal-day';
                 dayHeader.textContent = headerDate;
                 dayHeaders.appendChild(dayHeader);
             }
@@ -246,30 +222,43 @@
                 });
 
                 const dayCell = document.createElement('div');
-                dayCell.className = 'bg-white rounded-lg shadow-md p-3 min-h-40 overflow-y-auto';
+                dayCell.className = 'wgt-cal-cell';
 
                 dayEvents.forEach(event => {
                     const eventKey = `${event.name}|${event.date.getFullYear()}-${String(event.date.getMonth() + 1).padStart(2, '0')}-${String(event.date.getDate()).padStart(2, '0')}|${event.startTime || ''}|${event.endTime || ''}`;
                     const isSelected = selectedEvents.has(eventKey);
                     const occurrenceCount = getOccurrenceCount(event);
-                    const badge = occurrenceCount > 1 ? `<span class="text-xs bg-red-500 text-white rounded-full px-2 py-1 ml-1 font-bold">${occurrenceCount}</span>` : '';
-
+                    /* Built as nodes rather than innerHTML: SUMMARY comes
+                       out of whatever .ics the reader opened, and it used to
+                       be interpolated straight into markup. */
                     const btn = document.createElement('button');
-                    btn.className = `w-full text-xs p-2 rounded mb-2 transition text-left break-words ${
-                        isSelected
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                    }`;
-                    const timeDisplay = event.startTime ? 
-                        `<div class="text-xs opacity-75">${event.startTime}${event.endTime ? ' - ' + event.endTime : ''}</div>` 
-                        : '';
-                    btn.innerHTML = `<div class="flex items-center justify-between">
-                        <div>
-                            <div>${event.name}</div>
-                            ${timeDisplay}
-                        </div>
-                        ${badge}
-                    </div>`;
+                    btn.type = 'button';
+                    btn.className = 'wgt-event';
+                    btn.setAttribute('aria-pressed', String(isSelected));
+
+                    const text = document.createElement('span');
+                    const name = document.createElement('span');
+                    name.textContent = event.name;
+                    text.appendChild(name);
+
+                    if (event.startTime) {
+                        const time = document.createElement('span');
+                        time.className = 't';
+                        time.textContent = event.endTime
+                            ? `${event.startTime} – ${event.endTime}`
+                            : event.startTime;
+                        text.appendChild(time);
+                    }
+                    btn.appendChild(text);
+
+                    if (occurrenceCount > 1) {
+                        const badge = document.createElement('span');
+                        badge.className = 'n';
+                        badge.title = `${occurrenceCount} occurrences`;
+                        badge.textContent = occurrenceCount;
+                        btn.appendChild(badge);
+                    }
+
                     btn.addEventListener('click', () => toggleEvent(eventKey, event));
                     dayCell.appendChild(btn);
                 });
@@ -290,7 +279,8 @@
         }
 
         function updateInfoLabel() {
-            infoLabel.textContent = `Selected: ${selectedEvents.size} event(s)`;
+            /* The "Selected:" caption is markup now, so this is just the count. */
+            infoLabel.textContent = selectedEvents.size;
         }
 
         function deleteSelected() {
@@ -299,40 +289,40 @@
                 return;
             }
 
+            const n = selectedEvents.size;
             const deleteDialog = document.createElement('div');
-            deleteDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            deleteDialog.className = 'wgt-dialog';
+            deleteDialog.setAttribute('role', 'dialog');
+            deleteDialog.setAttribute('aria-modal', 'true');
             deleteDialog.innerHTML = `
-                <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">Delete Events</h2>
-                    <p class="text-gray-700 mb-6">You have ${selectedEvents.size} event(s) selected. How would you like to delete them?</p>
-                    <div class="space-y-3">
-                        <button id="deleteJustSelectedBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition font-semibold">
-                            Delete Selected Events Only
-                        </button>
-                        <button id="deleteAllOccurrencesBtn" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition font-semibold">
-                            Delete All Occurrences (Same Name & Date)
-                        </button>
-                        <button id="cancelDeleteBtn" class="w-full bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition font-semibold">
-                            Cancel
-                        </button>
+                <div class="wgt-dialog-panel">
+                    <h2>Delete events</h2>
+                    <p>${n} event${n === 1 ? '' : 's'} selected. Recurring events can be removed one at a time, or every occurrence at once.</p>
+                    <div class="wgt-bar">
+                        <button type="button" class="wgt-btn" data-mode="selected">Delete just these</button>
+                        <button type="button" class="wgt-btn wgt-btn--danger" data-mode="all">Delete all occurrences</button>
+                        <button type="button" class="wgt-btn" data-mode="cancel">Cancel</button>
                     </div>
                 </div>
             `;
             document.body.appendChild(deleteDialog);
 
-            document.getElementById('deleteJustSelectedBtn').addEventListener('click', () => {
-                deleteEventsMode('selected');
-                deleteDialog.remove();
+            deleteDialog.querySelectorAll('[data-mode]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    if (btn.dataset.mode !== 'cancel') deleteEventsMode(btn.dataset.mode);
+                    deleteDialog.remove();
+                });
             });
-
-            document.getElementById('deleteAllOccurrencesBtn').addEventListener('click', () => {
-                deleteEventsMode('all');
-                deleteDialog.remove();
+            /* Click-outside and Escape both mean cancel. */
+            deleteDialog.addEventListener('click', (e) => {
+                if (e.target === deleteDialog) deleteDialog.remove();
             });
-
-            document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+            document.addEventListener('keydown', function esc(e) {
+                if (e.key !== 'Escape') return;
                 deleteDialog.remove();
+                document.removeEventListener('keydown', esc);
             });
+            deleteDialog.querySelector('[data-mode]').focus();
         }
 
         function deleteEventsMode(mode) {
@@ -421,5 +411,3 @@
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
     </script>
-</body>
-</html>

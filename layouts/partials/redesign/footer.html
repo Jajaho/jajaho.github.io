@@ -1,0 +1,11 @@
+{{/* Site footer. Copyright/licence notice comes from config/_default/params.yaml. */}}
+<footer class="site-footer">
+  <div class="center fgrid">
+    <span>{{ site.Params.footer.copyright.notice }}</span>
+    <span class="cluster" style="--cluster-space: var(--s-3)">
+      {{ partial "redesign/social" . }}
+      <a href="{{ "index.xml" | relURL }}">RSS</a>
+      <a href="{{ "terms/" | relURL }}">Imprint</a>
+    </span>
+  </div>
+</footer>

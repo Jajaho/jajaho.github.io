@@ -1,226 +1,94 @@
-<!-- Model viewer with optimized fullscreen functionality -->
-<div class="model-viewer-container">
-    <div class="firefox-warning" style="display: none; padding: 1rem; margin: 1rem 0; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px;">
-        ⚠️ This large 3D model may not display correctly in Firefox. Please use Chrome for the best experience.
+{{- /* A 3D model that can be thrown to fullscreen.
+
+     Params: src, alt, ios-src, camera-orbit, title
+     The viewer element is MOVED into the modal rather than duplicated, so the
+     camera position survives the transition and the model is only decoded
+     once. The stage keeps its height while empty, so nothing reflows.
+*/ -}}
+{{- $id := printf "mv%d" .Ordinal -}}
+
+<div class="wgt" id="{{ $id }}">
+  <div class="wgt-hd"><b>{{ .Get "title" | default "3D model" }}</b><span class="r">drag to orbit</span></div>
+
+  <div class="wgt-note" data-ff hidden>
+    <b>Firefox</b>
+    <span>This model is large enough that Firefox may fail to display it. Chrome renders it reliably.</span>
+  </div>
+
+  <div class="wgt-stage" data-home>
+    <div class="wgt-hud">
+      <button type="button" class="wgt-btn wgt-btn--icon" data-expand aria-label="View fullscreen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 3h6v6M14 10l7-7M9 21H3v-6M10 14l-7 7"/>
+        </svg>
+      </button>
     </div>
 
-    <div class="model-wrapper" style="width: 100%; height: 600px; margin: 0 auto; position: relative;">
-        <!-- Expand button -->
-        <button class="expand-button" aria-label="Expand model viewer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 3h6v6M14 10l7-7M9 21H3v-6M10 14l-7 7"/>
-            </svg>
-        </button>
-
-        <!-- Model viewer placeholder - will hold the position in the document -->
-        <div class="model-placeholder"></div>
-
-        <model-viewer 
-            class="main-model-viewer"
-            style="width: 100%; height: 100%; background-color: #f5f5f5;"
-            src="{{ .Get "src" }}"
-            alt="{{ .Get "alt" | default "A 3D model" }}"
-            camera-controls
-            {{ with .Get "ios-src" }}ios-src="{{ . }}"{{ end }}
-            shadow-intensity="1"
-            camera-orbit="-30deg auto auto"
-            exposure="1">
-        </model-viewer>
-    </div>
+    <model-viewer
+      src="{{ .Get "src" }}"
+      alt="{{ .Get "alt" | default "A 3D model" }}"
+      camera-controls
+      {{ with .Get "ios-src" }}ios-src="{{ . }}"{{ end }}
+      shadow-intensity="1"
+      exposure="1"
+      loading="lazy"
+      touch-action="pan-y"
+      camera-orbit="{{ .Get "camera-orbit" | default "-30deg auto auto" }}">
+    </model-viewer>
+  </div>
 </div>
 
-<!-- Fullscreen modal -->
-<div class="model-fullscreen-modal">
-    <button class="close-button" aria-label="Close fullscreen view">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6L6 18M6 6l12 12"/>
+<div class="wgt-modal" id="{{ $id }}-fs" role="dialog" aria-modal="true" aria-label="{{ .Get "alt" | default "3D model" }}, fullscreen">
+  <div class="wgt-stage">
+    <div class="wgt-hud">
+      <button type="button" class="wgt-btn wgt-btn--icon" data-close aria-label="Close fullscreen view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
         </svg>
-    </button>
-    <div class="fullscreen-model-container">
-        <!-- The model-viewer will be moved here when in fullscreen -->
+      </button>
     </div>
+  </div>
 </div>
 
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-
-<style>
-/* Container styles */
-.model-wrapper {
-    position: relative;
-}
-
-.model-placeholder {
-    width: 100%;
-    height: 100%;
-    display: none;
-}
-
-/* Expand button styles */
-.expand-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.3s;
-}
-
-.expand-button:hover {
-    background: white;
-}
-
-/* Fullscreen modal styles */
-.model-fullscreen-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-}
-
-.model-fullscreen-modal.active {
-    display: block;
-}
-
-.fullscreen-model-container {
-    width: 100%;
-    height: 100%;
-}
-
-.fullscreen-model-container model-viewer {
-    width: 100%;
-    height: 100%;
-}
-
-.close-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1001;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.3s;
-}
-
-.close-button:hover {
-    background: white;
-}
-</style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Find all model viewer containers
-    document.querySelectorAll('.model-viewer-container').forEach(container => {
-        const wrapper = container.querySelector('.model-wrapper');
-        const modelViewer = container.querySelector('.main-model-viewer');
-        const placeholder = container.querySelector('.model-placeholder');
-        const expandButton = container.querySelector('.expand-button');
-        const modal = document.querySelector('.model-fullscreen-modal');
-        const closeButton = modal.querySelector('.close-button');
-        const fullscreenContainer = modal.querySelector('.fullscreen-model-container');
-        
-        // Handle expand button click
-        expandButton.addEventListener('click', () => {
-            // Show placeholder to maintain document flow
-            placeholder.style.display = 'block';
-            
-            // Move the model-viewer to fullscreen container
-            fullscreenContainer.appendChild(modelViewer);
-            
-            // Show the modal
-            modal.classList.add('active');
-            
-            // Prevent body scrolling
-            document.body.style.overflow = 'hidden';
+(function () {
+  const root   = document.getElementById({{ $id }});
+  const modal  = document.getElementById({{ printf "%s-fs" $id }});
+  const viewer = root.querySelector('model-viewer');
+  const home   = root.querySelector('[data-home]');
+  const away   = modal.querySelector('.wgt-stage');
 
-            console.log('modelViewer:', modelViewer); // Debug log
-            
-            // Notify model-viewer of size change
-            modelViewer.requestUpdate();
-        });
-        
-        // Handle closing fullscreen
-        function closeFullscreen() {
-            // Move model-viewer back to original container
-            wrapper.insertBefore(modelViewer, placeholder);
-            
-            // Hide placeholder
-            placeholder.style.display = 'none';
-            
-            // Hide modal
-            modal.classList.remove('active');
-            
-            // Restore body scrolling
-            document.body.style.overflow = '';
-            
-            // Notify model-viewer of size change
-            modelViewer.requestUpdate();
-        }
-        
-        // Close button click
-        closeButton.addEventListener('click', closeFullscreen);
-        
-        // Close on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                closeFullscreen();
-            }
-        });
-        
-        // Close on click outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeFullscreen();
-            }
-        });
-    });
-});
+  function open() {
+    away.appendChild(viewer);
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    viewer.requestUpdate?.();
+    modal.querySelector('[data-close]').focus();
+  }
 
-async function checkModelSize() {
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) return;
+  function close() {
+    home.appendChild(viewer);
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+    viewer.requestUpdate?.();
+    root.querySelector('[data-expand]').focus();
+  }
 
-    const modelViewers = document.querySelectorAll('model-viewer');
-    const warnings = document.querySelectorAll('.firefox-warning');
-    
-    modelViewers.forEach(async (viewer, index) => {
-        const modelUrl = viewer.getAttribute('src');
-        console.log('Checking model URL:', modelUrl); // Debug log
-        try {
-            const response = await fetch(modelUrl, { method: 'HEAD' });
-            if (!response.ok) {
-                console.error('Model file not found:', modelUrl);
-                return;
-            }
-            const sizeInMB = response.headers.get('content-length') / (1024 * 1024);
-            if (sizeInMB > 100 && warnings[index]) {
-                warnings[index].style.display = 'block';
-            }
-        } catch (error) {
-            console.error('Error checking model size:', error);
-        }
-    });
-}
+  root.querySelector('[data-expand]').addEventListener('click', open);
+  modal.querySelector('[data-close]').addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+  });
 
-checkModelSize();
-
+  if (navigator.userAgent.toLowerCase().includes('firefox')) {
+    fetch(viewer.getAttribute('src'), { method: 'HEAD' })
+      .then((res) => {
+        if (!res.ok) return;
+        const mb = res.headers.get('content-length') / (1024 * 1024);
+        if (mb > 100) root.querySelector('[data-ff]').hidden = false;
+      })
+      .catch(() => {});
+  }
+})();
 </script>

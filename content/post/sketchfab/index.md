@@ -17,11 +17,11 @@ The first method relies on a post made [here](https://www.dbbrunson.com/docs/eff
 
 <!-- Article: https://www.dbbrunson.com/docs/effective-online-presence/markdown-extensions-capabilities/embedding-3d-models/ -->
 
-{{< sketchfab id="cfacd277a52b4eea95b071df48470a0b" width="800" height="600" theme="light" content="autostart">}}
+{{< sketchfab id="cfacd277a52b4eea95b071df48470a0b" title="Sketchfab oEmbed" >}}
 
 The second version is an example from Sketchfab's own website, [here](https://sketchfab.com/developers/viewer).
 
-{{< sketchfab_custom>}}
+{{< sketchfab_custom id="7w7pAfrCfjovwykkEeRFLGw5SXS" title="Sketchfab viewer API" >}}
 <!--This is Hugos shortcode syntax to embed content -->
 
 ## Features

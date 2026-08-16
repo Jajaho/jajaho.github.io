@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-design="a">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A — Instrument · Jakob Holz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;450;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#0A0B0D;
+  --surface:#101216;
+  --surface-2:#15181D;
+  --line:#22262D;
+  --line-soft:#1A1D23;
+  --ink:#E9ECF1;
+  --ink-2:#A8B0BC;
+  --ink-3:#6B7280;
+  --accent:#F5A524;
+  --accent-dim:#7A5410;
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --max:1160px;
+}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);
+  font-size:15px;line-height:1.6;
+  background-image:
+    linear-gradient(var(--line-soft) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:64px 64px;
+  background-position:center top;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(120% 70% at 50% -10%,rgba(245,165,36,.07),transparent 60%);z-index:0}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px;position:relative;z-index:1}
+a{color:inherit;text-decoration:none}
+
+/* ── mono label ── */
+.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ── nav ── */
+header{position:sticky;top:0;z-index:50;background:rgba(10,11,13,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav{max-width:var(--max);margin:0 auto;padding:0 32px;height:56px;display:flex;align-items:center;gap:28px}
+.brand{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;display:flex;align-items:center;gap:9px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(245,165,36,.15)}
+nav ul{list-style:none;display:flex;gap:26px;margin:0 0 0 auto;padding:0;font-family:var(--mono);font-size:12px;letter-spacing:.06em}
+nav ul a{color:var(--ink-2);padding:4px 0;border-bottom:1px solid transparent;transition:.15s}
+nav ul a:hover{color:var(--ink);border-color:var(--accent)}
+nav ul a.on{color:var(--ink)}
+
+/* ── hero ── */
+.hero{padding:96px 0 72px;display:grid;grid-template-columns:1fr 300px;gap:64px;align-items:start}
+h1{font-family:var(--sans);font-weight:600;font-size:clamp(40px,6.4vw,68px);line-height:1.02;letter-spacing:-.035em;margin:14px 0 0}
+h1 em{font-style:normal;color:var(--ink-3)}
+.tagline{font-size:17px;line-height:1.62;color:var(--ink-2);max-width:46ch;margin:26px 0 0}
+.cta{display:flex;gap:10px;margin-top:34px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:10px 16px;border:1px solid var(--line);background:var(--surface);transition:.15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#140D00;border-color:var(--accent);font-weight:500}
+.btn.primary:hover{background:#ffb840;color:#140D00}
+
+/* spec rail */
+.rail{border:1px solid var(--line);background:linear-gradient(180deg,var(--surface),rgba(16,18,22,.4));font-family:var(--mono);font-size:12px}
+.rail .rh{padding:9px 14px;border-bottom:1px solid var(--line);color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;font-size:10.5px;display:flex;justify-content:space-between}
+.rail dl{margin:0;padding:4px 0}
+.rail .row{display:flex;justify-content:space-between;gap:12px;padding:7px 14px}
+.rail dt{color:var(--ink-3)}
+.rail dd{margin:0;color:var(--ink);text-align:right}
+.rail dd .ok{color:var(--accent)}
+
+/* ── section ── */
+section{padding:64px 0;border-top:1px solid var(--line)}
+.shead{display:flex;align-items:baseline;gap:16px;margin-bottom:28px}
+.shead h2{font-family:var(--sans);font-size:22px;font-weight:600;letter-spacing:-.02em;margin:0}
+.shead .rule{flex:1;height:1px;background:var(--line)}
+.shead .more{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.08em}
+.shead .more:hover{color:var(--accent)}
+
+/* ── project rows ── */
+.rows{border-top:1px solid var(--line-soft)}
+.row{display:grid;grid-template-columns:44px 1fr auto 66px;gap:20px;align-items:center;
+  padding:17px 12px 17px 0;border-bottom:1px solid var(--line-soft);position:relative;transition:.16s}
+.row::before{content:"";position:absolute;left:-12px;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transition:.18s;transform-origin:center}
+.row:hover{background:linear-gradient(90deg,rgba(245,165,36,.045),transparent 55%);padding-left:12px}
+.row:hover::before{transform:scaleY(1)}
+.row .idx{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.row .t{font-family:var(--sans);font-size:17px;font-weight:500;letter-spacing:-.012em}
+.row .s{color:var(--ink-3);font-size:13.5px;margin-top:2px}
+.row:hover .t{color:var(--accent)}
+.row .yr{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:right}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-2);border:1px solid var(--line);padding:3px 7px;background:var(--surface)}
+
+/* ── featured cards ── */
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.card{background:var(--surface);padding:0;transition:.18s;position:relative;overflow:hidden}
+.card:hover{background:var(--surface-2)}
+.thumb{aspect-ratio:16/9;background:
+  repeating-linear-gradient(135deg,#161a20 0 12px,#12161b 12px 24px);
+  border-bottom:1px solid var(--line);position:relative;display:grid;place-items:center}
+.thumb .ph{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:#39404a;text-transform:uppercase}
+.card .body{padding:20px 22px 24px}
+.card h3{font-family:var(--sans);font-size:19px;font-weight:600;letter-spacing:-.018em;margin:8px 0 6px}
+.card:hover h3{color:var(--accent)}
+.card p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6}
+
+/* ── article typography demo ── */
+.art{display:grid;grid-template-columns:1fr minmax(0,660px) 1fr;gap:0}
+.art>*{grid-column:2}
+.art .bleed{grid-column:1/-1}
+.art h2.title{font-family:var(--sans);font-size:38px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:10px 0 14px}
+.art .meta{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;display:flex;gap:14px;flex-wrap:wrap}
+.art p{font-size:16.5px;line-height:1.72;color:#D3D8E0;margin:20px 0}
+.art h3{font-family:var(--sans);font-size:19px;font-weight:600;letter-spacing:-.015em;margin:38px 0 4px}
+.art a.link{color:var(--accent);border-bottom:1px solid var(--accent-dim)}
+pre{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);
+  padding:16px 18px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.62;color:#C9D1DB;margin:24px 0}
+.tok-k{color:var(--accent)}.tok-c{color:#5C6673}.tok-s{color:#8FD08A}
+figure{margin:30px 0}
+figure .box{aspect-ratio:21/9;border:1px solid var(--line);background:
+  linear-gradient(90deg,transparent 49.7%,var(--line-soft) 49.7% 50.3%,transparent 50.3%),
+  repeating-linear-gradient(0deg,#0F1216 0 22px,#111419 22px 44px);display:grid;place-items:center}
+figure figcaption{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:10px;
+  padding-left:12px;border-left:2px solid var(--line)}
+.callout{border:1px solid var(--line);background:var(--surface);padding:16px 18px;margin:26px 0;font-size:14.5px;color:var(--ink-2)}
+.callout b{color:var(--accent);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;font-weight:500}
+
+/* ── footer ── */
+footer{border-top:1px solid var(--line);padding:44px 0 60px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.fgrid{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+footer a:hover{color:var(--accent)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:36px;padding:64px 0 48px}
+  .feat{grid-template-columns:1fr}
+  .row{grid-template-columns:32px 1fr auto;gap:12px}
+  .row .tags{display:none}
+  .art{grid-template-columns:1fr}
+  .art>*{grid-column:1}
+  nav ul{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a class="brand" href="#"><span class="dot"></span>Jakob&nbsp;Holz</a>
+    <ul>
+      <li><a href="#" class="on">Index</a></li>
+      <li><a href="#">Projects</a></li>
+      <li><a href="#">Writing</a></li>
+      <li><a href="#">CV</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <div class="lbl">Quantum Engineering M.Sc. · ETH Zürich</div>
+      <h1>Building things<br>that measure<br><em>the physical world.</em></h1>
+      <p class="tagline">Electronics, solid-state physics and a workshop full of half-finished
+      instruments. I write up what I build — circuits, cold-atom hardware, teardowns and the
+      occasional repair that shouldn't have worked.</p>
+      <div class="cta">
+        <a class="btn primary" href="#">Selected work</a>
+        <a class="btn" href="#">GitHub</a>
+        <a class="btn" href="#">LinkedIn</a>
+      </div>
+    </div>
+
+    <aside class="rail">
+      <div class="rh"><span>Status</span><span>2026</span></div>
+      <dl>
+        <div class="row"><dt>Role</dt><dd>M.Sc. Student</dd></div>
+        <div class="row"><dt>Institution</dt><dd>ETH Zürich</dd></div>
+        <div class="row"><dt>Previously</dt><dd>DLR · QT</dd></div>
+        <div class="row"><dt>Focus</dt><dd>Quantum&nbsp;/&nbsp;RF</dd></div>
+        <div class="row"><dt>Workshop</dt><dd><span class="ok">● open</span></dd></div>
+      </dl>
+    </aside>
+  </div>
+
+  <section>
+    <div class="shead">
+      <h2>Featured</h2><div class="rule"></div><a class="more" href="#">ALL PROJECTS →</a>
+    </div>
+    <div class="feat">
+      <a class="card" href="#">
+        <div class="thumb"><span class="ph">IC-Microscopy.webp</span></div>
+        <div class="body">
+          <div class="lbl">2024 · Optics</div>
+          <h3>IC Microscopy</h3>
+          <p>Visualizing integrated circuits in 3D — focus-stacked die shots of 1970s silicon,
+          reconstructed into navigable height maps.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb"><span class="ph">OpenScan.webp</span></div>
+        <div class="body">
+          <div class="lbl">2025 · Photogrammetry</div>
+          <h3>OpenScan</h3>
+          <p>A showcase of DIY photogrammetry performance — how close a €200 turntable rig
+          gets to commercial structured-light scanners.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Projects</h2><div class="rule"></div><span class="more">18 ENTRIES</span>
+    </div>
+    <div class="rows">
+      <a class="row" href="#"><span class="idx">18</span>
+        <span><span class="t">Cartesian Doodle Game</span><span class="s">Two-axis plotter turned into a drawing toy.</span></span>
+        <span class="tags"><span class="tag">Firmware</span><span class="tag">Mechanics</span></span><span class="yr">2025</span></a>
+      <a class="row" href="#"><span class="idx">17</span>
+        <span><span class="t">ICS Editor</span><span class="s">Browser-side calendar file surgery.</span></span>
+        <span class="tags"><span class="tag">Web</span></span><span class="yr">2025</span></a>
+      <a class="row" href="#"><span class="idx">16</span>
+        <span><span class="t">OpenScan</span><span class="s">A showcase of DIY photogrammetry performance.</span></span>
+        <span class="tags"><span class="tag">Optics</span><span class="tag">3D</span></span><span class="yr">2025</span></a>
+      <a class="row" href="#"><span class="idx">15</span>
+        <span><span class="t">IC Microscopy</span><span class="s">Visualizing integrated circuits in 3d.</span></span>
+        <span class="tags"><span class="tag">Optics</span></span><span class="yr">2024</span></a>
+      <a class="row" href="#"><span class="idx">14</span>
+        <span><span class="t">Bodeplot</span><span class="s">Frequency-response measurement on a budget.</span></span>
+        <span class="tags"><span class="tag">Instrumentation</span></span><span class="yr">2024</span></a>
+      <a class="row" href="#"><span class="idx">13</span>
+        <span><span class="t">Workbench</span><span class="s">Design &amp; fabricate a modular but sturdy workbench.</span></span>
+        <span class="tags"><span class="tag">Woodwork</span></span><span class="yr">2024</span></a>
+      <a class="row" href="#"><span class="idx">12</span>
+        <span><span class="t">Analog Freezer Alarm</span><span class="s">No microcontroller. On purpose.</span></span>
+        <span class="tags"><span class="tag">Analog</span></span><span class="yr">2024</span></a>
+      <a class="row" href="#"><span class="idx">11</span>
+        <span><span class="t">Bosch 3S Charger Reverse Engineering</span><span class="s">Tracing a GAL 1215 CV back to a schematic.</span></span>
+        <span class="tags"><span class="tag">Reverse Eng.</span><span class="tag">Power</span></span><span class="yr">2023</span></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Writing</h2><div class="rule"></div><a class="more" href="#">ARCHIVE →</a>
+    </div>
+    <div class="rows">
+      <a class="row" href="#"><span class="idx">2025</span>
+        <span><span class="t">Crystal Lattice Visualizer</span><span class="s">An interactive Bravais-lattice explorer, built for a solid-state lecture.</span></span>
+        <span class="tags"><span class="tag">WebGL</span><span class="tag">Physics</span></span><span class="yr">03/01</span></a>
+      <a class="row" href="#"><span class="idx">2025</span>
+        <span><span class="t">Ulm University Promotional Video</span><span class="s">Being on the other side of the camera for once.</span></span>
+        <span class="tags"><span class="tag">Misc</span></span><span class="yr">02/07</span></a>
+      <a class="row" href="#"><span class="idx">2024</span>
+        <span><span class="t">Intel in 1976</span><span class="s">A CPU from almost 50 years ago, under the microscope.</span></span>
+        <span class="tags"><span class="tag">Silicon</span></span><span class="yr">12/15</span></a>
+      <a class="row" href="#"><span class="idx">2024</span>
+        <span><span class="t">Phillips BDX 67B</span><span class="s">A Darlington power transistor.</span></span>
+        <span class="tags"><span class="tag">Silicon</span></span><span class="yr">12/15</span></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><h2>Article view</h2><div class="rule"></div><span class="more">TYPOGRAPHY</span></div>
+    <div class="art">
+      <div class="meta"><span>15 DEC 2024</span><span>·</span><span>SILICON</span><span>·</span><span>7 MIN</span></div>
+      <h2 class="title">Intel in 1976</h2>
+      <p>The 8080 die is 4.8&nbsp;mm on a side and carries roughly 4,500 transistors. Under a
+      50× objective the metal layer reads almost like a street map — you can follow the data
+      bus from the pads all the way into the register file without ever losing the trace.</p>
+      <h3>Preparing the die</h3>
+      <p>Decapsulation is the unglamorous half. Fuming nitric acid removes the epoxy without
+      touching the aluminium interconnect, but the margin between "clean die" and "no die"
+      is about forty seconds. I ran three sacrificial parts before committing the
+      <a class="link" href="#">C8080A</a> to the beaker.</p>
+      <figure>
+        <div class="box"><span class="ph lbl">FIG · focus stack, 112 slices</span></div>
+        <figcaption>Fig. 3 — Composite of 112 focus slices at 50×. Metal-1 in light grey,
+        diffusion visible as darker regions beneath.</figcaption>
+      </figure>
+      <p>The stacking itself is scripted. Each slice is aligned on a phase-correlation
+      estimate before the Laplacian sharpness map decides which pixels survive:</p>
+      <pre><span class="tok-c"># select sharpest pixel per (x, y) across the stack</span>
+<span class="tok-k">def</span> focus_stack(slices):
+    sharp = [laplacian(s).var(axis=<span class="tok-s">-1</span>) <span class="tok-k">for</span> s <span class="tok-k">in</span> slices]
+    idx   = np.argmax(np.stack(sharp), axis=<span class="tok-s">0</span>)
+    <span class="tok-k">return</span> np.take_along_axis(np.stack(slices), idx[<span class="tok-k">None</span>], <span class="tok-s">0</span>)[<span class="tok-s">0</span>]</pre>
+      <div class="callout"><b>Note</b>Nitric acid decapsulation should happen under a fume
+      hood with the right PPE. This is a description of what I did, not an instruction.</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap fgrid">
+    <span>© 2024–2026 Jakob Holz · CC BY-NC-ND</span>
+    <span><a href="#">GitHub</a> · <a href="#">LinkedIn</a> · <a href="#">GrabCAD</a> · <a href="#">RSS</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

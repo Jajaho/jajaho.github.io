@@ -1,0 +1,20 @@
+{{ define "main" }}
+{{ $pages := .RegularPages.ByDate.Reverse }}
+<section class="section">
+  <div class="center">
+    <div class="page-head stack stack-3">
+      <div class="lbl">{{ .Data.Singular }}</div>
+      <h1 class="page-title">{{ .Title }}</h1>
+      {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "01" "title" "Tagged" "linkText" (printf "%d entries" (len $pages))) }}
+    {{ partial "redesign/index-table" (dict
+        "pages" $pages "numbered" false "status" false "dateFmt" "2006-01" "head" true "label" "Page") }}
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,30 @@
+{{ define "main" }}
+{{ $isProjects := eq .Section "projects" }}
+{{ $pages := .RegularPages.ByDate.Reverse }}
+
+<section class="section">
+  <div class="center">
+    <div class="page-head stack stack-3">
+      <div class="lbl">{{ .Section | default "Index" }}</div>
+      <h1 class="page-title">{{ .Title }}</h1>
+      {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict
+        "n" "01"
+        "title" (cond $isProjects "Project index" "Archive")
+        "linkText" (printf "%d entries" (len $pages))) }}
+    {{ partial "redesign/index-table" (dict
+        "pages" $pages
+        "numbered" $isProjects
+        "status" $isProjects
+        "dateFmt" (cond $isProjects "2006" "2006-01")
+        "head" true
+        "label" (cond $isProjects "Project" "Post")) }}
+  </div>
+</section>
+{{ end }}

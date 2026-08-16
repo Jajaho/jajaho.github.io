@@ -1,0 +1,1060 @@
+/* ==========================================================================
+   jakobholz.com — design system  ·  direction "Copper"
+   Loaded from layouts/partials/site_head.html. No Node/PostCSS build required.
+
+   LAYERS (order matters, do not reorder):
+     1. tokens      the only place raw values are allowed
+     2. reset       minimal, replaces Tailwind preflight
+     3. base        element defaults
+     4. primitives  composable layout objects — these own ALL spacing
+     5. components  site furniture built from primitives
+     6. prose       article body (replaces `prose prose-slate dark:prose-invert`)
+     7. widgets     the interactive shortcodes, as one instrument vocabulary
+
+   RULES:
+     - No file outside layer 1 may contain a raw hex colour or px length.
+       Use a token. If no token fits, add one.
+     - Templates never set margins. They pick a primitive (.stack, .cluster,
+       .grid-auto, .sidebar, .center, .frame). This is what keeps pages
+       consistent with each other.
+   ========================================================================== */
+
+/* ---------- 1. tokens ---------------------------------------------------- */
+:root {
+  /* — colour: light ("copper on paper") — */
+  --bg:        #f6f5f2;
+  --panel:     #ffffff;
+  --panel-2:   #efede8;
+  --ink:       #111214;
+  --ink-2:     #54585f;
+  --ink-3:     #8c9098;
+  --line:      #111214;   /* structural rule — deliberate high contrast */
+  --hair:      #d8d5ce;   /* subdivision rule */
+  --cu:        #b4632f;   /* accent: PCB copper */
+  --cu-2:      #8e4c22;
+  --cu-soft:   #faede4;
+
+  /* Status. Only widgets use these, and only for genuinely semantic states
+     (destructive action, committed action) — never for decoration. */
+  --ok:        #1f7a52;
+  --danger:    #a83232;
+
+  /* Reciprocal space, in the lattice widget. It needs a second data colour
+     that survives next to copper without competing with it. */
+  --lat-k:     #3b6ea5;
+
+  /* — type — */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* Type scale. Named by ROLE, not by size, so "which token?" has one answer.
+     Dense technical UI needs finer steps than a t-shirt scale provides —
+     rounding 10px labels up to a shared 10.5px step visibly inflates the
+     whole interface, which is exactly what the first pass got wrong. */
+  --t-display: 3.25rem;    /* 52px   hero headline (max of clamp) */
+  --t-title:   2.5rem;     /* 40px   article / page title (max of clamp) */
+  --t-heading: 1.25rem;    /* 20px   tile + card headings */
+  --t-prose:   1.03125rem; /* 16.5px article body, lede */
+  --t-body:    0.9375rem;  /* 15px   UI body */
+  --t-dense:   0.90625rem; /* 14.5px table body */
+  --t-note:    0.84375rem; /* 13.5px table sub-line */
+  --t-code:    0.8125rem;  /* 13px   code, wordmark */
+  --t-num:     0.78125rem; /* 12.5px tabular year column */
+  --t-ui:      0.75rem;    /* 12px   spec rows, section headings, site name */
+  --t-nav:     0.71875rem; /* 11.5px nav, buttons, aside */
+  --t-meta:    0.6875rem;  /* 11px   article meta, status, section links */
+  --t-label:   0.65625rem; /* 10.5px eyebrow labels */
+  --t-tick:    0.625rem;   /* 10px   table headers, chips */
+
+  --lh-tight: 1.1;
+  --lh-snug:  1.35;
+  --lh-body:  1.58;
+  --lh-prose: 1.72;
+
+  --track-tight: -0.028em;  /* display headings */
+  --track-label: 0.13em;    /* uppercase mono labels */
+
+  /* — space (the knob the old theme hard-coded as py-24 / 6rem) — */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+
+  --space-section: var(--s-7);
+  --space-block:   var(--s-5);
+
+  /* — measure & page — */
+  --measure:  68ch;
+  --page-max: 77.5rem;   /* 1240px */
+  --page-pad: var(--s-6);
+
+  /* The right rail. Shared by the article thumbnail and the Contents/Tags
+     aside so the page keeps one vertical edge from the title downwards. */
+  --rail-width: 18rem;   /* 288px */
+  --thumb-ratio: 16 / 9;
+
+  /* Interactive widgets (3D viewers, canvases). One height for all of them,
+     so a page with several does not read as a pile of unrelated embeds.
+     Individual widgets raise it with a modifier, never with a literal. */
+  --wgt-stage-h: clamp(20rem, 55vh, 34rem);
+
+  --border: 1px solid var(--line);
+  --border-hair: 1px solid var(--hair);
+}
+
+/* Dark palette. `html.dark` is the SINGLE source of truth: the inline script in
+   site_head.html sets it before first paint, from (1) the visitor's stored
+   choice, else (2) appearance.mode in params.yaml, else (3) the OS setting.
+   Deliberately NOT a prefers-color-scheme media query — that would override an
+   explicit "light" choice made on a dark-mode OS. */
+html.dark {
+  --bg:      #0f1011;
+  --panel:   #161719;
+  --panel-2: #1d1f21;
+  --ink:     #ededea;
+  --ink-2:   #a8acb2;
+  --ink-3:   #71757c;
+  --line:    #33363a;
+  --hair:    #26282b;
+  --cu:      #e08a4e;
+  --cu-2:    #f0a468;
+  --cu-soft: #2a1d14;
+  --ok:      #4bb98a;
+  --danger:  #e5736b;
+  --lat-k:   #6ea8dd;
+}
+
+@media (max-width: 60rem) {
+  :root { --page-pad: var(--s-4); --space-section: var(--s-6); }
+}
+
+/* ---------- 2. reset ----------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
+/* Widgets toggle parts that set their own display, so [hidden] has to win. */
+[hidden] { display: none !important; }
+input, button, textarea, select { font: inherit; color: inherit; }
+table { border-collapse: collapse; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- 3. base ------------------------------------------------------ */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+
+a { color: inherit; text-decoration: none; }
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  line-height: var(--lh-tight);
+  text-wrap: balance;
+}
+
+code, pre, kbd, samp { font-family: var(--font-mono); }
+::selection { background: var(--cu); color: var(--bg); }
+
+:focus-visible { outline: 2px solid var(--cu); outline-offset: 2px; }
+
+.skip-link {
+  position: absolute; left: var(--s-2); top: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  background: var(--cu); color: #fff;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; z-index: 100; }
+
+/* ---------- 4. primitives ------------------------------------------------ */
+
+/* Center: the page gutter. */
+.center {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+}
+
+/* Stack: vertical rhythm. Owns all vertical margins between siblings. */
+.stack > * + * { margin-top: var(--stack-space, var(--s-4)); }
+.stack-2 { --stack-space: var(--s-2); }
+.stack-3 { --stack-space: var(--s-3); }
+.stack-5 { --stack-space: var(--s-5); }
+.stack-6 { --stack-space: var(--s-6); }
+
+/* Cluster: horizontal group that wraps. */
+.cluster {
+  display: flex; flex-wrap: wrap;
+  gap: var(--cluster-space, var(--s-3));
+  align-items: var(--cluster-align, center);
+}
+
+/* Grid: equal columns, collapses on narrow viewports. */
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 20rem), 1fr));
+  gap: var(--grid-gap, 0);
+}
+
+/* Sidebar: main + fixed-width aside, collapses when cramped. */
+.sidebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--sidebar-width, var(--rail-width));
+  gap: var(--sidebar-gap, var(--s-7));
+}
+@media (max-width: 60rem) {
+  .sidebar { grid-template-columns: 1fr; gap: var(--s-5); }
+}
+
+/* Frame: fixed aspect-ratio media box. */
+.frame {
+  aspect-ratio: var(--frame-ratio, 16 / 9);
+  overflow: hidden;
+  background: var(--panel-2);
+  display: grid;
+  place-items: center;
+}
+.frame > img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Section: the vertical rhythm of the page. */
+.section { padding-block: var(--space-section); border-bottom: var(--border); }
+.section:last-of-type { border-bottom: 0; }
+
+/* ---------- 5. components ------------------------------------------------ */
+
+/* mono eyebrow label — used everywhere */
+.lbl {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.cu { color: var(--cu); }
+
+/* Page title — every non-article page heading. Exists so templates never
+   carry an inline font-size, per the rules at the top of this file. */
+.page-title { font-size: clamp(1.75rem, 4.4vw, var(--t-title)); }
+
+/* Standard intro block: eyebrow + title + optional prose. */
+.page-head { max-width: var(--measure); }
+
+/* Small shared utilities, so templates carry no raw values.
+   Setting a primitive's custom property inline (--grid-min, --sidebar-width,
+   --cluster-space) is the intended API and stays allowed. */
+.dim  { color: var(--ink-2); }
+.lede { color: var(--ink-2); font-size: var(--t-prose); line-height: 1.65; max-width: 54ch; }
+.spaced { margin-top: var(--s-6); }
+.spec--boxed { border: var(--border); }
+.cv-date { text-align: left; width: 11rem; }
+.cv-detail { font-size: var(--t-code); margin-top: var(--s-2); }
+.aside .hd + a ~ .hd, .aside nav + .hd { margin-top: var(--s-5); }
+
+/* — header — */
+.site-header nav { margin-left: auto; }
+.site-header {
+  border-bottom: var(--border);
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 40;
+}
+.site-header .bar {
+  height: 3.25rem;
+  display: flex; align-items: center;
+}
+.mark {
+  font-family: var(--font-mono); font-weight: 600; font-size: var(--t-code);
+  border: var(--border); padding: var(--s-1) var(--s-2);
+  background: var(--cu); color: #fff;
+}
+.who {
+  font-family: var(--font-mono); font-size: var(--t-ui);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  margin-left: var(--s-3); color: var(--ink-2);
+}
+.site-nav {
+  display: flex;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border-left: var(--border-hair);
+  list-style: none; padding: 0;
+}
+.site-nav a {
+  padding-inline: var(--s-4); height: 3.25rem;
+  display: grid; place-items: center;
+  border-right: var(--border-hair); color: var(--ink-2);
+}
+.site-nav a:hover { background: var(--cu-soft); color: var(--cu); }
+.site-nav a.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--cu); }
+
+.theme-toggle {
+  width: 3.25rem; height: 3.25rem;
+  border: 0; border-right: var(--border-hair);
+  background: none; color: var(--ink-2); cursor: pointer;
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+}
+.theme-toggle:hover { background: var(--cu-soft); color: var(--cu); }
+.theme-toggle::before { content: "\25D1"; font-size: var(--t-prose); line-height: 1; }
+.theme-toggle[data-theme="dark"]::before { content: "\25D0"; }
+
+/* — section bar — */
+.sbar {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding-block: var(--s-3);
+  border-bottom: var(--border-hair);
+  margin-bottom: var(--s-5);
+}
+.sbar h2 {
+  font-family: var(--font-mono); font-size: var(--t-ui); font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+.sbar .n {
+  font-family: var(--font-mono); font-size: var(--t-label);
+  color: #fff; background: var(--cu);
+  padding: 0.125rem var(--s-2); letter-spacing: 0.1em;
+}
+.sbar .fill {
+  flex: 1; height: 1px;
+  background: repeating-linear-gradient(90deg, var(--hair) 0 4px, transparent 4px 8px);
+}
+.sbar a {
+  font-family: var(--font-mono); font-size: var(--t-meta);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+}
+.sbar a:hover { color: var(--cu); }
+
+/* — hero — */
+.hero { border-bottom: var(--border); }
+.hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21.25rem;
+}
+.hero-l { padding: var(--s-7) var(--s-6) var(--s-6) 0; }
+.hero-r { border-left: var(--border-hair); }
+.hero h1 {
+  font-size: clamp(2.125rem, 4.6vw, var(--t-display));
+  margin-top: var(--s-3);
+  max-width: 17ch;
+}
+.hero .lede {
+  color: var(--ink-2); font-size: var(--t-prose);
+  line-height: 1.65; max-width: 54ch; margin-top: var(--s-4);
+}
+.trace {
+  height: 1px; margin-top: var(--s-6);
+  background: repeating-linear-gradient(90deg, var(--cu) 0 26px, transparent 26px 34px);
+  opacity: 0.6;
+}
+@media (max-width: 60rem) {
+  .hero-in { grid-template-columns: 1fr; }
+  .hero-l { padding: var(--s-6) 0; }
+  .hero-r { border-left: 0; border-top: var(--border-hair); }
+}
+
+/* — button row — */
+.acts {
+  display: flex; width: max-content; max-width: 100%; flex-wrap: wrap;
+  border: var(--border); margin-top: var(--s-5);
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.acts a { padding: var(--s-3) var(--s-4); border-right: var(--border-hair); }
+.acts a:last-child { border-right: 0; }
+.acts a:hover { background: var(--cu); color: #fff; }
+.acts a.p { background: var(--ink); color: var(--bg); }
+.acts a.p:hover { background: var(--cu); color: #fff; }
+
+/* — spec panel (key/value block) — */
+.spec { font-family: var(--font-mono); font-size: var(--t-ui); }
+.spec .h {
+  padding: var(--s-2) var(--s-5);
+  border-bottom: var(--border-hair); background: var(--panel-2);
+  font-size: var(--t-label); letter-spacing: var(--track-label);
+  text-transform: uppercase; color: var(--ink-2);
+  display: flex; justify-content: space-between;
+}
+.spec .r {
+  display: flex; justify-content: space-between; gap: var(--s-4);
+  padding: var(--s-2) var(--s-5);
+  border-bottom: var(--border-hair);
+}
+.spec .r > :first-child { color: var(--ink-3); }
+.spec .r > :last-child { text-align: right; }
+.led {
+  display: inline-block; width: 7px; height: 7px;
+  background: var(--cu); border-radius: 50%;
+  box-shadow: 0 0 6px var(--cu);
+  margin-right: var(--s-2); vertical-align: 1px;
+}
+
+/* — tiles (featured cards) — */
+.tiles { border-left: var(--border-hair); --grid-min: 22rem; }
+.tile {
+  border-right: var(--border-hair); border-bottom: var(--border-hair);
+  transition: background 0.15s;
+}
+.tile:hover { background: var(--panel); }
+.tile .frame { border-bottom: var(--border-hair); position: relative; }
+/* Hatch fill marks an ABSENT image. Never overlay it on real artwork. */
+.frame--empty {
+  background-image: repeating-linear-gradient(45deg, transparent 0 9px, rgb(180 99 47 / 0.06) 9px 18px);
+}
+.tile .tx { padding: var(--s-4) var(--s-5) var(--s-5); }
+.tile h3 { font-size: var(--t-heading); margin-block: var(--s-2) var(--s-2); }
+.tile:hover h3 { color: var(--cu); }
+.tile p { color: var(--ink-2); font-size: var(--t-dense); }
+
+/* — index table — */
+.tbl { width: 100%; font-size: var(--t-dense); }
+.tbl th {
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3); text-align: left; font-weight: 500;
+  padding: var(--s-3); border-bottom: var(--border);
+}
+.tbl td { padding: var(--s-3); border-bottom: var(--border-hair); vertical-align: top; }
+.tbl tbody tr { transition: background 0.12s; }
+.tbl tbody tr:hover { background: var(--cu-soft); }
+.tbl .id { font-family: var(--font-mono); font-size: var(--t-ui); color: var(--ink-3); width: 3.25rem; }
+.tbl .nm { font-weight: 500; letter-spacing: -0.01em; }
+.tbl tbody tr:hover .nm { color: var(--cu); }
+.tbl .ds { color: var(--ink-2); font-size: var(--t-note); margin-top: 0.125rem; }
+.tbl .yr {
+  font-family: var(--font-mono); font-size: var(--t-num);
+  color: var(--ink-3); width: 5rem; text-align: right; white-space: nowrap;
+}
+.tbl a { display: block; }
+
+.chip {
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border: var(--border-hair); padding: 0.125rem var(--s-2);
+  white-space: nowrap; color: var(--ink-2);
+}
+a.chip:hover { border-color: var(--cu); color: var(--cu); }
+
+.st { width: 7rem; }
+.st b {
+  font-family: var(--font-mono); font-weight: 500; font-size: var(--t-meta);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--cu);
+  display: flex; align-items: center; gap: var(--s-2);
+}
+.st b::before { content: ""; width: 5px; height: 5px; background: currentColor; }
+
+@media (max-width: 48rem) {
+  .tbl .st, .tbl th.st, .tbl .dom { display: none; }
+}
+
+/* — article — */
+.article { padding-block: var(--space-section); }
+.article-head { max-width: var(--measure); }
+.article-head h1 {
+  font-size: clamp(1.75rem, 4.4vw, var(--t-title));
+  margin-block: var(--s-2) var(--s-3);
+}
+.article-meta {
+  display: flex; gap: var(--s-3); flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: var(--t-meta);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+  padding-bottom: var(--s-4); border-bottom: var(--border-hair);
+}
+/* Masthead: header text left, uniform thumbnail in the right rail.
+   Same column width as the aside below, so the page holds one vertical edge. */
+.article-masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--rail-width);
+  gap: var(--s-7);
+  align-items: start;
+}
+.article-thumb .frame {
+  --frame-ratio: var(--thumb-ratio);
+  border: var(--border);
+}
+
+@media (max-width: 60rem) {
+  .article-masthead { grid-template-columns: 1fr; gap: var(--s-5); }
+  /* Thumbnail follows the header text rather than pushing the title down. */
+  .article-thumb { max-width: 26rem; }
+}
+
+.article-thumb figcaption,
+.prose figure figcaption {
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink-3); margin-top: var(--s-2);
+  display: flex; gap: var(--s-2); letter-spacing: 0.04em;
+}
+
+/* article aside (contents + tags) */
+.aside {
+  font-family: var(--font-mono); font-size: var(--t-nav); line-height: 1.9;
+  color: var(--ink-3);
+  position: sticky; top: 5rem; align-self: start;
+  border-left: var(--border-hair); padding-left: var(--s-4);
+}
+.aside .hd {
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-2); margin-bottom: var(--s-2);
+}
+.aside a { display: block; }
+.aside a:hover, .aside a.on { color: var(--cu); }
+.aside nav ul { list-style: none; padding: 0; }
+.aside nav ul ul { padding-left: var(--s-3); }
+
+/* — external-link stub (archetype: external) — */
+.stub {
+  border: var(--border); background: var(--panel);
+  padding: var(--s-5); max-width: var(--measure);
+}
+.stub .go {
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--cu);
+}
+.stub .go:hover { text-decoration: underline; }
+
+/* — pagination — */
+.pager {
+  display: flex; gap: var(--s-2); justify-content: center;
+  margin-top: var(--s-6);
+  font-family: var(--font-mono); font-size: var(--t-nav);
+}
+.pager a, .pager span {
+  border: var(--border-hair); padding: var(--s-2) var(--s-3); color: var(--ink-2);
+}
+.pager a:hover { border-color: var(--cu); color: var(--cu); }
+.pager .on { background: var(--cu); color: #fff; border-color: var(--cu); }
+
+/* — footer — */
+.site-footer {
+  border-top: var(--border);
+  padding-block: var(--s-6) var(--s-7);
+  font-family: var(--font-mono); font-size: var(--t-meta);
+  letter-spacing: 0.06em; color: var(--ink-3);
+}
+.site-footer .fgrid {
+  display: flex; justify-content: space-between; gap: var(--s-5);
+  flex-wrap: wrap; text-transform: uppercase;
+}
+.site-footer a:hover { color: var(--cu); }
+
+/* ---------- 6. prose ----------------------------------------------------- */
+.prose {
+  max-width: var(--measure);
+  font-size: var(--t-prose);
+  line-height: var(--lh-prose);
+}
+.prose > * + * { margin-top: var(--space-block); }
+
+.prose h2, .prose h3 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--cu);
+  display: flex; align-items: center; gap: var(--s-3);
+  margin-top: var(--s-7);
+}
+.prose h2 { font-size: var(--t-ui); }
+.prose h3 { font-size: var(--t-nav); color: var(--ink-2); }
+.prose h2::after, .prose h3::after {
+  content: ""; flex: 1; height: 1px; background: var(--hair);
+}
+.prose h4 { font-size: var(--t-body); margin-top: var(--s-5); }
+
+.prose a { color: var(--cu); border-bottom: 1px solid var(--cu); }
+.prose a:hover { background: var(--cu-soft); }
+
+.prose ul, .prose ol { padding-left: 1.3em; }
+.prose li + li { margin-top: var(--s-1); }
+.prose li > ul, .prose li > ol { margin-top: var(--s-1); }
+
+.prose code {
+  font-size: 0.88em;
+  background: var(--panel-2);
+  border: var(--border-hair);
+  padding: 0.12em 0.35em;
+}
+.prose pre {
+  background: var(--panel); border: var(--border);
+  padding: var(--s-4) var(--s-5);
+  overflow-x: auto;
+  font-size: var(--t-code); line-height: 1.62;
+}
+.prose pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+
+.prose blockquote {
+  border-left: 2px solid var(--cu);
+  padding-left: var(--s-4);
+  color: var(--ink-2);
+}
+
+.prose img, .prose figure { margin-inline: auto; }
+.prose figure img { border: var(--border); }
+
+.prose hr { border: 0; border-top: var(--border-hair); }
+
+.prose table { width: 100%; font-size: var(--t-dense); display: block; overflow-x: auto; }
+.prose th, .prose td { text-align: left; padding: var(--s-2) var(--s-3); border-bottom: var(--border-hair); }
+.prose th {
+  font-family: var(--font-mono); font-size: var(--t-label);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+  border-bottom: var(--border);
+}
+
+/* Wide content must scroll inside itself, never the page. */
+.prose > pre, .prose > table { max-width: 100%; }
+
+/* Callouts. Same shape as .wgt-note, but this one lives in the text flow, so
+   it is bordered rather than filled edge to edge. */
+.callout {
+  display: flex; gap: var(--s-3); align-items: baseline;
+  padding: var(--s-3) var(--s-4);
+  border-left: 2px solid var(--cu);
+  background: var(--cu-soft);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+.callout > b {
+  flex: none;
+  font-family: var(--font-mono); font-size: var(--t-tick); font-weight: 500;
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--cu-2);
+}
+.callout > div > * + * { margin-top: var(--s-3); }
+.callout--warning { border-left-color: var(--danger); }
+.callout--warning > b { color: var(--danger); }
+
+/* Two posts lay figures out side by side. That was the only thing they used
+   Tailwind for, so it becomes a primitive instead of a soup of utilities. */
+.figrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--s-4);
+}
+.figrow figure { margin: 0; }
+.figrow img { width: 100%; border: var(--border); }
+
+/* ==========================================================================
+   7. WIDGETS  —  the interactive shortcodes
+
+   Every shortcode in layouts/shortcodes/ used to carry its own <style> block
+   with its own palette, its own button shape and its own idea of what a
+   control looks like. Three of them shipped a whole <!DOCTYPE html> document
+   into the middle of an article, so their body{} rules restyled the page
+   around them; one pulled the Tailwind CDN, one pulled Google Fonts, and the
+   ones that had a dark mode drove it off prefers-color-scheme — which the
+   site's own theme toggle cannot reach.
+
+   This layer replaces all of it. A widget is an INSTRUMENT: a bordered panel,
+   a strip that names it, a stage, and controls in the site's mono/copper
+   vocabulary. Shortcodes now emit markup and behaviour only, never style.
+
+   Composition — order is free, the block draws the dividers:
+     <div class="wgt">
+       <div class="wgt-hd">…</div>      name strip
+       <div class="wgt-note">…</div>    warning
+       <div class="wgt-bar">…</div>     controls, repeatable
+       <div class="wgt-stage">…</div>   the canvas / viewer / iframe
+       <dl  class="wgt-specs">…</dl>    readouts
+     </div>
+   ========================================================================== */
+
+/* — the block — */
+.wgt {
+  --wgt-pad: var(--s-4);
+  border: var(--border);
+  background: var(--panel);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+/* The block, not its children, owns every internal rule. */
+.wgt > * + *,
+.wgt-group > * + * { border-top: var(--border-hair); }
+.wgt > .wgt-hd + * { border-top-color: var(--line); }
+
+/* Widgets live inside .prose, which is capped at --measure. They fill it
+   rather than inventing their own width — that is what makes a page with
+   three viewers on it read as one document. */
+.prose .wgt { max-width: 100%; }
+
+/* — header strip — */
+.wgt-hd {
+  display: flex; align-items: baseline; gap: var(--s-3);
+  padding: var(--s-2) var(--wgt-pad);
+  font-family: var(--font-mono); font-size: var(--t-label);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.wgt-hd b { font-weight: 500; color: var(--ink-2); }
+.wgt-hd .r { margin-left: auto; }
+
+/* — stage: whatever actually renders — */
+.wgt-stage {
+  position: relative;
+  height: var(--wgt-stage-h);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.wgt-stage > model-viewer,
+.wgt-stage > canvas,
+.wgt-stage > iframe,
+.wgt-stage > img,
+.wgt-stage > video {
+  display: block; width: 100%; height: 100%; border: 0;
+  background: var(--panel-2);
+}
+.wgt-stage--tall  { --wgt-stage-h: clamp(24rem, 68vh, 40rem); }
+.wgt-stage--short { --wgt-stage-h: clamp(14rem, 38vh, 22rem); }
+/* Several viewers occupying one stage, revealed against each other by clip-path. */
+.wgt-stage--stack > model-viewer { position: absolute; inset: 0; }
+/* A canvas drawn at a fixed resolution: centre it and keep its aspect rather
+   than stretching the drawing surface to the stage. */
+.wgt-stage--fit { display: grid; place-items: center; padding: var(--s-4); }
+.wgt-stage--fit > canvas {
+  width: auto; height: auto;
+  max-width: 100%; max-height: 100%;
+}
+
+/* Side-by-side stages: real/reciprocal lattice, A/B comparisons. */
+.wgt-panes { display: grid; grid-template-columns: 1fr; }
+.wgt-pane  { display: grid; grid-template-rows: auto 1fr; min-width: 0; }
+.wgt-pane > * + * { border-top: var(--border-hair); }
+@media (min-width: 45rem) {
+  .wgt-panes { grid-template-columns: 1fr 1fr; }
+  .wgt-panes > * + * { border-left: var(--border-hair); }
+}
+@media (max-width: 45rem) {
+  .wgt-panes > * + * { border-top: var(--border-hair); }
+}
+
+/* — control bars — */
+.wgt-bar {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--s-3) var(--s-5);
+  padding: var(--s-3) var(--wgt-pad);
+}
+.wgt-bar--end { justify-content: flex-end; }
+.wgt-bar > .sep { flex: 1 1 auto; }
+
+/* A labelled control. Grows to fill the bar; several share one line. */
+.wgt-field {
+  display: flex; flex-direction: column; gap: var(--s-1);
+  min-width: 0; flex: 1 1 12rem;
+}
+.wgt-field--fixed { flex: 0 0 auto; }
+
+.wgt-lab {
+  display: flex; align-items: baseline; gap: var(--s-2);
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3);
+}
+/* Live readout of the control this labels. */
+.wgt-lab .v { margin-left: auto; color: var(--cu); font-variant-numeric: tabular-nums; }
+
+.wgt-check {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink-2); cursor: pointer;
+}
+
+/* — form controls — */
+.wgt select,
+.wgt input[type="text"],
+.wgt input[type="number"],
+.wgt input[type="date"] {
+  width: 100%;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink); background: var(--panel);
+  border: var(--border-hair); border-radius: 0;
+  padding: var(--s-2) var(--s-3);
+}
+.wgt select:focus,
+.wgt input:focus { outline: none; border-color: var(--cu); }
+
+.wgt input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: var(--s-4);
+  background: transparent; cursor: pointer;
+}
+.wgt input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: var(--line); }
+.wgt input[type="range"]::-moz-range-track { height: 1px; background: var(--line); }
+.wgt input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: var(--s-3); height: var(--s-3);
+  margin-top: calc(var(--s-3) / -2);
+  background: var(--cu); border: 0; border-radius: 0;
+}
+.wgt input[type="range"]::-moz-range-thumb {
+  width: var(--s-3); height: var(--s-3);
+  background: var(--cu); border: 0; border-radius: 0;
+}
+.wgt input[type="checkbox"] {
+  accent-color: var(--cu);
+  width: var(--s-3); height: var(--s-3);
+}
+
+/* — buttons — */
+.wgt-btn {
+  /* inline-block, not inline: a <label> can wear this class too (the file
+     picker in the ICS editor), and an inline box ignores vertical padding. */
+  display: inline-block;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  line-height: 1;
+  color: var(--ink); background: var(--panel);
+  border: var(--border); border-radius: 0;
+  padding: var(--s-2) var(--s-3);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.wgt-btn:hover { background: var(--cu-soft); color: var(--cu-2); border-color: var(--cu); }
+.wgt-btn[aria-pressed="true"],
+.wgt-btn.is-on { background: var(--cu); border-color: var(--cu); color: var(--bg); }
+.wgt-btn[disabled] { opacity: 0.4; cursor: default; }
+.wgt-btn[disabled]:hover { background: var(--panel); color: var(--ink); border-color: var(--line); }
+
+.wgt-btn--primary { background: var(--cu); border-color: var(--cu); color: var(--bg); }
+.wgt-btn--primary:hover { background: var(--cu-2); border-color: var(--cu-2); color: var(--bg); }
+.wgt-btn--ok { border-color: var(--ok); color: var(--ok); }
+.wgt-btn--ok:hover { background: var(--ok); border-color: var(--ok); color: var(--bg); }
+.wgt-btn--danger { border-color: var(--danger); color: var(--danger); }
+.wgt-btn--danger:hover { background: var(--danger); border-color: var(--danger); color: var(--bg); }
+
+.wgt-btn--icon {
+  padding: 0; width: var(--s-6); height: var(--s-6);
+  display: grid; place-items: center;
+}
+.wgt-btn--icon svg { width: var(--s-4); height: var(--s-4); stroke: currentColor; }
+
+/* A direction pad. Buttons carry data-dir; the grid places them. */
+.wgt-dpad { display: grid; grid-template-columns: repeat(3, var(--s-7)); gap: var(--s-1); }
+.wgt-dpad .wgt-btn {
+  width: 100%; height: var(--s-7); padding: 0;
+  display: grid; place-items: center; font-size: var(--t-body);
+}
+.wgt-dpad [data-dir="up"]    { grid-area: 1 / 2; }
+.wgt-dpad [data-dir="left"]  { grid-area: 2 / 1; }
+.wgt-dpad [data-dir="right"] { grid-area: 2 / 3; }
+.wgt-dpad [data-dir="down"]  { grid-area: 3 / 2; }
+
+/* — explanatory text inside a widget — */
+.wgt-help {
+  padding: var(--s-3) var(--wgt-pad);
+  font-size: var(--t-nav); line-height: var(--lh-body);
+  color: var(--ink-2);
+}
+.wgt-help strong { color: var(--ink); font-weight: 600; }
+.wgt-help ul { padding-left: 1.2em; margin-top: var(--s-2); }
+.wgt-help li + li { margin-top: var(--s-1); }
+
+.wgt-fail { color: var(--danger); }
+
+/* Score popup: rises out of the board and fades. */
+.wgt-pop {
+  position: absolute; z-index: 5; pointer-events: none;
+  font-family: var(--font-mono); font-size: var(--t-heading); font-weight: 600;
+  color: var(--ok);
+  animation: wgt-pop 1.6s ease-out forwards;
+}
+@keyframes wgt-pop {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(calc(var(--s-8) * -1)); }
+}
+
+/* — week calendar (the ICS editor) — */
+.wgt-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.wgt-cal-day {
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3); background: var(--panel-2);
+  padding: var(--s-2) var(--s-3);
+  border-left: var(--border-hair);
+}
+.wgt-cal-cell {
+  min-height: 9rem; max-height: 18rem; overflow-y: auto;
+  padding: var(--s-2);
+  display: flex; flex-direction: column; gap: var(--s-2);
+  border-left: var(--border-hair); border-top: var(--border-hair);
+}
+.wgt-cal-day:nth-child(7n + 1),
+.wgt-cal-cell:nth-child(7n + 1) { border-left: 0; }
+
+.wgt-event {
+  width: 100%; text-align: left;
+  display: flex; align-items: flex-start; gap: var(--s-2);
+  font-size: var(--t-meta); line-height: var(--lh-snug);
+  color: var(--ink); background: var(--panel-2);
+  border: var(--border-hair); border-radius: 0;
+  padding: var(--s-2);
+  cursor: pointer;
+}
+.wgt-event:hover { border-color: var(--cu); }
+.wgt-event[aria-pressed="true"] { background: var(--cu); border-color: var(--cu); color: var(--bg); }
+.wgt-event .t { display: block; font-family: var(--font-mono); font-size: var(--t-tick); opacity: 0.7; }
+/* Repeat count. Marks an event that recurs, so deleting one is a choice. */
+.wgt-event .n {
+  margin-left: auto; flex: none;
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  padding: 0 var(--s-1);
+  border: 1px solid currentColor;
+}
+
+/* — file drop / empty state — */
+.wgt-drop {
+  display: grid; place-items: center; gap: var(--s-4);
+  padding: var(--s-8) var(--wgt-pad);
+  text-align: center;
+}
+.wgt-drop p { color: var(--ink-2); max-width: 32ch; }
+/* The real input is hidden; the label is the button. Clicking a label still
+   opens the picker for an input it contains, even a display:none one. */
+.wgt-drop input[type="file"] { display: none; }
+
+/* — modal dialogue — */
+.wgt-dialog {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center; padding: var(--s-4);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.wgt-dialog-panel {
+  width: min(30rem, 100%);
+  background: var(--panel); border: var(--border);
+}
+.wgt-dialog-panel h2 {
+  font-family: var(--font-mono); font-size: var(--t-ui);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--cu);
+  padding: var(--s-3) var(--wgt-pad);
+  border-bottom: var(--border);
+}
+.wgt-dialog-panel p { padding: var(--s-4) var(--wgt-pad); color: var(--ink-2); }
+.wgt-dialog-panel .wgt-bar { flex-direction: column; align-items: stretch; }
+.wgt-dialog-panel .wgt-bar .wgt-btn { text-align: center; }
+
+/* — floating controls over a stage — */
+.wgt-hud {
+  position: absolute; z-index: 3;
+  top: var(--s-2); right: var(--s-2);
+  display: flex; flex-direction: column; gap: var(--s-2);
+}
+.wgt-hud--bl { top: auto; right: auto; bottom: var(--s-2); left: var(--s-2); flex-direction: row; }
+
+/* A chip pinned over the stage: model labels, dimension readouts. */
+.wgt-tag {
+  position: absolute; z-index: 2;
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink); background: var(--panel);
+  border: var(--border-hair); border-radius: 0;
+  padding: var(--s-1) var(--s-2);
+  pointer-events: none;
+}
+.wgt-tag--tl { top: var(--s-2); left: var(--s-2); }
+.wgt-tag--tr { top: var(--s-2); right: var(--s-2); }
+/* Projected onto the canvas from 3D coordinates, so JS owns top/left. */
+.k-point-label { z-index: 4; }
+
+/* — A/B wipe divider — */
+.wgt-split {
+  position: absolute; inset-block: 0; z-index: 2;
+  width: 1px; background: var(--line);
+  transform: translateX(-50%);
+  cursor: ew-resize; touch-action: none;
+}
+/* A 1px line is not a grab target; widen the hit area without widening the line. */
+.wgt-split::before {
+  content: ""; position: absolute; inset-block: 0; left: 50%;
+  width: var(--s-6); transform: translateX(-50%);
+}
+.wgt-split-grip {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--s-6); height: var(--s-6);
+  background: var(--panel); border: var(--border); color: var(--ink);
+  display: grid; place-items: center;
+}
+.wgt-split-grip svg { width: var(--s-4); height: var(--s-4); stroke: currentColor; }
+.wgt-split:focus-visible .wgt-split-grip { border-color: var(--cu); color: var(--cu); }
+
+/* model-viewer hotspots are slotted LIGHT-DOM children, so these rules reach
+   them from here; --min-hotspot-opacity stops the element fading when it
+   rotates behind the model. */
+.wgt-tag--hotspot { transform: translate3d(-50%, -50%, 0); --min-hotspot-opacity: 0; }
+/* Corner anchors: geometry only, never drawn. */
+.wgt-dot { display: none; }
+/* Dimension leader lines, drawn into an SVG overlay. */
+.wgt-rule { pointer-events: none; width: 100%; height: 100%; }
+.wgt-rule line { stroke: var(--cu); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+/* — note / warning — */
+.wgt-note {
+  display: flex; gap: var(--s-3); align-items: baseline;
+  padding: var(--s-3) var(--wgt-pad);
+  background: var(--cu-soft); color: var(--cu-2);
+  font-size: var(--t-nav);
+}
+.wgt-note b {
+  flex: none;
+  font-family: var(--font-mono); font-size: var(--t-tick); font-weight: 500;
+  letter-spacing: var(--track-label); text-transform: uppercase;
+}
+
+/* — readouts — */
+.wgt-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0 var(--s-6);
+  padding: var(--s-2) var(--wgt-pad) var(--s-3);
+}
+.wgt-specs > div {
+  display: flex; align-items: baseline; gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: var(--border-hair);
+}
+.wgt-specs dt {
+  font-family: var(--font-mono); font-size: var(--t-tick);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.wgt-specs dd {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  color: var(--ink); font-variant-numeric: tabular-nums;
+}
+
+/* — fullscreen — */
+.wgt-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+}
+.wgt-modal.is-open { display: block; }
+.wgt-modal > .wgt-stage { height: 100%; background: var(--bg); }
+.wgt-modal .wgt-hud { top: var(--s-4); right: var(--s-4); }
+
+/* Custom elements are invisible until their module defines them; without this
+   their light-DOM children flash unstyled first. */
+:not(:defined) > * { display: none; }
+

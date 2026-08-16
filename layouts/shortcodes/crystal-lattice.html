@@ -1,104 +1,96 @@
-<div class="w-full max-w-full mx-auto p-4 dark:bg-gray-900">
-  <!-- Control Panel -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4">
-    <!-- Lattice Type Controls -->
-    <div class="flex flex-col gap-2">
-      <label class="font-medium dark:text-gray-200" for="lattice-type">Lattice Type:</label>
-      <select id="lattice-type" class="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded dark:text-gray-200">
-        <option value="sc">Simple Cubic (SC)</option>
-        <option value="bcc">Body-Centered Cubic (BCC)</option>
-        <option value="fcc">Face-Centered Cubic (FCC)</option>
+{{- /* Real- and reciprocal-space lattice explorer.
+
+     No parameters — the widget is self-contained and drives itself from its
+     own controls. Only one may appear per page: the three.js code below
+     addresses its canvases by fixed id.
+
+     The markup was a wall of Tailwind utilities against the old theme's
+     bundle. It is the widget vocabulary from layer 7 of site.css now, and the
+     three.js scenes read their colours from the same CSS tokens, so the
+     visualisation follows the theme toggle instead of sitting in a permanent
+     light-grey box.
+*/ -}}
+<div class="wgt">
+  <div class="wgt-hd">
+    <b>Crystal lattice</b>
+    <span class="r">drag to orbit · scroll to zoom</span>
+  </div>
+
+  <div class="wgt-bar">
+    <div class="wgt-field">
+      <label class="wgt-lab" for="lattice-type">Lattice type</label>
+      <select id="lattice-type">
+        <option value="sc">Simple cubic (SC)</option>
+        <option value="bcc">Body-centered cubic (BCC)</option>
+        <option value="fcc">Face-centered cubic (FCC)</option>
         <option value="diamond">Diamond</option>
-        <option value="hcp">Hexagonal Close-Packed (HCP)</option>
+        <option value="hcp">Hexagonal close-packed (HCP)</option>
       </select>
     </div>
 
-    <!-- Lattice Constants Controls -->
-    <div class="flex flex-col gap-2">
-      <label class="font-medium dark:text-gray-200" for="lattice-constant">
-        Lattice Constant (Å): <span id="constant-value" class="dark:text-gray-300">1.0</span>
+    <div class="wgt-field">
+      <label class="wgt-lab" for="lattice-constant">
+        Lattice constant <span class="v"><span id="constant-value">1.0</span> Å</span>
       </label>
-      <input type="range" id="lattice-constant" min="0.5" max="2" step="0.1" value="1" 
-             class="w-full accent-blue-600 dark:accent-blue-400">
+      <input type="range" id="lattice-constant" min="0.5" max="2" step="0.1" value="1">
+    </div>
 
-      <label class="font-medium dark:text-gray-200" for="unit-cell-count">
-        Unit Cells: <span id="cell-count-value" class="dark:text-gray-300">1</span>
+    <div class="wgt-field">
+      <label class="wgt-lab" for="unit-cell-count">
+        Unit cells <span class="v" id="cell-count-value">1</span>
       </label>
-      <input type="range" id="unit-cell-count" min="1" max="10" step="1" value="1" 
-             class="w-full accent-blue-600 dark:accent-blue-400">
+      <input type="range" id="unit-cell-count" min="1" max="10" step="1" value="1">
     </div>
+  </div>
 
-    <!-- Checkbox Controls -->
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2">
-        <input type="checkbox" id="show-klabels" class="rounded text-blue-600 dark:text-blue-400 dark:bg-gray-700 dark:border-gray-600">
-        <label for="show-klabels" class="font-medium dark:text-gray-200">Show k-space Labels</label>
+  <div class="wgt-bar">
+    <label class="wgt-check">
+      <input type="checkbox" id="show-unit-cell-edges" checked> Unit cell edges
+    </label>
+    <label class="wgt-check">
+      <input type="checkbox" id="show-atom-connections"> Atom connections
+    </label>
+    <label class="wgt-check">
+      <input type="checkbox" id="show-klabels"> k-space labels
+    </label>
+  </div>
+
+  <div class="wgt-panes">
+    <div class="wgt-pane">
+      <div class="wgt-hd">Real space</div>
+      <div class="wgt-stage wgt-stage--tall">
+        <canvas id="real-lattice-canvas"></canvas>
       </div>
-      
-      <div class="flex items-center gap-2">
-        <input type="checkbox" id="show-unit-cell-edges" checked class="rounded text-blue-600 dark:text-blue-400 dark:bg-gray-700 dark:border-gray-600">
-        <label for="show-unit-cell-edges" class="font-medium dark:text-gray-200">Show Unit Cell Edges</label>
-      </div>
-      
-      <div class="flex items-center gap-2">
-        <input type="checkbox" id="show-atom-connections" class="rounded text-blue-600 dark:text-blue-400 dark:bg-gray-700 dark:border-gray-600">
-        <label for="show-atom-connections" class="font-medium dark:text-gray-200">Show Atom Connections</label>
+    </div>
+    <div class="wgt-pane" id="reciprocal-panel">
+      <div class="wgt-hd">Reciprocal space</div>
+      <div class="wgt-stage wgt-stage--tall">
+        <canvas id="reciprocal-lattice-canvas"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- Visualization Area -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 min-h-[600px]">
-    <!-- Real Space Lattice -->
-    <div class="flex flex-col">
-      <h4 class="text-lg font-semibold text-center mb-2 dark:text-gray-200">Real Space Lattice</h4>
-      <div class="flex-1 relative border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 min-h-[550px] overflow-hidden">
-        <canvas id="real-lattice-canvas" class="w-full h-full block"></canvas>
-      </div>
-    </div>
-
-    <!-- Reciprocal Space Lattice -->
-    <div class="flex flex-col" id="reciprocal-panel">
-      <h4 class="text-lg font-semibold text-center mb-2 dark:text-gray-200">Reciprocal Space Lattice</h4>
-      <div class="flex-1 relative border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 min-h-[550px] overflow-hidden">
-        <canvas id="reciprocal-lattice-canvas" class="w-full h-full block"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- Info Panel -->
-  <div class="bg-blue-50 dark:bg-gray-800 p-4 rounded-lg border border-blue-100 dark:border-gray-700">
-    <h4 class="text-lg font-semibold mb-2 dark:text-gray-200">Lattice Information</h4>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <p class="mb-2">
-          <span class="font-medium dark:text-gray-300">Lattice Type:</span>
-          <span id="info-lattice-type" class="dark:text-gray-200">Simple Cubic (SC)</span>
-        </p>
-        <p>
-          <span class="font-medium dark:text-gray-300">Lattice Constant:</span>
-          <span id="info-lattice-constant" class="dark:text-gray-200">1.00</span>
-          <span class="dark:text-gray-300">Å</span>
-        </p>
-      </div>
-      <div>
-        <p class="mb-2">
-          <span class="font-medium dark:text-gray-300">Reciprocal Lattice Constant:</span>
-          <span id="info-reciprocal-constant" class="dark:text-gray-200">6.28</span>
-          <span class="dark:text-gray-300">Å⁻¹</span>
-        </p>
-        <p>
-          <span class="font-medium dark:text-gray-300">Brillouin Zone:</span>
-          <span id="info-brillouin-zone" class="dark:text-gray-200">Cubic</span>
-        </p>
-      </div>
-    </div>
-  </div>
+  <dl class="wgt-specs">
+    <div><dt>Lattice type</dt><dd id="info-lattice-type">Simple Cubic (SC)</dd></div>
+    <div><dt>Lattice constant</dt><dd><span id="info-lattice-constant">1.00</span> Å</dd></div>
+    <div><dt>Reciprocal constant</dt><dd><span id="info-reciprocal-constant">6.28</span> Å⁻¹</dd></div>
+    <div><dt>Brillouin zone</dt><dd id="info-brillouin-zone">Cubic</dd></div>
+  </dl>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  /* Scene colours come from the design tokens rather than from literals, so
+     the visualisation follows the site's theme toggle. THREE.Color parses any
+     CSS colour string, which is why the tokens can be handed over verbatim.
+     The high-symmetry point colours further down are NOT tokenised — Γ green,
+     X red, L blue and so on are a convention readers arrive with. */
+  const token = (name) =>
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const paint = (name) => new THREE.Color(token(name));
+
   // DOM Elements
   const realCanvas = document.getElementById('real-lattice-canvas');
   const reciprocalCanvas = document.getElementById('reciprocal-lattice-canvas');
@@ -156,7 +148,15 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize
   init();
-  
+
+  /* The theme toggle flips a class on <html>. Re-read the tokens and rebuild,
+     or the scenes stay in whichever palette they were born in. */
+  new MutationObserver(() => {
+    if (realScene) realScene.background = paint('--panel-2');
+    if (reciprocalScene) reciprocalScene.background = paint('--panel-2');
+    updateVisualization();
+  }).observe(document.documentElement, { attributeFilter: ['class'] });
+
   function init() {
     // Initialize real space
     initRealSpace();
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function initRealSpace() {
     // Create scene
     realScene = new THREE.Scene();
-    realScene.background = new THREE.Color(0xf0f0f0);
+    realScene.background = paint('--panel-2');
     
     // Create camera
     realCamera = new THREE.PerspectiveCamera(75, realCanvas.clientWidth / realCanvas.clientHeight, 0.1, 1000);
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function initReciprocalSpace() {
     // Create scene
     reciprocalScene = new THREE.Scene();
-    reciprocalScene.background = new THREE.Color(0xf0f0f0);
+    reciprocalScene.background = paint('--panel-2');
     
     // Create camera
     reciprocalCamera = new THREE.PerspectiveCamera(75, reciprocalCanvas.clientWidth / reciprocalCanvas.clientHeight, 0.1, 1000);
@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add atoms to the scene
     const sphereGeometry = new THREE.SphereGeometry(0.1, 32, 32);
-    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff });
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: paint('--cu') });
     
     latticePoints.forEach(point => {
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
@@ -590,7 +590,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   function drawUnitCellEdges(type, constant, scene, min, max) {
     const a = constant;
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x444444 });
+    const lineMaterial = new THREE.LineBasicMaterial({ color: paint('--ink-3') });
     
     // Draw unit cell edges for each unit cell
     for (let i = min; i < max; i++) {
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   function connectAtoms(latticePoints, type, constant, scene) {
     const a = constant;
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x444444 });
+    const lineMaterial = new THREE.LineBasicMaterial({ color: paint('--ink-3') });
     
     for (let i = 0; i < latticePoints.length; i++) {
       for (let j = i + 1; j < latticePoints.length; j++) {
@@ -831,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
     // Add k-points to the scene
     const sphereGeometry = new THREE.SphereGeometry(0.1, 32, 32);
-    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff3366 });
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: paint('--lat-k') });
     
     reciprocalPoints.forEach(point => {
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
@@ -944,20 +944,11 @@ document.addEventListener('DOMContentLoaded', function() {
     scene.add(sphere);
     
     // Create an HTML element for the label
+    /* .wgt-tag carries the chip styling; only the bits the update loop
+       actually drives stay inline. */
     const labelDiv = document.createElement('div');
-    labelDiv.className = 'k-point-label';
+    labelDiv.className = 'k-point-label wgt-tag';
     labelDiv.innerHTML = text;
-    labelDiv.style.position = 'absolute';
-    labelDiv.style.color = '#FFFFFF';
-    labelDiv.style.fontWeight = 'bold';
-    labelDiv.style.fontSize = '18px';
-    labelDiv.style.fontFamily = 'Arial, sans-serif';
-    labelDiv.style.textShadow = '1px 1px 3px black';
-    labelDiv.style.padding = '2px 6px';
-    labelDiv.style.borderRadius = '4px';
-    labelDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    labelDiv.style.pointerEvents = 'none';
-    labelDiv.style.zIndex = '1000';
     labelDiv.style.display = 'none'; // Will be shown in update loop
     
     // Store the 3D position with the label

@@ -1,28 +1,32 @@
-<div class="sketchfab-embed-wrapper">
-    <iframe 
-      frameborder="0" 
-      allowfullscreen 
-      mozallowfullscreen="true" 
-      webkitallowfullscreen="true" 
-      allow="autoplay; fullscreen; xr-spatial-tracking" 
-      execution-while-out-of-viewport 
-      execution-while-not-rendered 
+{{- /* A Sketchfab model on a stage.
+
+     Params: id (required), theme, title
+
+     Sketchfab paints its own chrome inside the iframe and cannot follow the
+     site's theme toggle, so `theme` is set once at build time. It defaults to
+     the site's configured appearance rather than to light, which is the
+     closest this can get to matching.
+
+     Docs: https://sketchfab.com/developers/oembed
+*/ -}}
+{{- $id := .Get "id" -}}
+{{- if not $id }}{{ errorf "sketchfab: 'id' is required (%s)" .Position }}{{ end -}}
+{{- $theme := .Get "theme" | default (cond (eq site.Params.appearance.mode "dark") "dark" "light") -}}
+
+<div class="wgt">
+  <div class="wgt-hd">
+    <b>{{ .Get "title" | default "Sketchfab model" }}</b>
+    <span class="r">drag to orbit</span>
+  </div>
+  <div class="wgt-stage">
+    <iframe
+      title="{{ .Get "title" | default "Sketchfab 3D model" }}"
+      loading="lazy"
+      allow="autoplay; fullscreen; xr-spatial-tracking"
+      allowfullscreen
+      execution-while-out-of-viewport
+      execution-while-not-rendered
       web-share
-      width="{{ .Get "width" | default "640" }}" 
-      height="{{ .Get "height" | default "480" }}" 
-      src="https://sketchfab.com/models/{{ .Get "id" }}/embed?ui_theme={{ .Get "theme" | default "light" }}&autostart=1">
-    </iframe>
+      src="https://sketchfab.com/models/{{ $id }}/embed?ui_theme={{ $theme }}&autostart=1"></iframe>
+  </div>
 </div>
-
-<!-- Article: https://www.dbbrunson.com/docs/effective-online-presence/markdown-extensions-capabilities/embedding-3d-models/ -->
-
-<!-- Settings explained:
-
-Enable automatic loading 
-Add &autostart=1 behind the src URL so it looks like this:
-src="https://sketchfab.com/models/{{ .Get "id" }}/embed?ui_theme={{ .Get "theme" | default "light" }}&autostart=1">
-
-Web-share
-Removing the web-share line has not
--->
-

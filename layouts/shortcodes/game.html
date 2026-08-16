@@ -1,295 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grid Rectangle Drawing Game</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap');
-        
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #f5f5dc;
-            background-image: 
-                radial-gradient(circle at 25px 25px, rgba(0,0,0,0.1) 1px, transparent 1px),
-                linear-gradient(0deg, transparent 24px, rgba(0,0,0,0.05) 25px, rgba(0,0,0,0.05) 26px, transparent 27px),
-                linear-gradient(90deg, transparent 24px, rgba(0,0,0,0.05) 25px, rgba(0,0,0,0.05) 26px, transparent 27px);
-            background-size: 50px 50px, 50px 50px, 50px 50px;
-            font-family: 'Kalam', cursive;
-            color: #2c3e50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+{{- /* Rectangle Sketcher — the grid-drawing game.
 
-        .game-container {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 
-                0 2px 10px rgba(0,0,0,0.1),
-                inset 0 1px 0 rgba(255,255,255,0.8);
-            text-align: center;
-            border: 2px solid #e8e8e8;
-            position: relative;
-        }
+     No parameters. Only one may appear per page: the game logic below
+     addresses its canvas and controls by fixed id.
 
-        .game-container::before {
-            content: '';
-            position: absolute;
-            left: 30px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #ff6b6b;
-            opacity: 0.7;
-        }
+     This shortcode used to emit a complete <!DOCTYPE html> document, styles
+     and all, into the middle of the article. Its `body {}` rule set a beige
+     paper background, a Google-hosted handwriting font and
+     `display:flex; min-height:100vh` on the PAGE — so the project page it
+     appears on was laid out by the game rather than by the site.
 
-        h1 {
-            margin: 0 0 20px 0;
-            font-size: 2.8em;
-            font-family: 'Caveat', cursive;
-            font-weight: 700;
-            color: #2c3e50;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            transform: rotate(-1deg);
-        }
+     The chrome is the site's instrument vocabulary now. What is left of the
+     original look lives where it belongs: on the board itself, in the canvas
+     drawing code below, which is the part that is actually about sketching.
+*/ -}}
+<div class="wgt">
+  <div class="wgt-hd">
+    <b>Rectangle sketcher</b>
+    <span class="r">arrow keys or WASD</span>
+  </div>
 
-        .game-info {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            font-weight: 600;
-            font-family: 'Caveat', cursive;
-            gap: 30px;
-        }
-
-        .score, .status {
-            background: #fff3cd;
-            padding: 8px 15px;
-            border-radius: 6px;
-            border: 2px dashed #ffc107;
-            transform: rotate(1deg);
-        }
-
-        .status {
-            transform: rotate(-1deg);
-        }
-
-        .score-popup {
-            position: absolute;
-            font-size: 2em;
-            font-weight: bold;
-            color: #28a745;
-            font-family: 'Caveat', cursive;
-            pointer-events: none;
-            z-index: 1000;
-            animation: scoreFloat 2s ease-out forwards;
-        }
-
-        @keyframes scoreFloat {
-            0% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.5) translateY(-50px);
-            }
-        }
-
-        canvas {
-            border: 3px solid #34495e;
-            border-radius: 6px;
-            background: white;
-            display: block;
-            margin: 0 auto 20px auto;
-            box-shadow: 
-                0 4px 8px rgba(0,0,0,0.1),
-                inset 0 0 0 1px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(3, 70px);
-            gap: 12px;
-            justify-content: center;
-            margin: 20px 0;
-            transform: rotate(0.5deg);
-        }
-
-        .control-btn {
-            background: #3498db;
-            border: 3px solid #2980b9;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            font-family: 'Caveat', cursive;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            height: 55px;
-            box-shadow: 
-                0 3px 0 #2574a9,
-                0 4px 8px rgba(0,0,0,0.2);
-            user-select: none;
-            position: relative;
-        }
-
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 5px 0 #2574a9,
-                0 6px 12px rgba(0,0,0,0.25);
-        }
-
-        .control-btn:active {
-            transform: translateY(2px);
-            box-shadow: 
-                0 1px 0 #2574a9,
-                0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .control-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .control-btn.invalid {
-            background: #95a5a6;
-            border-color: #7f8c8d;
-            box-shadow: 
-                0 3px 0 #6c757d,
-                0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .control-btn.invalid:hover {
-            transform: none;
-            box-shadow: 
-                0 3px 0 #6c757d,
-                0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        #up { grid-column: 2; grid-row: 1; }
-        #left { grid-column: 1; grid-row: 2; }
-        #right { grid-column: 3; grid-row: 2; }
-        #down { grid-column: 2; grid-row: 3; }
-
-        .restart-btn {
-            background: #e74c3c;
-            border: 3px solid #c0392b;
-            color: white;
-            padding: 12px 25px;
-            font-size: 18px;
-            font-weight: bold;
-            font-family: 'Caveat', cursive;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 
-                0 3px 0 #a93226,
-                0 4px 8px rgba(0,0,0,0.2);
-            transform: rotate(-0.5deg);
-        }
-
-        .restart-btn:hover {
-            transform: rotate(-0.5deg) translateY(-2px);
-            box-shadow: 
-                0 5px 0 #a93226,
-                0 6px 12px rgba(0,0,0,0.25);
-        }
-
-        .instructions {
-            background: #f8f9fa;
-            border: 2px dashed #6c757d;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 15px;
-            line-height: 1.5;
-            transform: rotate(0.3deg);
-            font-family: 'Kalam', cursive;
-        }
-
-        .game-over {
-            color: #e74c3c;
-            font-weight: bold;
-            font-family: 'Caveat', cursive;
-            font-size: 1.1em;
-        }
-
-        .doodle {
-            position: absolute;
-            font-size: 24px;
-            opacity: 0.3;
-            transform: rotate(-15deg);
-            user-select: none;
-            pointer-events: none;
-        }
-
-        .doodle-1 { top: 20px; right: 20px; }
-        .doodle-2 { bottom: 20px; left: 60px; transform: rotate(12deg); }
-        .doodle-3 { top: 50%; right: 10px; transform: rotate(-8deg); }
-    </style>
-</head>
-<body>
-    <div class="game-container">
-        <div class="doodle doodle-1">✏️</div>
-        <div class="doodle doodle-2">📐</div>
-        <div class="doodle doodle-3">📏</div>
-        
-        <h1>Rectangle Sketcher</h1>
-        
-        <div class="game-info">
-            <div class="score">Score: <span id="score">0</span></div>
-            <div class="status" id="status">Drawing...</div>
-        </div>
-
-        <div class="canvas-wrapper">
-            <canvas id="gameCanvas" width="420" height="420"></canvas>
-        </div>
-
-        <div class="controls">
-            <button class="control-btn" id="up">↑</button>
-            <button class="control-btn" id="left">←</button>
-            <button class="control-btn" id="right">→</button>
-            <button class="control-btn" id="down">↓</button>
-        </div>
-
-        <button class="restart-btn" onclick="resetGame()">🔄 New Sketch</button>
-
-        <div class="difficulty-controls" style="margin-top: 15px;">
-            <label style="font-weight: bold; margin-right: 10px;">Difficulty:</label>
-            <select id="difficultySelect" onchange="changeDifficulty()" style="padding: 5px; font-family: 'Kalam', cursive;">
-                <option value="easy">Easy</option>
-                <option value="medium" selected>Medium</option>
-                <option value="hard">Hard</option>
-                <option value="extreme">Extreme</option>
-            </select>
-        </div>
-
-        <div class="instructions">
-            <strong>How to Sketch Rectangles:</strong><br>
-            • Use arrows or WASD to draw lines between grid vertices<br>
-            • <strong>Each line can only be drawn once!</strong><br>
-            • <strong>Rectangles can be completed using obstacles (red blocked edges)!</strong><br>
-            • <strong>Score 2^n points for each rectangle, where n = connected rectangles + 1</strong><br>
-            • Connected rectangles share at least one edge (player-drawn or obstacle)<br>
-            • Game ends when no new lines can be drawn from current position<br>
-            • Create connected rectangle clusters for exponential scoring!<br>
-            • <strong>Colors: Green = all your edges, Yellow = 1 your edge + obstacles, Purple = mixed</strong>
-        </div>
+  <div class="wgt-bar">
+    <span class="wgt-lab">Score <span class="v" id="score">0</span></span>
+    <span class="wgt-lab">Status <span class="v" id="status">Drawing…</span></span>
+    <span class="sep"></span>
+    <div class="wgt-field wgt-field--fixed">
+      <label class="wgt-lab" for="difficultySelect">Difficulty</label>
+      <select id="difficultySelect">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+        <option value="extreme">Extreme</option>
+      </select>
     </div>
+  </div>
+
+  <div class="wgt-stage wgt-stage--fit" id="board">
+    <canvas id="gameCanvas" width="420" height="420"></canvas>
+  </div>
+
+  <div class="wgt-bar">
+    <div class="wgt-dpad">
+      <button type="button" class="wgt-btn" id="up"    data-dir="up"    aria-label="Draw up">↑</button>
+      <button type="button" class="wgt-btn" id="left"  data-dir="left"  aria-label="Draw left">←</button>
+      <button type="button" class="wgt-btn" id="right" data-dir="right" aria-label="Draw right">→</button>
+      <button type="button" class="wgt-btn" id="down"  data-dir="down"  aria-label="Draw down">↓</button>
+    </div>
+    <span class="sep"></span>
+    <button type="button" class="wgt-btn wgt-btn--primary" id="restartBtn">New sketch</button>
+  </div>
+
+  <div class="wgt-help">
+    <strong>How to sketch rectangles</strong>
+    <ul>
+      <li>Arrows or WASD draw lines between grid vertices. <strong>Each line can be drawn only once.</strong></li>
+      <li>Rectangles may be completed using obstacles — the red blocked edges.</li>
+      <li>A rectangle scores 2<sup>n</sup>, where n is the number of connected rectangles plus one. Rectangles connect by sharing an edge, drawn or obstacle.</li>
+      <li>Colours: green means every edge is yours, yellow means one of yours plus obstacles, purple is mixed.</li>
+      <li>The game ends when no new line can be drawn from the current position — so build connected clusters while you still can.</li>
+    </ul>
+  </div>
+</div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -458,17 +228,19 @@
 
         // Show score popup animation
         function showScorePopup(points, canvasPos) {
+            /* The popup used to be appended to document.body and positioned
+               from canvas.offsetLeft — which is measured against the nearest
+               positioned ancestor, not the page. It lives on the board now,
+               which is that ancestor, so the two agree. */
+            const board = document.getElementById('board');
             const popup = document.createElement('div');
-            popup.className = 'score-popup';
+            popup.className = 'wgt-pop';
             popup.textContent = `+${points}`;
-            popup.style.left = (canvas.offsetLeft + canvasPos.x - 30) + 'px';
-            popup.style.top = (canvas.offsetTop + canvasPos.y - 30) + 'px';
-            
-            document.body.appendChild(popup);
-            
-            setTimeout(() => {
-                document.body.removeChild(popup);
-            }, 2000);
+            popup.style.left = (canvas.offsetLeft + canvasPos.x) + 'px';
+            popup.style.top = (canvas.offsetTop + canvasPos.y) + 'px';
+
+            board.appendChild(popup);
+            setTimeout(() => popup.remove(), 1600);
         }
 
         // Get adjacent vertices
@@ -592,7 +364,7 @@
                 // Add text indicator for mixed rectangles
                 if (obstacleEdges > 0) {
                     ctx.fillStyle = strokeColor;
-                    ctx.font = '12px Caveat';
+                    ctx.font = "12px ui-monospace, monospace";
                     ctx.textAlign = 'center';
                     ctx.fillText(`${playerEdges}/${edges.length}`, 
                                 topLeft.x + rectWidth/2, 
@@ -753,7 +525,7 @@
         function endGame(reason) {
             gameState.gameOver = true;
             stopMoveTimer(); // Stop any active timer
-            statusElement.innerHTML = `<span class="game-over">${reason}</span>`;
+            statusElement.innerHTML = `<span class='wgt-fail'>${reason}</span>`;
             updateControlButtons();
         }
 
@@ -761,8 +533,7 @@
         function updateDisplay() {
             scoreElement.textContent = gameState.score;
             if (!gameState.gameOver) {
-                statusElement.textContent = `Drawing...`;
-                statusElement.className = 'status';
+                statusElement.textContent = 'Drawing…';
             }
             updateControlButtons();
         }
@@ -780,7 +551,7 @@
                 const button = document.getElementById(id);
                 if (gameState.gameOver) {
                     button.disabled = true;
-                    button.className = 'control-btn';
+                    button.className = 'wgt-btn';
                 } else {
                     const newPos = {
                         x: gameState.currentPos.x + direction.x,
@@ -788,7 +559,7 @@
                     };
                     const validMove = isValidMove(gameState.currentPos, newPos);
                     button.disabled = !validMove;
-                    button.className = validMove ? 'control-btn' : 'control-btn invalid';
+                    button.className = 'wgt-btn';
                 }
             });
         }
@@ -1290,8 +1061,17 @@
             }
         }
 
+        /* The difficulty select used to call an inline changeDifficulty(),
+           which was never defined — every change threw a ReferenceError and
+           the setting silently did nothing. Both controls are bound here now,
+           next to the functions they actually call. */
+        document.getElementById('restartBtn').addEventListener('click', resetGame);
+        document.getElementById('difficultySelect').addEventListener('change', (e) => {
+            setDifficulty(e.target.value);
+            initGame();
+        });
+
         // Start the game
+        setDifficulty(document.getElementById('difficultySelect').value);
         initGame();
     </script>
-</body>
-</html>

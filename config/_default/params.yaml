@@ -5,7 +5,7 @@
 
 # Appearance
 appearance:
-  mode: light
+  mode: system
   color: blue
 
 # SEO
@@ -31,7 +31,7 @@ header:
     enable: true
     blox: "navbar"
     fixed_to_top: true
-    show_search: true
+    show_search: false
     show_theme_chooser: true
     logo:
       text: "Jakob Holz"
@@ -54,6 +54,15 @@ locale:
 # Site features
 features:
   math:
-    enable: true
+    enable: false
   privacy_pack:
     enable: false
+
+# Redesign (Copper). Set `redesign: false` to fall back to the HugoBlox theme bundle.
+redesign: true
+hero:
+  headline: 'Electronics, physics, and things taken apart.'
+  lede: >-
+    I build measurement hardware, work on cold-atom experiments, and fix whatever
+    lands on the bench. Everything here is documented the way I would want to find
+    it: schematics, measurements, and the parts that did not work.

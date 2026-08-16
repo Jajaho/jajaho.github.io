@@ -1,0 +1,110 @@
+{{ define "main" }}
+{{ $a := site.GetPage "/authors/admin" }}
+{{ $df := "Jan 2006" }}
+
+<section class="section">
+  <div class="center">
+    <div class="page-head stack stack-3">
+      <div class="lbl">{{ $a.Params.role }}</div>
+      <h1 class="page-title">{{ .Title }}</h1>
+      {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    </div>
+  </div>
+</section>
+
+{{/* — work — */}}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "01" "title" "Work" "linkText" (printf "%d positions" (len $a.Params.work))) }}
+    <table class="tbl">
+      <tbody>
+        {{ range $a.Params.work }}
+          <tr>
+            <td class="yr cv-date">
+              {{ (time .date_start).Format $df }} –
+              {{ if .date_end }}{{ (time .date_end).Format $df }}{{ else }}present{{ end }}
+            </td>
+            <td>
+              <div class="nm">{{ .position }}</div>
+              <div class="ds">{{ .company_name }}</div>
+              {{ with .summary }}<div class="prose cv-detail">{{ . | markdownify }}</div>{{ end }}
+            </td>
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{{/* — education — */}}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "02" "title" "Education") }}
+    <table class="tbl">
+      <tbody>
+        {{ range $a.Params.education }}
+          <tr>
+            <td class="yr cv-date">
+              {{ (time .date_start).Format $df }} –
+              {{ if .date_end }}{{ (time .date_end).Format $df }}{{ else }}present{{ end }}
+            </td>
+            <td>
+              <div class="nm">{{ .area }}</div>
+              <div class="ds">{{ .institution }}</div>
+              {{ with .summary }}<div class="prose cv-detail">{{ . | markdownify }}</div>{{ end }}
+            </td>
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{{/* — skills & languages — */}}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "03" "title" "Skills & languages") }}
+    <div class="grid-auto" style="--grid-min: 17rem; --grid-gap: var(--s-6)">
+      {{ range $a.Params.skills }}
+        <div class="spec spec--boxed">
+          <div class="h"><span>{{ .name }}</span></div>
+          {{ range .items }}<div class="r"><span>{{ .name }}</span><span></span></div>{{ end }}
+        </div>
+      {{ end }}
+      <div class="spec spec--boxed">
+        <div class="h"><span>Languages</span></div>
+        {{ range $a.Params.languages }}
+          <div class="r"><span>{{ .name }}</span><span>{{ .percent }}%</span></div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+
+{{/* — awards — */}}
+{{ with $a.Params.awards }}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "04" "title" "Awards") }}
+    <table class="tbl">
+      <tbody>
+        {{ range . }}
+          <tr>
+            <td class="yr cv-date">{{ (time .date).Format "2006" }}</td>
+            <td>
+              <div class="nm">
+                {{ with .url }}<a href="{{ . }}" rel="noopener" target="_blank">{{ end }}
+                {{ .title }}
+                {{ if .url }} ↗</a>{{ end }}
+              </div>
+              <div class="ds">{{ .awarder }}</div>
+              {{ with .summary }}<div class="ds">{{ . | markdownify | plainify }}</div>{{ end }}
+            </td>
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{ end }}
+{{ end }}

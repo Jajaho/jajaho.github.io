@@ -1,0 +1,12 @@
+{{/* Section header bar.
+     dict "n" "01" "title" "Featured" "linkText" "All projects →" "linkUrl" "/projects/" */}}
+<div class="sbar">
+  {{ with .n }}<span class="n">{{ . }}</span>{{ end }}
+  <h2{{ with .id }} id="{{ . }}"{{ end }}>{{ .title }}</h2>
+  <span class="fill" aria-hidden="true"></span>
+  {{ if .linkUrl }}
+    <a href="{{ .linkUrl | relURL }}">{{ .linkText }}</a>
+  {{ else if .linkText }}
+    <span class="lbl">{{ .linkText }}</span>
+  {{ end }}
+</div>

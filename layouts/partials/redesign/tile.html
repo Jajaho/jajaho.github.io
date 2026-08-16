@@ -1,0 +1,24 @@
+{{/* Featured tile. Takes a page. Used by the homepage featured grid. */}}
+{{ $featured := partial "functions/get_featured_image.html" . }}
+{{ $summary := .Params.summary | default .Params.description }}
+<a class="tile" href="{{ with .Params.external_link }}{{ . }}{{ else }}{{ .RelPermalink }}{{ end }}"
+   {{ with .Params.external_link }}rel="noopener" target="_blank"{{ end }}>
+  {{/* The hatch fill is a placeholder for a missing image, never an overlay. */}}
+  <div class="frame{{ if not $featured }} frame--empty{{ end }}">
+    {{ with $featured }}
+      {{ $img := .Fill "960x540 Center webp q82" }}
+      <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
+           alt="{{ $.Params.image.alt_text | default $.Title }}" loading="lazy" />
+    {{ else }}
+      <span class="lbl">{{ .File.ContentBaseName | default .LinkTitle }}</span>
+    {{ end }}
+  </div>
+  <div class="tx">
+    <div class="lbl">
+      {{ .Date.Format "2006" }}
+      {{ with (index (.GetTerms "tags") 0) }}<span class="cu">/</span> {{ .LinkTitle }}{{ end }}
+    </div>
+    <h3>{{ .LinkTitle }}</h3>
+    {{ with $summary }}<p>{{ . }}</p>{{ end }}
+  </div>
+</a>

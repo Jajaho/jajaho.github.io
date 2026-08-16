@@ -1,0 +1,75 @@
+{{ define "main" }}
+{{ $author   := site.GetPage "/authors/admin" }}
+{{ $projects := where (where site.RegularPages "Section" "projects") "Params.draft" "!=" true }}
+{{ $posts    := where (where site.RegularPages "Section" "post") "Params.draft" "!=" true }}
+{{ $featured := first 2 (where (union $projects $posts) "Params.featured" true).ByDate.Reverse }}
+
+{{/* — hero — */}}
+<section class="hero">
+  <div class="center hero-in">
+    <div class="hero-l">
+      <div class="lbl">
+        {{ $author.Params.role }}
+        {{ with (index $author.Params.organizations 0) }}<span class="cu">/</span> {{ .name }}{{ end }}
+      </div>
+      <h1>{{ site.Params.hero.headline | default "Electronics, physics, and things taken apart." }}</h1>
+      <p class="lede">{{ site.Params.hero.lede | default site.Params.marketing.seo.description }}</p>
+      <div class="trace" aria-hidden="true"></div>
+      {{/* Social only — Projects/Writing/CV already live in the header nav,
+           so repeating them here just buries the links that aren't elsewhere. */}}
+      <div class="acts">
+        {{ partial "redesign/social" (dict "primary" "github") }}
+      </div>
+    </div>
+
+    <aside class="hero-r spec">
+      <div class="h"><span>Profile</span><span>{{ now.Format "2006" }}</span></div>
+      <div class="r"><span>Position</span><span>{{ $author.Params.role }}</span></div>
+      {{ with (index $author.Params.organizations 0) }}
+        <div class="r"><span>Institution</span><span>{{ .name }}</span></div>
+      {{ end }}
+      {{ with (index $author.Params.work 0) }}
+        <div class="r"><span>Previously</span><span>{{ .company_name }}</span></div>
+      {{ end }}
+      <div class="r"><span>Domains</span><span>
+        {{ range $i, $v := first 3 $author.Params.interests }}{{ if $i }}<br>{{ end }}{{ $v }}{{ end }}
+      </span></div>
+      <div class="r"><span>Projects</span><span>{{ len $projects }} documented</span></div>
+    </aside>
+  </div>
+</section>
+
+{{/* — featured — */}}
+{{ with $featured }}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "01" "title" "Featured" "linkText" "All projects →" "linkUrl" "/projects/") }}
+  </div>
+  <div class="center">
+    <div class="grid-auto tiles">
+      {{ range . }}{{ partial "redesign/tile" . }}{{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* — project index — */}}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "02" "title" "Project index" "linkText" (printf "%d entries" (len $projects)) "linkUrl" "/projects/") }}
+    {{ partial "redesign/index-table" (dict
+        "pages" (first 8 $projects.ByDate.Reverse) "numbered" true
+        "status" true "dateFmt" "2006" "head" true "label" "Project") }}
+  </div>
+</section>
+
+{{/* — writing — */}}
+<section class="section">
+  <div class="center">
+    {{ partial "redesign/section-bar" (dict "n" "03" "title" "Writing" "linkText" "Archive →" "linkUrl" "/post/") }}
+    {{ partial "redesign/index-table" (dict
+        "pages" (first 6 $posts.ByDate.Reverse) "numbered" false
+        "status" false "dateFmt" "2006-01" "head" false) }}
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-design="c">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C — Copper · Jakob Holz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#F6F5F2;
+  --panel:#FFFFFF;
+  --panel-2:#EFEDE8;
+  --ink:#111214;
+  --ink-2:#54585F;
+  --ink-3:#8C9098;
+  --line:#111214;
+  --hair:#D8D5CE;
+  --cu:#B4632F;
+  --cu-2:#8E4C22;
+  --cu-soft:#FAEDE4;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --max:1240px;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0F1011;--panel:#161719;--panel-2:#1D1F21;--ink:#EDEDEA;--ink-2:#A8ACB2;
+        --ink-3:#71757C;--line:#33363A;--hair:#26282B;--cu:#E08A4E;--cu-2:#F0A468;--cu-soft:#2A1D14}
+}
+html{-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.58}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+.lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.cu{color:var(--cu)}
+
+/* ── top bar ── */
+header{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:40}
+.bar{max-width:var(--max);margin:0 auto;padding:0 28px;height:52px;display:flex;align-items:center;gap:0}
+.mark{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.02em;
+  border:1px solid var(--line);padding:5px 9px;background:var(--cu);color:#fff}
+.who{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-left:12px;color:var(--ink-2)}
+.bar nav{margin-left:auto;display:flex;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.1em;text-transform:uppercase;border-left:1px solid var(--hair)}
+.bar nav a{padding:0 16px;height:52px;display:grid;place-items:center;border-right:1px solid var(--hair);color:var(--ink-2)}
+.bar nav a:hover{background:var(--cu-soft);color:var(--cu)}
+.bar nav a.on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--cu)}
+
+/* ── hero ── */
+.hero{border-bottom:1px solid var(--line);padding:0}
+.hero-in{display:grid;grid-template-columns:minmax(0,1fr) 340px}
+.hero-l{padding:56px 40px 48px 0}
+.hero-r{border-left:1px solid var(--hair);padding:0}
+h1{font-size:clamp(34px,4.6vw,52px);font-weight:600;line-height:1.07;letter-spacing:-.028em;margin:14px 0 0;max-width:17ch}
+.lede{color:var(--ink-2);font-size:16.5px;line-height:1.65;max-width:54ch;margin:22px 0 0}
+.trace{margin:34px 0 0;height:1px;background:
+  repeating-linear-gradient(90deg,var(--cu) 0 26px,transparent 26px 34px);opacity:.6}
+.acts{display:flex;gap:0;margin-top:28px;border:1px solid var(--line);width:max-content;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+.acts a{padding:10px 16px;border-right:1px solid var(--hair)}
+.acts a:last-child{border-right:0}
+.acts a:hover{background:var(--cu);color:#fff}
+.acts a.p{background:var(--ink);color:var(--bg)}
+.acts a.p:hover{background:var(--cu)}
+
+/* spec block */
+.spec{font-family:var(--mono);font-size:12px}
+.spec .h{padding:9px 18px;border-bottom:1px solid var(--hair);background:var(--panel-2);
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between}
+.spec .r{display:flex;justify-content:space-between;gap:14px;padding:9px 18px;border-bottom:1px solid var(--hair)}
+.spec .r span:first-child{color:var(--ink-3)}
+.spec .r span:last-child{text-align:right}
+.led{display:inline-block;width:7px;height:7px;background:var(--cu);border-radius:50%;
+  box-shadow:0 0 6px var(--cu);margin-right:6px;vertical-align:1px}
+
+/* ── section chrome ── */
+section{border-bottom:1px solid var(--line)}
+.sbar{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--hair)}
+.sbar h2{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;margin:0}
+.sbar .n{font-family:var(--mono);font-size:10.5px;color:#fff;background:var(--cu);padding:2px 6px;letter-spacing:.1em}
+.sbar .fill{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--hair) 0 4px,transparent 4px 8px)}
+.sbar a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.sbar a:hover{color:var(--cu)}
+
+/* ── featured tiles ── */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-left:1px solid var(--hair)}
+.tile{border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:0;transition:.15s}
+.tile:hover{background:var(--panel)}
+.tile .im{aspect-ratio:16/9;border-bottom:1px solid var(--hair);background:var(--panel-2);
+  display:grid;place-items:center;position:relative}
+.tile .im::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent 0 9px,rgba(180,99,47,.05) 9px 18px)}
+.tile .tx{padding:18px 20px 22px}
+.tile h3{font-size:20px;font-weight:600;letter-spacing:-.018em;margin:8px 0 6px}
+.tile:hover h3{color:var(--cu)}
+.tile p{margin:0;color:var(--ink-2);font-size:14.5px}
+
+/* ── dense table index ── */
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:12px;border-bottom:1px solid var(--hair);vertical-align:top}
+.tbl tr{transition:.12s}
+.tbl tbody tr:hover{background:var(--cu-soft)}
+.tbl .id{font-family:var(--mono);font-size:12px;color:var(--ink-3);width:52px}
+.tbl .nm{font-weight:500;letter-spacing:-.01em}
+.tbl tbody tr:hover .nm{color:var(--cu)}
+.tbl .ds{color:var(--ink-2);font-size:13.5px;margin-top:2px}
+.tbl .yr{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);width:64px;text-align:right}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--hair);padding:2px 6px;margin-right:4px;white-space:nowrap;color:var(--ink-2)}
+.st{width:112px}
+.st b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--cu);display:flex;align-items:center;gap:6px}
+.st b::before{content:"";width:5px;height:5px;background:currentColor}
+
+/* ── article ── */
+.article{display:grid;grid-template-columns:minmax(0,700px) 1fr;gap:56px;padding:40px 0 8px}
+.article h1.t{font-size:40px;font-weight:600;letter-spacing:-.032em;line-height:1.1;margin:10px 0 12px}
+.article .meta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--hair)}
+.article p{font-size:16.5px;line-height:1.72;margin:20px 0;color:var(--ink)}
+.article h3{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--cu);margin:38px 0 -4px;display:flex;align-items:center;gap:12px}
+.article h3::after{content:"";flex:1;height:1px;background:var(--hair)}
+.article a.link{color:var(--cu);border-bottom:1px solid var(--cu)}
+pre{background:var(--panel);border:1px solid var(--line);padding:0;overflow:hidden;margin:26px 0}
+pre .ph{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px 14px;border-bottom:1px solid var(--hair);color:var(--ink-3);background:var(--panel-2);
+  display:flex;justify-content:space-between}
+pre code{display:block;padding:16px 18px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.62}
+.tok-k{color:var(--cu);font-weight:500}.tok-c{color:var(--ink-3)}.tok-s{color:#1F7A52}
+@media(prefers-color-scheme:dark){.tok-s{color:#63C795}}
+figure{margin:30px 0}
+figure .box{aspect-ratio:16/9;border:1px solid var(--line);background:var(--panel-2);display:grid;place-items:center}
+figcaption{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:8px;
+  display:flex;gap:8px;letter-spacing:.04em}
+figcaption b{color:var(--cu);font-weight:500}
+.aside{font-family:var(--mono);font-size:11.5px;line-height:1.9;color:var(--ink-3);
+  position:sticky;top:80px;align-self:start;border-left:1px solid var(--hair);padding-left:18px}
+.aside .hd{letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px}
+.aside a{display:block}
+.aside a:hover,.aside a.on{color:var(--cu)}
+
+/* ── footer ── */
+footer{padding:32px 0 48px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3)}
+.fg{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;text-transform:uppercase}
+footer a:hover{color:var(--cu)}
+
+@media(max-width:960px){
+  .hero-in,.tiles,.article{grid-template-columns:1fr}
+  .hero-l{padding:40px 0 32px}
+  .hero-r{border-left:0;border-top:1px solid var(--hair)}
+  .aside{display:none}
+  .tbl .st,.tbl th.st{display:none}
+  .bar nav a{padding:0 11px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <span class="mark">JH</span><span class="who">Jakob Holz</span>
+    <nav>
+      <a href="#" class="on">Index</a><a href="#">Projects</a><a href="#">Writing</a>
+      <a href="#">CV</a><a href="#">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap"><div class="hero-in">
+    <div class="hero-l">
+      <div class="lbl">Quantum Engineering M.Sc. <span class="cu">/</span> ETH Zürich</div>
+      <h1>Electronics, physics, and things taken apart.</h1>
+      <p class="lede">I build measurement hardware, work on cold-atom experiments, and fix
+      whatever lands on the bench. Everything here is documented the way I'd want to find
+      it: schematics, measurements, and the parts that didn't work.</p>
+      <div class="trace"></div>
+      <div class="acts">
+        <a class="p" href="#">Projects</a><a href="#">Writing</a><a href="#">GitHub</a><a href="#">CV</a>
+      </div>
+    </div>
+    <aside class="hero-r spec">
+      <div class="h"><span>Profile</span><span>REV 2026.1</span></div>
+      <div class="r"><span>Position</span><span>M.Sc. student</span></div>
+      <div class="r"><span>Institution</span><span>ETH Zürich</span></div>
+      <div class="r"><span>Previously</span><span>DLR — Inst. of<br>Quantum Technologies</span></div>
+      <div class="r"><span>Domains</span><span>Analog · RF<br>Solid state · CAM</span></div>
+      <div class="r"><span>Location</span><span>Zürich, CH</span></div>
+      <div class="r"><span>Status</span><span><span class="led"></span>Taking on work</span></div>
+    </aside>
+  </div></div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sbar"><span class="n">01</span><h2>Featured</h2><span class="fill"></span><a href="#">All projects →</a></div>
+  </div>
+  <div class="wrap"><div class="tiles">
+    <a class="tile" href="#">
+      <div class="im"><span class="lbl">ic-microscopy.webp</span></div>
+      <div class="tx"><div class="lbl">2024 <span class="cu">/</span> Optics</div>
+        <h3>IC Microscopy</h3>
+        <p>Visualizing integrated circuits in 3D — focus-stacked die shots of 1970s silicon.</p></div>
+    </a>
+    <a class="tile" href="#">
+      <div class="im"><span class="lbl">openscan.webp</span></div>
+      <div class="tx"><div class="lbl">2025 <span class="cu">/</span> Photogrammetry</div>
+        <h3>OpenScan</h3>
+        <p>A showcase of DIY photogrammetry performance, benchmarked against structured light.</p></div>
+    </a>
+  </div></div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sbar"><span class="n">02</span><h2>Project index</h2><span class="fill"></span><a href="#">18 entries</a></div>
+    <table class="tbl">
+      <thead><tr><th class="id">#</th><th>Project</th><th>Domain</th><th class="st">Status</th><th class="yr">Year</th></tr></thead>
+      <tbody>
+        <tr><td class="id">18</td><td><div class="nm">Cartesian Doodle Game</div><div class="ds">A two-axis plotter that draws back at you.</div></td>
+          <td><span class="chip">Firmware</span><span class="chip">Mechanics</span></td><td class="st"><b>Active</b></td><td class="yr">2025</td></tr>
+        <tr><td class="id">17</td><td><div class="nm">ICS Editor</div><div class="ds">Calendar-file surgery that never leaves the browser.</div></td>
+          <td><span class="chip">Web</span></td><td class="st"><b>Active</b></td><td class="yr">2025</td></tr>
+        <tr><td class="id">16</td><td><div class="nm">OpenScan</div><div class="ds">A showcase of DIY photogrammetry performance.</div></td>
+          <td><span class="chip">Optics</span><span class="chip">3D</span></td><td class="st"><b>Shipped</b></td><td class="yr">2025</td></tr>
+        <tr><td class="id">15</td><td><div class="nm">IC Microscopy</div><div class="ds">Visualizing integrated circuits in 3d.</div></td>
+          <td><span class="chip">Optics</span></td><td class="st"><b>Shipped</b></td><td class="yr">2024</td></tr>
+        <tr><td class="id">14</td><td><div class="nm">Bodeplot</div><div class="ds">Frequency-response measurement on a student budget.</div></td>
+          <td><span class="chip">Instrumentation</span></td><td class="st"><b>Shipped</b></td><td class="yr">2024</td></tr>
+        <tr><td class="id">13</td><td><div class="nm">Workbench</div><div class="ds">Design &amp; fabricate a modular but sturdy workbench.</div></td>
+          <td><span class="chip">Woodwork</span></td><td class="st"><b>Shipped</b></td><td class="yr">2024</td></tr>
+        <tr><td class="id">12</td><td><div class="nm">Analog Freezer Alarm</div><div class="ds">No microcontroller. On purpose.</div></td>
+          <td><span class="chip">Analog</span></td><td class="st"><b>Shipped</b></td><td class="yr">2024</td></tr>
+        <tr><td class="id">11</td><td><div class="nm">Bosch 3S Charger Reverse Engineering</div><div class="ds">From potted brick to full schematic.</div></td>
+          <td><span class="chip">Reverse eng.</span><span class="chip">Power</span></td><td class="st"><b>Shipped</b></td><td class="yr">2023</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sbar"><span class="n">03</span><h2>Writing</h2><span class="fill"></span><a href="#">Archive →</a></div>
+    <table class="tbl">
+      <tbody>
+        <tr><td class="id">—</td><td><div class="nm">Crystal Lattice Visualizer</div>
+          <div class="ds">An interactive Bravais-lattice explorer for a solid-state lecture.</div></td>
+          <td><span class="chip">WebGL</span><span class="chip">Physics</span></td><td class="st"></td><td class="yr">2025-03</td></tr>
+        <tr><td class="id">—</td><td><div class="nm">Ulm University Promotional Video</div>
+          <div class="ds">Being on the other side of the camera for once.</div></td>
+          <td><span class="chip">Misc</span></td><td class="st"></td><td class="yr">2025-02</td></tr>
+        <tr><td class="id">—</td><td><div class="nm">Intel in 1976</div>
+          <div class="ds">A CPU from almost fifty years ago, decapped and photographed at 50×.</div></td>
+          <td><span class="chip">Silicon</span></td><td class="st"></td><td class="yr">2024-12</td></tr>
+        <tr><td class="id">—</td><td><div class="nm">Phillips BDX 67B</div>
+          <div class="ds">A Darlington power transistor.</div></td>
+          <td><span class="chip">Silicon</span></td><td class="st"></td><td class="yr">2024-12</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sbar"><span class="n">04</span><h2>Article view</h2><span class="fill"></span><a href="#">Typography</a></div>
+    <div class="article">
+      <article>
+        <div class="lbl">Silicon</div>
+        <h1 class="t">Intel in 1976</h1>
+        <div class="meta"><span>2024-12-15</span><span>/</span><span>7 min</span><span>/</span><span>Teardown</span></div>
+        <p>The 8080 die is 4.8&nbsp;mm on a side and carries roughly 4,500 transistors. Under a
+        50× objective the metal layer reads almost like a street map — you can follow the data
+        bus from the bond pads all the way into the register file without ever losing the trace.</p>
+        <h3>Preparing the die</h3>
+        <p>Decapsulation is the unglamorous half. Fuming nitric acid removes the epoxy without
+        touching the aluminium interconnect, but the margin between "clean die" and "no die" is
+        about forty seconds. I ran three sacrificial parts before committing the
+        <a class="link" href="#">C8080A</a> to the beaker.</p>
+        <figure>
+          <div class="box"><span class="lbl">fig · focus stack, 112 slices</span></div>
+          <figcaption><b>Fig. 3</b> Composite of 112 focus slices at 50×. Metal-1 in light grey,
+          diffusion visible as darker regions beneath.</figcaption>
+        </figure>
+        <h3>Focus stacking</h3>
+        <p>The stacking itself is scripted. Each slice is aligned on a phase-correlation estimate
+        before a Laplacian sharpness map decides which pixels survive:</p>
+        <pre><span class="ph"><span>stack.py</span><span>Python</span></span><code><span class="tok-c"># select sharpest pixel per (x, y) across the stack</span>
+<span class="tok-k">def</span> focus_stack(slices):
+    sharp = [laplacian(s).var(axis=<span class="tok-s">-1</span>) <span class="tok-k">for</span> s <span class="tok-k">in</span> slices]
+    idx   = np.argmax(np.stack(sharp), axis=<span class="tok-s">0</span>)
+    <span class="tok-k">return</span> np.take_along_axis(np.stack(slices), idx[<span class="tok-k">None</span>], <span class="tok-s">0</span>)[<span class="tok-s">0</span>]</code></pre>
+      </article>
+      <aside class="aside">
+        <div class="hd">Contents</div>
+        <a href="#" class="on">1 · The die</a>
+        <a href="#">2 · Preparing the die</a>
+        <a href="#">3 · Focus stacking</a>
+        <a href="#">4 · Results</a>
+        <div class="hd" style="margin-top:22px">Tags</div>
+        <a href="#">silicon</a><a href="#">microscopy</a><a href="#">intel</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap fg">
+  <span>© 2024–2026 Jakob Holz · CC BY-NC-ND 4.0</span>
+  <span><a href="#">GitHub</a> · <a href="#">LinkedIn</a> · <a href="#">GrabCAD</a> · <a href="#">RSS</a></span>
+</div></footer>
+
+</body>
+</html>

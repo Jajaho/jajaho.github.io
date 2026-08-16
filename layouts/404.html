@@ -1,0 +1,16 @@
+{{ define "main" }}
+<section class="section">
+  <div class="center">
+    <div class="page-head stack stack-3">
+      <div class="lbl">Error <span class="cu">/</span> 404</div>
+      <h1 class="page-title">No such page</h1>
+      <p class="dim">The link is broken or the page has moved.</p>
+      <div class="acts">
+        <a class="p" href="{{ "" | relURL }}">Home</a>
+        <a href="{{ "projects/" | relURL }}">Projects</a>
+        <a href="{{ "post/" | relURL }}">Writing</a>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}
