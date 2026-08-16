@@ -727,6 +727,11 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 .wgt-stage--short { --wgt-stage-h: clamp(14rem, 38vh, 22rem); }
 /* Several viewers occupying one stage, revealed against each other by clip-path. */
 .wgt-stage--stack > model-viewer { position: absolute; inset: 0; }
+/* Only the first one is interactive; the ones stacked on top just paint. A
+   clipped element is not hit-testable in its clipped-away region, so leaving
+   them all interactive meant the drag landed on whichever viewer owned the
+   half you grabbed — and the camera sync then had to reconcile two drivers. */
+.wgt-stage--stack > model-viewer ~ model-viewer { pointer-events: none; }
 /* A canvas drawn at a fixed resolution: centre it and keep its aspect rather
    than stretching the drawing surface to the stage. */
 .wgt-stage--fit { display: grid; place-items: center; padding: var(--s-4); }

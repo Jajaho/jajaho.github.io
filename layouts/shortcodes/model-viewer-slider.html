@@ -3,14 +3,20 @@
      Params: src1, src2, rot1, rot2, color1, color2, btn1-text, btn2-text,
              alt, camera-orbit, title
 
-     Both viewers are mounted and clipped against each other, so the wipe is a
-     pure CSS clip-path — no reload, no flash. Their cameras are kept in sync,
-     otherwise dragging the divider would compare two different viewpoints.
+     Both viewers are mounted on one stage, so the wipe is a pure CSS clip-path
+     — no reload, no flash. Their cameras are kept in sync, otherwise dragging
+     the divider would compare two different viewpoints.
 
-     The sync used to run on a 60 Hz setInterval that never stopped, even with
-     the widget off-screen. It is event-driven now, with a re-entry guard: the
-     write to the target viewer fires its own camera-change, and without the
-     guard the two would push each other around forever.
+     Only `b` is clipped, and only `a` takes pointer events (see the
+     .wgt-stage--stack rules). That is deliberate: clipping removes an element
+     from hit-testing, so clipping both handed the drag to whichever half you
+     happened to grab, and the sync then had to run in both directions. It
+     could not: the two viewers share one render tick that fires their
+     camera-change events in DOM order, so a drag on `b` was preceded every
+     frame by a camera-change from `a`, which wrote `a`'s damped — i.e. lagging
+     — camera straight back over the gesture. The result was a right half that
+     panned short and snapped back. `a` owning the camera outright removes the
+     loop rather than trying to guard against it.
 */ -}}
 {{- $id := printf "mv%d" .Ordinal -}}
 {{- $a  := .Get "src1" -}}
@@ -45,17 +51,16 @@
       touch-action="pan-y">
     </model-viewer>
 
+    {{/* No camera-controls: this one only ever mirrors the viewer below it. */}}
     <model-viewer data-b
       src="{{ $b }}"
       orientation="{{ .Get "rot2" | default "0 0 0" }}"
       alt="{{ .Get "alt" | default $labelB }}"
-      camera-controls
       camera-orbit="{{ .Get "camera-orbit" | default "-30deg auto auto" }}"
       max-camera-orbit="auto 100deg auto"
       interaction-prompt="none"
       shadow-intensity="1"
-      loading="lazy"
-      touch-action="pan-y">
+      loading="lazy">
     </model-viewer>
 
     <span class="wgt-tag wgt-tag--tl">{{ $labelA }}</span>
@@ -89,7 +94,8 @@
     at = Math.max(0, Math.min(100, pct));
     split.style.left = at + '%';
     split.setAttribute('aria-valuenow', Math.round(at));
-    a.style.clipPath = `inset(0 ${100 - at}% 0 0)`;
+    /* `a` stays unclipped underneath — both viewers paint an opaque background,
+       so `b` hides the half of it that should not show. */
     b.style.clipPath = `inset(0 0 0 ${at}%)`;
   }
 
@@ -131,18 +137,16 @@
 
   place(50);
 
-  /* — camera sync — */
-  let syncing = false;
-  function mirror(from, to) {
-    if (syncing) return;
-    syncing = true;
-    to.cameraOrbit  = from.getCameraOrbit().toString();
-    to.cameraTarget = from.getCameraTarget().toString();
-    to.fieldOfView  = from.getFieldOfView().toString();
-    requestAnimationFrame(() => { syncing = false; });
-  }
-  a.addEventListener('camera-change', () => mirror(a, b));
-  b.addEventListener('camera-change', () => mirror(b, a));
+  /* — camera sync —
+     One direction only. jumpCameraToGoal skips b's own interpolation: without
+     it b eases toward each mirrored pose on a ~50 ms decay and the two halves
+     sit visibly out of register for the whole drag. */
+  a.addEventListener('camera-change', () => {
+    b.cameraOrbit  = a.getCameraOrbit().toString();
+    b.cameraTarget = a.getCameraTarget().toString();
+    b.fieldOfView  = a.getFieldOfView() + 'deg';
+    b.jumpCameraToGoal();
+  });
 
   /* — optional per-model tint — */
   function tint(viewer, hex) {
