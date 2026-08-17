@@ -6,6 +6,9 @@ tags:
   - repair
   - electronics
   - 3d-printing
+links:
+  - name: Filter clip model
+    url: https://grabcad.com/library/dyson-dc34-animalpro-filter-clip-1
 draft: false
 featured: false
 ---

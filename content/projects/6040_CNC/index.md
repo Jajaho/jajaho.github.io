@@ -7,6 +7,11 @@ tags:
   - machining
   - diy
   - crafts
+links:
+  - name: Machine model
+    url: https://grabcad.com/library/6040-cnc-1-5kw-2020-model-1
+  - name: Enclosure model
+    url: https://grabcad.com/library/cnc-enclosure-werk2-1
 draft: false
 featured: false
 ---

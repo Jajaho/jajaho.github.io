@@ -7,6 +7,9 @@ tags:
   - electronics
   - pcb
   - milling
+links:
+  - name: Repository
+    url: https://github.com/Jajaho/Estl-Board
 draft: false
 featured: false
 ---

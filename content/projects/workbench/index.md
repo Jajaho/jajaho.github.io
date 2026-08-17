@@ -5,6 +5,9 @@ date: 2024-11-28
 tags:
   - welding
   - craftsmanship
+links:
+  - name: CAD & plans
+    url: https://grabcad.com/library/workbench-plans-included-2
 draft: false
 featured: true
 ---

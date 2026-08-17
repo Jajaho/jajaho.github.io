@@ -4,6 +4,9 @@ date: 2019-02-01
 tags:
   - pcb
   - electronics
+links:
+  - name: Repository
+    url: https://github.com/Jajaho/LiPo-Board
 draft: true
 featured: false
 ---

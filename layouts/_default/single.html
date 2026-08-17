@@ -77,13 +77,10 @@
           <div class="hd">Contents</div>
           <nav aria-label="Table of contents">{{ .TableOfContents }}</nav>
         {{ end }}
+        {{ partial "redesign/resources.html" . }}
         {{ with .GetTerms "tags" }}
           <div class="hd">Tags</div>
           {{ range . }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
-        {{ end }}
-        {{ with .Params.external_link }}
-          <div class="hd">Source</div>
-          <a href="{{ . }}" rel="noopener" target="_blank">Repository</a>
         {{ end }}
       </aside>
     </div>

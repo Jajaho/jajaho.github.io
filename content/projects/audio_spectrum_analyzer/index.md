@@ -6,6 +6,9 @@ tags:
   - electronics
   - audio
   - pcb
+links:
+  - name: Repository
+    url: https://github.com/Jajaho/Audio-Spektrum-Analysator
 draft: false
 featured: false
 ---

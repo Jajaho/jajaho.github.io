@@ -1,0 +1,87 @@
+{{/* The Resources block of the article aside — the artifacts a page carries,
+     collected in one place instead of scattered down the body.
+
+     Two sources, in this order:
+
+       1. External links. `external_link` first (folded in here so links live
+          in one place, not two), then any `links:` list in front matter:
+
+              links:
+                - name: Repository
+                  url: https://github.com/Jajaho/Estl-Board
+
+       2. Files in the page bundle, sorted by name. No declaration needed —
+          dropping a .pdf or .glb next to index.md is the whole gesture.
+
+     Emits nothing at all when a page has neither, so pages without resources
+     are untouched. Called from layouts/_default/single.html.
+
+     Per the house rule at assets/css/site.css:14 this file emits markup only —
+     the styling is `.aside a.res` in layer 5. The trailing ↗ on off-site links
+     is applied by the external-link rule at site.css:611; never type it here.
+*/}}
+
+{{/* Only file types a reader would actually want to keep. An allowlist rather
+     than "everything that isn't an image", because Hugo types SVG as an image
+     and OpenScan uses one as a figure — a blocklist would leak illustrations
+     into the list, and featured.webp with them. */}}
+{{- $kinds := dict
+      "pdf"  "PDF"
+      "glb"  "3D"    "gltf" "3D"   "stl" "3D"
+      "step" "CAD"   "stp"  "CAD"  "f3z" "CAD"
+      "zip"  "ZIP"
+      "csv"  "DATA"  "bib"  "DATA" -}}
+
+{{- $links := slice -}}
+{{- with .Params.external_link -}}
+  {{- $links = $links | append (dict "name" "Repository" "url" .) -}}
+{{- end -}}
+{{- range .Params.links -}}
+  {{- $link := . -}}
+  {{- with $link.url -}}
+    {{- $links = $links | append (dict "name" (or $link.name (urls.Parse .).Host) "url" .) -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Bundle files are stat'd on disk for their size: a page resource carries no
+     .Size in Hugo 0.136.5 (the version pinned in .github/workflows/publish.yaml).
+     .File.Path uses OS separators — dev is Windows, CI is Linux — so normalise
+     it, and check existence first so a path that fails to resolve drops the
+     size rather than failing the build. */}}
+{{- $dir := "" -}}
+{{- with .File -}}{{- $dir = path.Dir (replace .Path "\\" "/") -}}{{- end -}}
+
+{{- $files := slice -}}
+{{- range .Resources -}}
+  {{- $res := . -}}
+  {{- $ext := trim (path.Ext $res.Name | lower) "." -}}
+  {{- with index $kinds $ext -}}
+    {{- $meta := . -}}
+    {{- if $dir -}}
+      {{- $fs := path.Join "content" $dir $res.Name -}}
+      {{- if os.FileExists $fs -}}
+        {{- $b := float (os.Stat $fs).Size -}}
+        {{- $size := cond (ge $b 1048576.0)
+              (printf "%.1f MB" (div $b 1048576.0))
+              (printf "%.0f KB" (math.Ceil (div $b 1024.0))) -}}
+        {{- $meta = printf "%s · %s" $meta $size -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $files = $files | append (dict "name" (path.Base $res.Name) "url" $res.RelPermalink "meta" $meta) -}}
+  {{- end -}}
+{{- end -}}
+{{- $files = sort $files "name" -}}
+
+{{- if or $links $files -}}
+  <div class="hd">Resources</div>
+  {{- range $links }}
+    <a class="res" href="{{ .url }}" rel="noopener" target="_blank">
+      <span>{{ .name }}</span>
+    </a>
+  {{- end }}
+  {{- range $files }}
+    <a class="res" href="{{ .url }}" download>
+      <span>{{ .name }}</span><span class="res-m">{{ .meta }}</span>
+    </a>
+  {{- end }}
+{{- end -}}
