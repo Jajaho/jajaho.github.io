@@ -1,0 +1,48 @@
+{{/* Index / Timeline switch for /projects/.
+
+     The two radios ARE the state — the switching itself is pure CSS (the
+     `#pv-*:checked ~ .pv-p--*` rules in layer 5), so this works with
+     JavaScript disabled and is keyboard-operable for free.
+
+     THE INPUTS MUST STAY SIBLINGS of .viewsel and of both .pv-p panels: every
+     rule that drives them is a `~` combinator and cannot escape a wrapper.
+     That is why the control is emitted here rather than inside section-bar; it
+     is then lifted out of flow by CSS to sit on the section rule above, so it
+     costs the page no vertical space of its own.
+
+     Per the house rule at assets/css/site.css:14 this file emits markup only —
+     the styling is the `.viewsel` block in layer 5. */}}
+
+<input class="pv-i" type="radio" name="pv" id="pv-index" aria-label="Index view" checked>
+<input class="pv-i" type="radio" name="pv" id="pv-timeline" aria-label="Timeline view">
+<div class="viewsel">
+  <label for="pv-index">Index</label>
+  <label for="pv-timeline">Timeline</label>
+</div>
+<script>
+/* Persistence only — the switch works without this. Classic script, not a
+   module: document.currentScript is null in a module (see redesign/pdf-embed).
+   Emitted BEFORE the panels so a restored choice applies as they are parsed,
+   with no flash of the wrong view. */
+(function () {
+  var KEY = 'pv-projects';
+  var root = document.currentScript.parentElement;
+  var want = null;
+  try { want = localStorage.getItem(KEY); } catch (e) {}
+  /* #timeline / #index deliberately match no element id (the inputs are
+     pv-timeline / pv-index), so deep-linking a view causes no scroll jump. */
+  var hash = location.hash.slice(1);
+  if (hash === 'timeline' || hash === 'index') want = hash;
+  if (want === 'timeline' || want === 'index') {
+    var el = root.querySelector('#pv-' + want);
+    if (el) el.checked = true;
+  }
+  root.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (!t.classList || !t.classList.contains('pv-i')) return;
+    var v = t.id === 'pv-timeline' ? 'timeline' : 'index';
+    try { localStorage.setItem(KEY, v); } catch (e) {}
+    if (history.replaceState) history.replaceState(null, '', '#' + v);
+  });
+}());
+</script>

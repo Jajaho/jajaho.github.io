@@ -13,18 +13,35 @@
 </section>
 
 <section class="section">
-  <div class="center">
+  {{/* Projects get two views of the same page set behind one URL — the index
+       table and the timeline — switched by redesign/view-switch. The bar title
+       is neutral because one bar now heads both. Everything else keeps the
+       single-table layout. */}}
+  <div class="center{{ if $isProjects }} pv{{ end }}">
     {{ partial "redesign/section-bar" (dict
         "n" "01"
-        "title" (cond $isProjects "Project index" "Archive")
+        "title" (cond $isProjects "Projects" "Archive")
         "linkText" (printf "%d entries" (len $pages))) }}
-    {{ partial "redesign/index-table" (dict
-        "pages" $pages
-        "numbered" $isProjects
-        "status" $isProjects
-        "dateFmt" (cond $isProjects "2006" "2006-01")
-        "head" true
-        "label" (cond $isProjects "Project" "Post")) }}
+
+    {{ if $isProjects }}{{ partial "redesign/view-switch" . }}{{ end }}
+
+    <div{{ if $isProjects }} class="pv-p pv-p--index"{{ end }}>
+      {{ partial "redesign/index-table" (dict
+          "pages" $pages
+          "numbered" $isProjects
+          "status" $isProjects
+          "dateFmt" (cond $isProjects "2006" "2006-01")
+          "head" true
+          "label" (cond $isProjects "Project" "Post")) }}
+    </div>
+
+    {{ if $isProjects }}
+      {{/* pagefind indexes the built page, so without this every project title
+           and summary would be indexed twice and double each /projects/ hit. */}}
+      <div class="pv-p pv-p--timeline" data-pagefind-ignore>
+        {{ partial "redesign/index-timeline" (dict "pages" $pages "label" "Projects") }}
+      </div>
+    {{ end }}
   </div>
 </section>
 {{ end }}

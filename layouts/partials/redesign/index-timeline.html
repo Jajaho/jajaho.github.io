@@ -1,0 +1,103 @@
+{{/* The timeline renderer — the alternative view to redesign/index-table.
+
+     Every entry is a single point — a project that ran for months is placed on
+     the date it was FINISHED, not stretched along the rail. Rows here are
+     content-height and evenly spaced, so a bar could never have been to scale
+     anyway; a finish date is both honest and what a reader scans for.
+
+     The effective date is therefore `params.endDate`, else `params.startDate`,
+     else `.Date`. That is the one place this view disagrees with the table:
+     bodeplot and nacli were built in 2022 but carry `date: 2024-11-07`, so the
+     table (which keys off .Date) says 2024 and this view says 2022. Fixing the
+     content would remove the special case; this renderer works either way.
+
+     dict "pages"    <page slice>   required
+          "gaps"     true|false     mark years with no entries (default false)
+          "yearFmt"  "2006"         year marker format
+          "pointFmt" "Jan 2006"     entry date label format
+          "label"    "Projects"     accessible name for the list
+
+     Per the house rule at assets/css/site.css:14 this file emits markup only —
+     the styling is the `.tl` block in layer 5. The left/right side is decided
+     HERE rather than with :nth-child, because the year markers are list items
+     too and would flip the zig-zag at every year boundary. */}}
+
+{{ $pages    := .pages }}
+{{ $gaps     := .gaps | default false }}
+{{ $yearFmt  := .yearFmt | default "2006" }}
+{{ $pointFmt := .pointFmt | default "Jan 2006" }}
+{{ $label    := .label | default "Projects" }}
+
+{{/* One record per page, keyed by effective date. The key is ISO-8601 so that
+     lexical order IS chronological order — the sort then never depends on how
+     the engine happens to compare time.Time values. `time.AsTime` accepts both
+     a string and an already-parsed timestamp, so it does not matter how the
+     YAML parser resolved `startDate:` under the nested `params:` block. */}}
+{{ $items := slice }}
+{{ range $pages }}
+  {{/* Every entry is a single point. Where a project declares a timespan it is
+       placed on its FINISH date — when it was done, which is what the reader
+       is scanning for. endDate wins, then startDate (a project still running),
+       then the plain `date`. */}}
+  {{ $eff := .Date }}
+  {{ with .Params.startDate }}{{ $eff = time.AsTime . }}{{ end }}
+  {{ with .Params.endDate }}{{ $eff = time.AsTime . }}{{ end }}
+  {{ $items = $items | append (dict
+       "page" . "eff" $eff
+       "key" ($eff.Format "2006-01-02")) }}
+{{ end }}
+{{ $items = sort $items "key" "desc" }}
+
+<ol class="tl" aria-label="{{ $label }}, newest first">
+  {{ $lastYear := 0 }}
+  {{ range $i, $it := $items }}
+    {{ $p     := $it.page }}
+    {{ $yNum  := $it.eff.Year }}
+
+    {{/* — year marker, emitted on a change of year — */}}
+    {{ if ne $yNum $lastYear }}
+      {{ if and $gaps $lastYear (gt (sub $lastYear $yNum) 1) }}
+        {{ range seq (sub $lastYear 1) -1 (add $yNum 1) }}
+          <li class="tl-gap"><span class="lbl">{{ . }} &mdash; no entries</span></li>
+        {{ end }}
+      {{ end }}
+      <li class="tl-yr"><span class="lbl">{{ $it.eff.Format $yearFmt }}</span></li>
+      {{ $lastYear = $yNum }}
+    {{ end }}
+
+    {{ $dateLabel := $it.eff.Format $pointFmt }}
+
+    {{ $summary  := $p.Params.summary | default $p.Params.description }}
+    {{ $featured := partial "functions/get_featured_image.html" $p }}
+    {{ $external := $p.Params.external_link }}
+
+    <li class="tl-i {{ cond (eq (mod $i 2) 0) "tl-i--l" "tl-i--r" }}">
+      {{/* .tile supplies the frame/type/hover vocabulary; .tl-card re-borders
+           it, since .tile's borders belong to the homepage's grid. */}}
+      <a class="tile tl-card" href="{{ with $external }}{{ . }}{{ else }}{{ $p.RelPermalink }}{{ end }}"
+         {{ with $external }}rel="noopener" target="_blank"{{ end }}>
+        {{/* Hatch marks an ABSENT image, never an overlay on real artwork. */}}
+        <div class="frame{{ if not $featured }} frame--empty{{ end }}">
+          {{ with $featured }}
+            {{ $img := .Fill "960x540 Center webp q82" }}
+            <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}"
+                 alt="{{ $p.Params.image.alt_text | default $p.Title }}" loading="lazy" />
+          {{ else }}
+            <span class="lbl">{{ $p.File.ContentBaseName | default $p.LinkTitle }}</span>
+          {{ end }}
+        </div>
+        <div class="tx">
+          <div class="lbl">
+            <time datetime="{{ $it.eff.Format "2006-01-02" }}">{{ $dateLabel }}</time>
+            {{ range first 1 ($p.GetTerms "tags") }}<span class="cu">/</span> {{ .LinkTitle }}{{ end }}
+          </div>
+          {{/* the ↗ marker is applied by CSS, never typed — see site.css:610 */}}
+          <h3>{{ $p.LinkTitle }}</h3>
+          {{ with $summary }}<p>{{ . }}</p>{{ end }}
+        </div>
+      </a>
+      <span class="tl-m" aria-hidden="true"></span>
+    </li>
+  {{ end }}
+  <li class="tl-cap" aria-hidden="true"></li>
+</ol>

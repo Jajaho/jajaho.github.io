@@ -482,6 +482,161 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
   .tbl .st, .tbl th.st, .tbl .dom { display: none; }
 }
 
+/* — project views: the index/timeline switch —
+   Two server-rendered panels behind one URL. The radios ARE the state, so the
+   switch works with JavaScript off; the inline script in redesign/view-switch
+   only remembers the choice. Every rule here is a `~` combinator, so the
+   inputs must stay SIBLINGS of .viewsel and of both panels — wrapping them
+   breaks the page silently. (:has() would allow nesting, but on a browser
+   without it neither panel hides and both views stack.) */
+.pv { position: relative; }
+.pv-i { position: absolute; width: 0; height: 0; opacity: 0; }
+
+/* The control sits ON the section rule above it, like a tab: its bottom edge
+   lands exactly on that rule, so it needs no bottom border of its own and adds
+   no strip of its own to the page. The rule is this section's top edge, which
+   is --space-section above .pv — hence the offset, written with the token so
+   it stays in sync when the media query shrinks the section padding.
+   Same shape as .acts, so the control reads as house furniture. */
+.viewsel {
+  position: absolute; right: var(--page-pad);
+  bottom: calc(100% + var(--space-section));
+  display: flex; width: max-content; max-width: 100%;
+  font-family: var(--font-mono); font-size: var(--t-nav);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+/* Filing-cabinet tabs. The INACTIVE tab is plain text on the page — no fill and
+   no border — so the section rule runs unbroken beneath it. The ACTIVE tab is
+   the card pulled forward: a full-strength outline, the page's own fill, and
+   (below) a 1px bridge that erases the rule under it so the tab joins the
+   content. The border is declared transparent rather than absent so that
+   switching tabs moves no pixels; likewise hover tints the text only, since a
+   fill would break the rule the inactive tab is supposed to leave alone. */
+.viewsel label {
+  position: relative;
+  padding: var(--s-2) var(--s-4);
+  border: var(--border-hair); border-bottom: 0;
+  border-color: transparent;
+  background: transparent; color: var(--ink-3);
+  cursor: pointer;
+}
+.viewsel label + label { margin-left: -1px; }  /* collapse adjoining verticals */
+.viewsel label:hover { color: var(--cu); }
+/* The control sits in the section's padding band, which the media query at the
+   top of this file shrinks to --s-6. Tighten the label so it still fits inside
+   that band rather than reaching up into the page text. */
+@media (max-width: 60rem) {
+  .viewsel label { padding-block: var(--s-1); }
+}
+
+#pv-index:checked    ~ .pv-p--timeline,
+#pv-timeline:checked ~ .pv-p--index { display: none; }
+/* After :hover on purpose — the selected tab keeps its look when pointed at. */
+#pv-index:checked    ~ .viewsel label[for="pv-index"],
+#pv-timeline:checked ~ .viewsel label[for="pv-timeline"] {
+  background: var(--bg); color: var(--ink);
+  border-color: var(--line); z-index: 1;
+}
+/* The bridge: 1px of page colour laid over the section rule, which sits in the
+   last pixel of this label's box. This is what makes the tab read as attached
+   to the content below rather than as a button parked on the line. */
+#pv-index:checked    ~ .viewsel label[for="pv-index"]::after,
+#pv-timeline:checked ~ .viewsel label[for="pv-timeline"]::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 1px; background: var(--bg);
+}
+/* The inputs are zero-size rather than display:none so they stay focusable;
+   the ring is forwarded to the label the user can actually see. */
+#pv-index:focus-visible    ~ .viewsel label[for="pv-index"],
+#pv-timeline:focus-visible ~ .viewsel label[for="pv-timeline"] {
+  outline: 2px solid var(--cu); outline-offset: 2px;
+}
+
+/* — timeline —
+   card | rail | card. Each <li> is its OWN grid, not the <ol>: that stops
+   auto-placement pairing two cards into one row, and makes the rail continuous
+   by construction — every row draws its own segment with inset-block: 0, so
+   the segments abut and read as one line with no absolute positioning.
+   The left/right side comes from the template (.tl-i--l / .tl-i--r), because
+   year markers are list items too and :nth-child parity would flip the
+   zig-zag at every year boundary.
+   Below 60rem the fold flips four custom properties; no rule is restated. */
+.tl {
+  --tl-rail: 4rem;        /* the centre column */
+  --tl-x: 50%;            /* where the rule sits inside a row */
+  --tl-cols: minmax(0, 1fr) var(--tl-rail) minmax(0, 1fr);
+  --tl-card-l: 1;
+  --tl-card-r: 3;
+  --tl-card-max: 30rem;
+  --tl-y: var(--s-6);     /* marker + connector height, from the card top */
+  list-style: none; padding: 0;
+}
+.tl > li { position: relative; display: grid; grid-template-columns: var(--tl-cols); }
+.tl > li::before {
+  content: ""; position: absolute; inset-block: 0; left: var(--tl-x);
+  border-left: var(--border-hair);
+}
+
+.tl-i::after {            /* connector, card edge to rail */
+  content: ""; position: absolute; top: var(--tl-y);
+  width: calc(var(--tl-rail) / 2); border-top: var(--border-hair);
+}
+.tl-i--l::after { left: calc(var(--tl-x) - var(--tl-rail) / 2); }
+.tl-i--r::after { left: var(--tl-x); }
+
+.tl-card {                /* .tile supplies frame/type/hover */
+  grid-row: 1; max-width: var(--tl-card-max);
+  margin-block: var(--s-5);
+  border: var(--border-hair);   /* replaces .tile's two-sided grid border */
+  background: var(--bg);
+}
+.tl-i--l .tl-card { grid-column: var(--tl-card-l); justify-self: end; }
+.tl-i--r .tl-card { grid-column: var(--tl-card-r); justify-self: start; }
+
+/* The marker. Every entry is a point — a project with a timespan is placed on
+   its finish date, never stretched, since evenly spaced rows could not carry a
+   duration to scale. z-index lifts it over the connector: ::after is generated
+   content of the <li> and so paints after .tl-m, which would otherwise leave a
+   hairline crossing the dot. */
+.tl-m {
+  position: absolute; top: var(--tl-y); left: var(--tl-x); z-index: 1;
+  width: var(--s-2); height: var(--s-2);
+  transform: translate(-50%, -50%);
+  background: var(--cu); border-radius: 50%;
+}
+
+.tl-yr { padding-block: var(--s-5); }
+.tl-gap { padding-block: var(--s-4); }
+.tl-yr .lbl, .tl-gap .lbl {
+  grid-column: 1 / -1; justify-self: center;
+  position: relative;             /* paints over the rail behind it */
+  background: var(--bg); padding: var(--s-1) var(--s-3);
+  border: var(--border-hair); color: var(--ink-2); font-size: var(--t-ui);
+}
+/* A year with no entries — off by default, see the `gaps` arg on the partial. */
+.tl-gap .lbl { border-style: dashed; color: var(--ink-3); }
+
+.tl-cap { height: var(--s-6); }   /* the rail stops, it does not fade out */
+.tl-cap::before { inset-block: 0 auto; height: var(--s-3); }
+.tl-cap::after {
+  content: ""; position: absolute; top: var(--s-3);
+  left: calc(var(--tl-x) - var(--s-3)); width: var(--s-5);
+  border-top: var(--border-hair);
+}
+
+@media (max-width: 60rem) {
+  .tl {
+    --tl-rail: 2.5rem;
+    --tl-x: calc(var(--tl-rail) / 2);
+    --tl-cols: var(--tl-rail) minmax(0, 1fr);
+    --tl-card-l: 2; --tl-card-r: 2;
+    --tl-card-max: none;
+  }
+  .tl-i--l .tl-card, .tl-i--r .tl-card { justify-self: stretch; }
+  .tl-i--l::after { left: var(--tl-x); }
+  .tl-yr .lbl, .tl-gap .lbl { justify-self: start; }
+}
+
 /* — article — */
 .article { padding-block: var(--space-section); }
 .article-head { max-width: var(--measure); }
