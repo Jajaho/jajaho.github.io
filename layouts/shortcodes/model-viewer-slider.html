@@ -3,6 +3,10 @@
      Params: src1, src2, rot1, rot2, color1, color2, btn1-text, btn2-text,
              alt, camera-orbit, title
 
+     rot1/rot2 are model-viewer `orientation` values, "roll pitch yaw". Give
+     units: model-viewer reads a bare number as radians, so "0 -90 0" is a
+     pitch of about -116.6deg, not -90deg.
+
      Both viewers are mounted on one stage, so the wipe is a pure CSS clip-path
      — no reload, no flash. Their cameras are kept in sync, otherwise dragging
      the divider would compare two different viewpoints.
