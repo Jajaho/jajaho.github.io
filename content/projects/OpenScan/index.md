@@ -28,6 +28,7 @@ share: false
     btn2-text="Scan"
     alt="Einstein source and scan."
     camera-orbit="0deg 75deg auto"
+    dimensions="true"
 >}}
 
 While affordable 3d printers have been available for quite some time, the reverse path from object to file has been significantly harder and more expensive, often out of the reach of makers. Thanks to the work of Thomas Megel (founder) and a number of incredibly passionate contributors in the community, a reliable and affordable photogrammetry solution has been developed, called [OpenScan](https://openscan.eu/). Motivated by the lack of better options, the project developed from a prototype construction into an ecosystem with a rich choice of hardware variants and software solutions, even to a point where it is economically viable.

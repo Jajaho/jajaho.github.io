@@ -7,6 +7,17 @@
      units: model-viewer reads a bare number as radians, so "0 -90 0" is a
      pitch of about -116.6deg, not -90deg.
 
+     dimensions="true" adds a toggle for bounding-box dimensions, drawn by the
+     same assets/js/wgt-dims.js as model-viewer-dimensions. Each model is
+     measured on its own, and its overlay lives inside its own viewer, so the
+     wipe compares the measurements along with the surfaces. Options:
+       unit / unit_scale            label and multiplier for the readout
+                                    (default mm, x1 — the models here are
+                                    printed parts authored in millimetres)
+       x_scale / y_scale / z_scale  per-axis exaggeration, as a percentage;
+                                    the axes are the displayed ones, after
+                                    rot1/rot2
+
      Both viewers are mounted on one stage, so the wipe is a pure CSS clip-path
      — no reload, no flash. Their cameras are kept in sync, otherwise dragging
      the divider would compare two different viewpoints.
@@ -29,6 +40,10 @@
 {{- if not $b }}{{ errorf "model-viewer-slider: 'src2' is required (%s)" .Position }}{{ end -}}
 {{- $labelA := .Get "btn1-text" | default "Model 1" -}}
 {{- $labelB := .Get "btn2-text" | default "Model 2" -}}
+{{- /* printf, because an unquoted dimensions=true arrives as a bool. */ -}}
+{{- $dims   := eq (printf "%v" (.Get "dimensions")) "true" -}}
+{{- $unit   := .Get "unit" | default "mm" -}}
+{{- $uscale := .Get "unit_scale" | default 1 -}}
 
 <div class="wgt" id="{{ $id }}">
   <div class="wgt-hd">
@@ -69,6 +84,18 @@
 
     <span class="wgt-tag wgt-tag--tl">{{ $labelA }}</span>
     <span class="wgt-tag wgt-tag--tr">{{ $labelB }}</span>
+
+    {{- if $dims }}
+    {{/* Bottom-left: the model labels hold both top corners. */}}
+    <div class="wgt-hud wgt-hud--bl">
+      <button type="button" class="wgt-btn wgt-btn--icon" data-dims aria-pressed="false" aria-label="Toggle dimensions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 7v11a1 1 0 0 0 1 1h11"/><path d="M5.293 18.707 11 13"/>
+          <circle cx="19" cy="19" r="2"/><circle cx="5" cy="5" r="2"/>
+        </svg>
+      </button>
+    </div>
+    {{- end }}
 
     <div class="wgt-split" data-split tabindex="0"
          role="slider" aria-label="Reveal {{ $labelA }} or {{ $labelB }}"
@@ -151,6 +178,35 @@
     b.fieldOfView  = a.getFieldOfView() + 'deg';
     b.jumpCameraToGoal();
   });
+
+  {{- if $dims }}
+
+  /* — dimensions —
+     One overlay per viewer, each redrawn on its own camera-change: `b`'s
+     camera only lands once its jumpCameraToGoal has run, so drawing `b`'s
+     lines from `a`'s event would project them with the previous pose. `b`'s
+     overlay is clipped along with it; `a`'s right half sits under `b`'s
+     opaque canvas. */
+  {{ (resources.Get "js/wgt-dims.js").Content | safeJS }}
+
+  const dims = [a, b].map((viewer) => wgtDims(viewer, {
+    unit: {{ $unit }},
+    unitScale: {{ $uscale }},
+    scale: {
+      x: {{ .Get "x_scale" | default 100 }},
+      y: {{ .Get "y_scale" | default 100 }},
+      z: {{ .Get "z_scale" | default 100 }},
+    },
+  }));
+
+  const toggle = root.querySelector('[data-dims]');
+  let shown = false;
+  toggle.addEventListener('click', () => {
+    shown = !shown;
+    toggle.setAttribute('aria-pressed', String(shown));
+    dims.forEach((d) => d.show(shown));
+  });
+  {{- end }}
 
   /* — optional per-model tint — */
   function tint(viewer, hex) {

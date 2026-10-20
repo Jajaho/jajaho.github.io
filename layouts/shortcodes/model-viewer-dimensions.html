@@ -9,9 +9,9 @@
                                     (default µm, x1000 — these models are
                                     microscopy scans authored in millimetres)
 
-     Eleven invisible corner hotspots anchor the geometry; five visible ones
-     carry the numbers, and an SVG overlay joins them. All of it is redrawn on
-     `camera-change`, which is why the lines track the model as it rotates.
+     The hotspots, readouts and leader lines come from assets/js/wgt-dims.js,
+     shared with model-viewer-slider; this file adds the toggle, AR and
+     fullscreen around them.
 
      Styling lives in layer 7 of assets/css/site.css. Every id and selector is
      scoped by `.Ordinal` so a page can carry several of these — the previous
@@ -52,34 +52,12 @@
       src="{{ .Get "src" }}"
       alt="{{ .Get "alt" | default "A 3D model with dimensions" }}"
       {{ with .Get "poster" }}poster="{{ . }}"{{ end }}
-      data-x-scale="{{ .Get "x_scale" | default 100 }}"
-      data-y-scale="{{ .Get "y_scale" | default 100 }}"
-      data-z-scale="{{ .Get "z_scale" | default 100 }}"
       camera-controls
       camera-orbit="{{ .Get "camera-orbit" | default "-30deg auto auto" }}"
       max-camera-orbit="auto 100deg auto"
       shadow-intensity="1"
       loading="lazy"
       touch-action="pan-y">
-
-      {{- /* Corner anchors — geometry only, never drawn. */ -}}
-      <button slot="hotspot-dot+X-Y+Z" class="wgt-dot" data-position="1 -1 1"   data-normal="1 0 0"></button>
-      <button slot="hotspot-dot+X-Y-Z" class="wgt-dot" data-position="1 -1 -1"  data-normal="1 0 0"></button>
-      <button slot="hotspot-dot+X+Y-Z" class="wgt-dot" data-position="1 1 -1"   data-normal="0 1 0"></button>
-      <button slot="hotspot-dot-X+Y-Z" class="wgt-dot" data-position="-1 1 -1"  data-normal="0 1 0"></button>
-      <button slot="hotspot-dot-X-Y-Z" class="wgt-dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
-      <button slot="hotspot-dot-X-Y+Z" class="wgt-dot" data-position="-1 -1 1"  data-normal="-1 0 0"></button>
-
-      {{- /* The readouts. */ -}}
-      <button slot="hotspot-dim+X-Y" class="wgt-tag wgt-tag--hotspot" data-dim data-position="1 -1 0"  data-normal="1 0 0"  hidden></button>
-      <button slot="hotspot-dim+X-Z" class="wgt-tag wgt-tag--hotspot" data-dim data-position="1 0 -1"  data-normal="1 0 0"  hidden></button>
-      <button slot="hotspot-dim+Y-Z" class="wgt-tag wgt-tag--hotspot" data-dim data-position="0 -1 -1" data-normal="0 1 0"  hidden></button>
-      <button slot="hotspot-dim-X-Z" class="wgt-tag wgt-tag--hotspot" data-dim data-position="-1 0 -1" data-normal="-1 0 0" hidden></button>
-      <button slot="hotspot-dim-X-Y" class="wgt-tag wgt-tag--hotspot" data-dim data-position="-1 -1 0" data-normal="-1 0 0" hidden></button>
-
-      <svg class="wgt-rule" data-dim xmlns="http://www.w3.org/2000/svg" hidden>
-        <line/><line/><line/><line/><line/>
-      </svg>
     </model-viewer>
   </div>
 </div>
@@ -99,14 +77,24 @@
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <script>
 (function () {
+  {{ (resources.Get "js/wgt-dims.js").Content | safeJS }}
+
   const root   = document.getElementById({{ $id }});
   const modal  = document.getElementById({{ printf "%s-fs" $id }});
   const viewer = root.querySelector('model-viewer');
   const home   = root.querySelector('[data-home]');
   const away   = modal.querySelector('.wgt-stage');
-  const parts  = viewer.querySelectorAll('[data-dim]');
-  const lines  = viewer.querySelectorAll('.wgt-rule line');
   const toggle = root.querySelector('[data-dims]');
+
+  const dims = wgtDims(viewer, {
+    unit: {{ $unit }},
+    unitScale: {{ $uscale }},
+    scale: {
+      x: {{ .Get "x_scale" | default 100 }},
+      y: {{ .Get "y_scale" | default 100 }},
+      z: {{ .Get "z_scale" | default 100 }},
+    },
+  });
 
   let shown = false;
 
@@ -114,8 +102,7 @@
   toggle.addEventListener('click', () => {
     shown = !shown;
     toggle.setAttribute('aria-pressed', String(shown));
-    parts.forEach((el) => { el.hidden = !shown; });
-    if (shown) render();
+    dims.show(shown);
   });
 
   /* AR takes over the whole viewport; the overlay would float on top of the
@@ -123,7 +110,7 @@
   viewer.addEventListener('ar-status', (e) => {
     const inAR = e.detail.status === 'session-started';
     toggle.hidden = inAR;
-    parts.forEach((el) => { el.hidden = inAR || !shown; });
+    dims.show(!inAR && shown);
   });
 
   /* — fullscreen — */
@@ -132,7 +119,7 @@
     modal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
     viewer.requestUpdate?.();
-    if (shown) render();
+    if (shown) dims.render();
     modal.querySelector('[data-close]').focus();
   }
   function close() {
@@ -140,7 +127,7 @@
     modal.classList.remove('is-open');
     document.body.style.overflow = '';
     viewer.requestUpdate?.();
-    if (shown) render();
+    if (shown) dims.render();
     root.querySelector('[data-expand]').focus();
   }
   root.querySelector('[data-expand]').addEventListener('click', open);
@@ -149,69 +136,6 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
   });
-
-  /* — leader lines — */
-  function draw(line, a, b, tag) {
-    if (!a || !b) return;
-    line.setAttribute('x1', a.canvasPosition.x);
-    line.setAttribute('y1', a.canvasPosition.y);
-    line.setAttribute('x2', b.canvasPosition.x);
-    line.setAttribute('y2', b.canvasPosition.y);
-    /* A line whose label has rotated to the far side of the model would read
-       as belonging to the near face. Drop it instead. */
-    line.style.display = tag && !tag.facingCamera ? 'none' : '';
-  }
-
-  const q = (n) => viewer.queryHotspot(n);
-
-  function render() {
-    draw(lines[0], q('hotspot-dot+X-Y+Z'), q('hotspot-dot+X-Y-Z'), q('hotspot-dim+X-Y'));
-    draw(lines[1], q('hotspot-dot+X-Y-Z'), q('hotspot-dot+X+Y-Z'), q('hotspot-dim+X-Z'));
-    draw(lines[2], q('hotspot-dot+X+Y-Z'), q('hotspot-dot-X+Y-Z'));
-    draw(lines[3], q('hotspot-dot-X+Y-Z'), q('hotspot-dot-X-Y-Z'), q('hotspot-dim-X-Z'));
-    draw(lines[4], q('hotspot-dot-X-Y-Z'), q('hotspot-dot-X-Y+Z'), q('hotspot-dim-X-Y'));
-  }
-
-  /* — measure once the geometry exists — */
-  viewer.addEventListener('load', () => {
-    const c = viewer.getBoundingBoxCenter();
-    const s = viewer.getDimensions();
-
-    /* The models are authored with one axis exaggerated so surface relief is
-       visible; dividing by that factor gives the true measurement back. */
-    const pct = (attr) => (parseFloat(viewer.getAttribute(attr)) || 100) / 100;
-    const real = {
-      x: s.x / pct('data-x-scale'),
-      y: s.y / pct('data-y-scale'),
-      z: s.z / pct('data-z-scale'),
-    };
-
-    const hx = s.x / 2, hy = s.y / 2, hz = s.z / 2;
-    const at = (x, y, z) => `${x} ${y} ${z}`;
-
-    [
-      ['hotspot-dot+X-Y+Z', at(c.x + hx, c.y - hy, c.z + hz)],
-      ['hotspot-dot+X-Y-Z', at(c.x + hx, c.y - hy, c.z - hz)],
-      ['hotspot-dot+X+Y-Z', at(c.x + hx, c.y + hy, c.z - hz)],
-      ['hotspot-dot-X+Y-Z', at(c.x - hx, c.y + hy, c.z - hz)],
-      ['hotspot-dot-X-Y-Z', at(c.x - hx, c.y - hy, c.z - hz)],
-      ['hotspot-dot-X-Y+Z', at(c.x - hx, c.y - hy, c.z + hz)],
-      ['hotspot-dim+X-Y', at(c.x + hx * 1.2, c.y - hy * 1.1, c.z), real.z],
-      ['hotspot-dim+X-Z', at(c.x + hx * 1.2, c.y, c.z - hz * 1.2), real.y],
-      ['hotspot-dim+Y-Z', at(c.x, c.y + hy * 1.1, c.z - hz * 1.1), real.x],
-      ['hotspot-dim-X-Z', at(c.x - hx * 1.2, c.y, c.z - hz * 1.2), real.y],
-      ['hotspot-dim-X-Y', at(c.x - hx * 1.2, c.y - hy * 1.1, c.z), real.z],
-    ].forEach(([name, position, value]) => {
-      viewer.updateHotspot({ name, position });
-      if (value === undefined) return;
-      const tag = viewer.querySelector(`button[slot="${name}"]`);
-      if (tag) tag.textContent = `${(value * {{ $uscale }}).toFixed(2)} {{ $unit }}`;
-    });
-
-    render();
-  });
-
-  viewer.addEventListener('camera-change', render);
 
   if (navigator.userAgent.toLowerCase().includes('firefox')) {
     fetch(viewer.getAttribute('src'), { method: 'HEAD' })
