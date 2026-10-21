@@ -902,6 +902,11 @@ a.chip:hover { border-color: var(--cu); color: var(--cu); }
 }
 .wgt-hd b { font-weight: 500; color: var(--ink-2); }
 .wgt-hd .r { margin-left: auto; }
+/* Actions carried in the strip itself, where a whole control bar for two
+   links would be a row of empty space (the PDF viewer's Open / Download).
+   Set in the strip's own type so the header keeps its height. */
+.wgt-hd-acts { margin-left: auto; display: flex; gap: var(--s-2); }
+.wgt-hd .wgt-btn { font-size: var(--t-label); padding: var(--s-1) var(--s-2); }
 
 /* — stage: whatever actually renders — */
 .wgt-stage {

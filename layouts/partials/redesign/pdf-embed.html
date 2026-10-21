@@ -39,11 +39,11 @@
 <div class="wgt">
   <div class="wgt-hd">
     <b>{{ $label }}</b>
-    <span class="r" data-pdf-count>document</span>
-  </div>
-  <div class="wgt-bar wgt-bar--end">
-    <a class="wgt-btn" href="{{ $url }}" target="_blank" rel="noopener">Open</a>
-    <a class="wgt-btn" href="{{ $url }}" download>Download</a>
+    <span data-pdf-count>document</span>
+    <span class="wgt-hd-acts">
+      <a class="wgt-btn" href="{{ $url }}" target="_blank" rel="noopener">Open</a>
+      <a class="wgt-btn" href="{{ $url }}" download>Download</a>
+    </span>
   </div>
   <div class="wgt-doc" data-pdf-src="{{ $url }}">
     <p class="wgt-doc-wait">Rendering&nbsp;…</p>
