@@ -7,7 +7,7 @@ tags:
 links:
   - name: Repository
     url: https://github.com/Jajaho/LiPo-Board
-draft: true
+draft: false
 featured: false
 ---
 
@@ -20,9 +20,11 @@ A small form factor 5 V 1 A boost converter and LiPo-Battery charger with integr
 - **TP4056** 1 A standalone linear Li-Ion battery charger with thermal protection in SOP-8 package
 - **MT3608** High efficiency 1.2 MHz 2 A boost converter
 
-## Schematics & PCB
+## Schematics & Design Files
 
-[GitHub repository](https://github.com/Jajaho/LiPo-Board)
+![Schematic](LiPo-BoardV1-2019_schematic.pdf)
+
+The schematic above is available on [GitHub](https://github.com/Jajaho/LiPo-Board) along with the full set of design and production files.
 
 ## Mistakes & Learnings
 
